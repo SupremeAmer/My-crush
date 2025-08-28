@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Crush - Appwrite Integration</title>
+    <title>My Crush - Social App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/appwrite@10.0.0"></script>
     <style>
-        /* All the previous CSS styles remain the same */
         :root {
             --primary-color: #e91e63;
             --primary-light: #f8bbd0;
@@ -47,9 +46,536 @@
             padding-bottom: 60px; /* Space for bottom nav */
         }
 
-        /* ... (all other CSS styles remain exactly the same) ... */
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+        }
 
-        /* Additional styles for Appwrite integration */
+        button {
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-family: inherit;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 15px;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: var(--card-bg);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        /* Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+
+        .badge {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .post-card {
+            padding: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        .username {
+            font-weight: bold;
+        }
+
+        .timestamp {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .post-content {
+            margin-bottom: 15px;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .action-btn i {
+            margin-right: 5px;
+        }
+
+        .action-btn.liked {
+            color: var(--primary-color);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            padding: 15px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Auth pages */
+        .auth-container {
+            max-width: 400px;
+            margin: 30px auto;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .auth-tab.active {
+            border-bottom-color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Messages */
+        .message-thread {
+            height: calc(100vh - 180px);
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .message {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .message.sent {
+            background-color: var(--primary-light);
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received {
+            background-color: var(--card-bg);
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .message-input {
+            display: flex;
+            padding: 10px;
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            position: fixed;
+            bottom: 60px;
+            left: 0;
+            right: 0;
+        }
+
+        .message-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            margin-right: 10px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        /* Notifications */
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .notification-item.unread {
+            background-color: var(--primary-light);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        /* Profile */
+        .profile-header {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid var(--primary-color);
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        .stat {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* Search */
+        .search-container {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            padding-right: 40px;
+        }
+
+        .search-close {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .user-list {
+            margin-top: 15px;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Utilities */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-1 { margin-top: 10px; }
+        .mt-2 { margin-top: 20px; }
+        .mb-1 { margin-bottom: 10px; }
+        .mb-2 { margin-bottom: 20px; }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .bottom-nav {
+                display: none;
+            }
+
+            .desktop-nav {
+                display: flex;
+            }
+
+            body {
+                padding-bottom: 0;
+            }
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        /* Comment section */
+        .comments-container {
+            margin-top: 15px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .comment {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .comment-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        .comment-content {
+            flex: 1;
+            background-color: var(--bg-color);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .comment-input {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .comment-input input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            margin-right: 10px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        /* Verification notice */
         .verification-notice {
             background-color: var(--primary-light);
             padding: 10px 15px;
@@ -66,6 +592,14 @@
             text-decoration: underline;
             cursor: pointer;
             margin-left: 5px;
+        }
+
+        /* Search close button */
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -158,7 +692,16 @@
             </div>
         </section>
 
-        <
+        <!-- Search Page -->
+        <section id="searchPage" class="page">
+            <div class="search-header">
+                <h2 class="text-center">Search</h2>
+                <button class="close-btn" id="closeSearch">&times;</button>
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search users...">
+                <button class="search-close" id="clearSearch">&times;</button>
+            </div>
             <div id="searchResults">
                 <p class="text-center">Start typing to search for users</p>
             </div>
@@ -286,7 +829,6 @@
 
     <script>
         // Initialize Appwrite
-        const appwrite = new Appwrite();
         const client = new Appwrite.Client();
         
         // Replace with your Appwrite project details
@@ -556,6 +1098,17 @@
             
             // Search input
             document.getElementById('searchInput').addEventListener('input', handleSearch);
+            
+            // Clear search button
+            document.getElementById('clearSearch').addEventListener('click', () => {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('searchResults').innerHTML = '<p class="text-center">Start typing to search for users</p>';
+            });
+            
+            // Close search page button
+            document.getElementById('closeSearch').addEventListener('click', () => {
+                showPage('homePage');
+            });
             
             // Profile stats clicks
             document.getElementById('postsStat').addEventListener('click', () => {
@@ -1201,6 +1754,149 @@
                 }
             } catch (error) {
                 console.error('Error updating unread count:', error);
+            }
+        }
+
+        // Initialize search
+        function initSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '<p class="text-center">Start typing to search for users</p>';
+        }
+
+        // Handle search input
+        async function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const searchResults = document.getElementById('searchResults');
+            
+            if (query.length < 2) {
+                searchResults.innerHTML = '<p class="text-center">Start typing to search for users</p>';
+                return;
+            }
+            
+            try {
+                const results = await database.listDocuments(
+                    USERS_COLLECTION_ID,
+                    [
+                        Appwrite.Query.search('name', query),
+                        Appwrite.Query.notEqual('$id', currentUser.$id)
+                    ]
+                );
+                
+                searchResults.innerHTML = '';
+                
+                if (results.documents.length === 0) {
+                    searchResults.innerHTML = '<p class="text-center">No users found</p>';
+                    return;
+                }
+                
+                for (const user of results.documents) {
+                    const userEl = document.createElement('div');
+                    userEl.className = 'card user-item';
+                    userEl.innerHTML = `
+                        <img src="${user.avatar}" alt="${user.name}" class="avatar">
+                        <div style="flex: 1;">
+                            <div class="username">${user.name}</div>
+                            <div>${user.bio}</div>
+                        </div>
+                        <button class="btn btn-primary" data-user-id="${user.$id}">Follow</button>
+                    `;
+                    
+                    // Add follow functionality
+                    const followBtn = userEl.querySelector('button');
+                    const isFollowing = await checkIfFollowing(user.$id);
+                    
+                    if (isFollowing) {
+                        followBtn.textContent = 'Unfollow';
+                        followBtn.classList.remove('btn-primary');
+                        followBtn.classList.add('btn-secondary');
+                    }
+                    
+                    followBtn.addEventListener('click', () => {
+                        toggleFollow(user.$id);
+                    });
+                    
+                    searchResults.appendChild(userEl);
+                }
+            } catch (error) {
+                console.error('Error searching users:', error);
+                searchResults.innerHTML = '<p class="text-center">Error searching users</p>';
+            }
+        }
+
+        // Check if current user is following a specific user
+        async function checkIfFollowing(userId) {
+            try {
+                const follows = await database.listDocuments(
+                    FOLLOWS_COLLECTION_ID,
+                    [
+                        Appwrite.Query.equal('followerId', currentUser.$id),
+                        Appwrite.Query.equal('followingId', userId)
+                    ]
+                );
+                
+                return follows.total > 0;
+            } catch (error) {
+                console.error('Error checking follow status:', error);
+                return false;
+            }
+        }
+
+        // Toggle follow
+        async function toggleFollow(userId) {
+            try {
+                const isFollowing = await checkIfFollowing(userId);
+                
+                if (isFollowing) {
+                    // Unfollow
+                    const follows = await database.listDocuments(
+                        FOLLOWS_COLLECTION_ID,
+                        [
+                            Appwrite.Query.equal('followerId', currentUser.$id),
+                            Appwrite.Query.equal('followingId', userId)
+                        ]
+                    );
+                    
+                    if (follows.documents.length > 0) {
+                        await database.deleteDocument(FOLLOWS_COLLECTION_ID, follows.documents[0].$id);
+                    }
+                } else {
+                    // Follow
+                    await database.createDocument(
+                        FOLLOWS_COLLECTION_ID,
+                        Appwrite.ID.unique(),
+                        {
+                            followerId: currentUser.$id,
+                            followingId: userId,
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                    
+                    // Create notification
+                    await database.createDocument(
+                        NOTIFICATIONS_COLLECTION_ID,
+                        Appwrite.ID.unique(),
+                        {
+                            userId: userId,
+                            type: 'follow',
+                            sourceUserId: currentUser.$id,
+                            content: 'started following you',
+                            read: false,
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                    await updateUnreadCount();
+                }
+                
+                // Update UI
+                await handleSearch();
+                
+                // Update profile stats if on profile page
+                if (currentPage === 'profilePage') {
+                    await loadProfile();
+                }
+            } catch (error) {
+                console.error('Error toggling follow:', error);
+                alert('Error following user. Please try again.');
             }
         }
 

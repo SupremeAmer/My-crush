@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Crush - Social Media App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@10.0.0"></script>
     <style>
         :root {
             --primary-color: #e91e63;
@@ -42,7 +43,7 @@
             color: var(--text-color);
             line-height: 1.6;
             transition: var(--transition);
-            padding-bottom: 60px; /* Space for bottom nav */
+            padding-bottom: 60px;
         }
 
         a {
@@ -372,6 +373,7 @@
         .profile-header {
             text-align: center;
             padding: 20px;
+            position: relative;
         }
 
         .profile-avatar {
@@ -571,9 +573,43 @@
             color: #ccc;
             margin-bottom: 15px;
         }
+
+        /* Error message */
+        .error-message {
+            background-color: var(--error-color);
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Appwrite connection status */
+        .connection-status {
+            position: fixed;
+            top: 70px;
+            right: 15px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            z-index: 1000;
+        }
+
+        .connection-status.connected {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .connection-status.disconnected {
+            background-color: var(--error-color);
+            color: white;
+        }
     </style>
 </head>
 <body>
+    <!-- Appwrite Connection Status -->
+    <div id="connectionStatus" class="connection-status" style="display: none;">Connecting to Appwrite...</div>
+
     <!-- Header -->
     <header class="header">
         <div class="logo">My Crush</div>
@@ -683,6 +719,7 @@
                 </div>
                 
                 <form id="loginForm" class="auth-form">
+                    <div id="loginError" class="error-message" style="display: none;"></div>
                     <div class="form-group">
                         <input type="email" class="form-input" id="loginEmail" placeholder="Email" required>
                     </div>
@@ -699,6 +736,7 @@
                 </form>
 
                 <form id="registerForm" class="auth-form" style="display: none;">
+                    <div id="registerError" class="error-message" style="display: none;"></div>
                     <div class="form-group">
                         <input type="text" class="form-input" id="registerName" placeholder="Full Name" required>
                     </div>
@@ -783,169 +821,33 @@
     </div>
 
     <script>
-        // Database initialization
-        function initializeDatabase() {
-            if (!localStorage.getItem('mycrush_users')) {
-                const demoUsers = [
-                    {
-                        id: 'user1',
-                        name: 'Demo User',
-                        email: 'demo@example.com',
-                        password: 'password',
-                        bio: 'This is my bio',
-                        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        id: 'user2',
-                        name: 'Jane Doe',
-                        email: 'jane@example.com',
-                        password: 'password',
-                        bio: 'Coffee lover ☕️',
-                        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        id: 'user3',
-                        name: 'John Smith',
-                        email: 'john@example.com',
-                        password: 'password',
-                        bio: 'Photographer 📸',
-                        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
-                        createdAt: new Date().toISOString()
-                    }
-                ];
-                localStorage.setItem('mycrush_users', JSON.stringify(demoUsers));
-            }
+        // Appwrite Configuration
+        const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
+        const APPWRITE_PROJECT_ID = 'your-project-id'; // Replace with your Appwrite project ID
+        const APPWRITE_PLATFORM_WEB_ID = 'your-platform-web-id'; // Replace with your platform web ID
 
-            if (!localStorage.getItem('mycrush_posts')) {
-                const demoPosts = [
-                    {
-                        id: 'post1',
-                        userId: 'user2',
-                        content: 'Just had the best coffee ever! ☕️ #coffee #morning',
-                        image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80',
-                        likeCount: 15,
-                        commentCount: 3,
-                        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-                        likedBy: ['user1']
-                    },
-                    {
-                        id: 'post2',
-                        userId: 'user3',
-                        content: 'Beautiful sunset at the beach today 🌅',
-                        image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80',
-                        likeCount: 42,
-                        commentCount: 7,
-                        createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-                        likedBy: ['user1', 'user2']
-                    }
-                ];
-                localStorage.setItem('mycrush_posts', JSON.stringify(demoPosts));
-            }
+        // Database IDs
+        const DATABASE_ID = 'mycrush_db';
+        const USERS_COLLECTION_ID = 'users';
+        const POSTS_COLLECTION_ID = 'posts';
+        const COMMENTS_COLLECTION_ID = 'comments';
+        const FOLLOWS_COLLECTION_ID = 'follows';
+        const MESSAGES_COLLECTION_ID = 'messages';
+        const NOTIFICATIONS_COLLECTION_ID = 'notifications';
 
-            if (!localStorage.getItem('mycrush_comments')) {
-                const demoComments = [
-                    {
-                        id: 'comment1',
-                        postId: 'post1',
-                        userId: 'user3',
-                        content: 'Looks amazing! Where is this?',
-                        createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString()
-                    },
-                    {
-                        id: 'comment2',
-                        postId: 'post1',
-                        userId: 'user2',
-                        content: 'This is at Central Perk!',
-                        createdAt: new Date(Date.now() - 50 * 60 * 1000).toISOString()
-                    }
-                ];
-                localStorage.setItem('mycrush_comments', JSON.stringify(demoComments));
-            }
+        // Storage Bucket IDs
+        const AVATARS_BUCKET_ID = 'avatars_bucket';
+        const POST_IMAGES_BUCKET_ID = 'post_images_bucket';
 
-            if (!localStorage.getItem('mycrush_follows')) {
-                const demoFollows = [
-                    { id: 'follow1', followerId: 'user1', followingId: 'user2', createdAt: new Date().toISOString() },
-                    { id: 'follow2', followerId: 'user1', followingId: 'user3', createdAt: new Date().toISOString() },
-                    { id: 'follow3', followerId: 'user2', followingId: 'user1', createdAt: new Date().toISOString() }
-                ];
-                localStorage.setItem('mycrush_follows', JSON.stringify(demoFollows));
-            }
+        // Initialize Appwrite
+        const client = new Appwrite.Client()
+            .setEndpoint(APPWRITE_ENDPOINT)
+            .setProject(APPWRITE_PROJECT_ID);
 
-            if (!localStorage.getItem('mycrush_messages')) {
-                const demoMessages = [
-                    {
-                        id: 'msg1',
-                        threadKey: 'user1_user2',
-                        senderId: 'user2',
-                        receiverId: 'user1',
-                        content: 'Hey there! How are you?',
-                        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-                    },
-                    {
-                        id: 'msg2',
-                        threadKey: 'user1_user2',
-                        senderId: 'user1',
-                        receiverId: 'user2',
-                        content: 'I\'m good! Just posted a new photo',
-                        createdAt: new Date(Date.now() - 1.5 * 60 * 60 * 1000).toISOString()
-                    }
-                ];
-                localStorage.setItem('mycrush_messages', JSON.stringify(demoMessages));
-            }
-
-            if (!localStorage.getItem('mycrush_notifications')) {
-                const demoNotifications = [
-                    {
-                        id: 'notif1',
-                        userId: 'user1',
-                        type: 'like',
-                        sourceUserId: 'user2',
-                        content: 'liked your post',
-                        read: false,
-                        createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString()
-                    },
-                    {
-                        id: 'notif2',
-                        userId: 'user1',
-                        type: 'comment',
-                        sourceUserId: 'user3',
-                        content: 'commented on your post',
-                        read: true,
-                        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-                    }
-                ];
-                localStorage.setItem('mycrush_notifications', JSON.stringify(demoNotifications));
-            }
-        }
-
-        // Database functions
-        function getDatabaseItem(key) {
-            return JSON.parse(localStorage.getItem(`mycrush_${key}`) || '[]');
-        }
-
-        function setDatabaseItem(key, value) {
-            localStorage.setItem(`mycrush_${key}`, JSON.stringify(value));
-        }
-
-        function addDatabaseItem(key, item) {
-            const items = getDatabaseItem(key);
-            items.push(item);
-            setDatabaseItem(key, items);
-            return item;
-        }
-
-        function updateDatabaseItem(key, id, updates) {
-            const items = getDatabaseItem(key);
-            const index = items.findIndex(item => item.id === id);
-            if (index !== -1) {
-                items[index] = { ...items[index], ...updates };
-                setDatabaseItem(key, items);
-                return items[index];
-            }
-            return null;
-        }
+        const account = new Appwrite.Account(client);
+        const databases = new Appwrite.Databases(client);
+        const storage = new Appwrite.Storage(client);
+        const realtime = new Appwrite.Realtime(client);
 
         // State Management
         let currentUser = null;
@@ -953,28 +855,97 @@
         let currentPage = 'homePage';
         let currentPostId = null;
         let currentChatUser = null;
+        let appwriteConnected = false;
 
         // DOM Elements
         const pages = document.querySelectorAll('.page');
         const navItems = document.querySelectorAll('.nav-item');
         const themeToggle = document.getElementById('themeToggle');
+        const connectionStatus = document.getElementById('connectionStatus');
 
         // Initialize the app
-        function initApp() {
-            // Initialize database
-            initializeDatabase();
+        async function initApp() {
+            try {
+                // Test Appwrite connection
+                await client.get();
+                appwriteConnected = true;
+                updateConnectionStatus('connected', 'Connected to Appwrite');
+                
+                // Set the theme
+                setTheme(currentTheme);
+                
+                // Check if user is logged in
+                await checkAuthStatus();
+                
+                // Set up event listeners
+                setupEventListeners();
+                
+                // Load initial data if logged in
+                if (currentUser) {
+                    loadFeed();
+                    updateUnreadCount();
+                }
+            } catch (error) {
+                console.error('Appwrite connection failed:', error);
+                appwriteConnected = false;
+                updateConnectionStatus('disconnected', 'Appwrite connection failed');
+                
+                // Fall back to localStorage if Appwrite is not available
+                if (!localStorage.getItem('mycrush_users')) {
+                    initializeLocalStorage();
+                }
+                
+                setTheme(currentTheme);
+                checkAuthStatus();
+                setupEventListeners();
+            }
+        }
+
+        // Update connection status UI
+        function updateConnectionStatus(status, message) {
+            connectionStatus.textContent = message;
+            connectionStatus.className = `connection-status ${status}`;
+            connectionStatus.style.display = 'block';
             
-            // Set the theme
-            setTheme(currentTheme);
-            
-            // Check if user is logged in
-            checkAuthStatus();
-            
-            // Set up event listeners
-            setupEventListeners();
-            
-            // Load initial data
-            loadInitialData();
+            // Hide after 3 seconds
+            setTimeout(() => {
+                connectionStatus.style.display = 'none';
+            }, 3000);
+        }
+
+        // Initialize localStorage as fallback
+        function initializeLocalStorage() {
+            if (!localStorage.getItem('mycrush_users')) {
+                const demoUsers = [
+                    {
+                        $id: 'user1',
+                        name: 'Demo User',
+                        email: 'demo@example.com',
+                        password: 'password',
+                        bio: 'This is my bio',
+                        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('mycrush_users', JSON.stringify(demoUsers));
+            }
+
+            // Initialize other collections if needed
+            if (!localStorage.getItem('mycrush_posts')) {
+                localStorage.setItem('mycrush_posts', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_comments')) {
+                localStorage.setItem('mycrush_comments', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_follows')) {
+                localStorage.setItem('mycrush_follows', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_messages')) {
+                localStorage.setItem('mycrush_messages', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_notifications')) {
+                localStorage.setItem('mycrush_notifications', JSON.stringify([]));
+            }
         }
 
         // Set theme function
@@ -985,15 +956,83 @@
         }
 
         // Check authentication status
-        function checkAuthStatus() {
-            const userData = localStorage.getItem('currentUser');
-            if (userData) {
-                currentUser = JSON.parse(userData);
-                showPage('homePage');
-                loadFeed();
-                updateUnreadCount();
+        async function checkAuthStatus() {
+            if (appwriteConnected) {
+                try {
+                    const user = await account.get();
+                    currentUser = {
+                        $id: user.$id,
+                        name: user.name,
+                        email: user.email,
+                        // Additional user data will be fetched from the database
+                    };
+                    
+                    // Get user profile from database
+                    try {
+                        const userProfile = await databases.getDocument(
+                            DATABASE_ID,
+                            USERS_COLLECTION_ID,
+                            user.$id
+                        );
+                        
+                        currentUser = {
+                            ...currentUser,
+                            ...userProfile
+                        };
+                    } catch (error) {
+                        console.log('User profile not found in database, creating one...');
+                        // Create user profile in database
+                        await createUserProfile(user);
+                    }
+                    
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showPage('homePage');
+                    loadFeed();
+                    updateUnreadCount();
+                } catch (error) {
+                    console.log('No active session:', error);
+                    showPage('authPage');
+                }
             } else {
-                showPage('authPage');
+                // Fallback to localStorage
+                const userData = localStorage.getItem('currentUser');
+                if (userData) {
+                    currentUser = JSON.parse(userData);
+                    showPage('homePage');
+                    loadFeed();
+                    updateUnreadCount();
+                } else {
+                    showPage('authPage');
+                }
+            }
+        }
+
+        // Create user profile in database
+        async function createUserProfile(user) {
+            if (!appwriteConnected) return;
+            
+            try {
+                const userProfile = {
+                    userId: user.$id,
+                    displayName: user.name,
+                    bio: '',
+                    avatarFileId: null,
+                    createdAt: new Date().toISOString()
+                };
+                
+                await databases.createDocument(
+                    DATABASE_ID,
+                    USERS_COLLECTION_ID,
+                    user.$id, // Using user ID as document ID
+                    userProfile
+                );
+                
+                currentUser = {
+                    ...currentUser,
+                    ...userProfile
+                };
+            } catch (error) {
+                console.error('Error creating user profile:', error);
             }
         }
 
@@ -1057,15 +1096,15 @@
             });
             
             // Login form
-            document.getElementById('loginForm').addEventListener('submit', (e) => {
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
-                loginUser(email, password);
+                await loginUser(email, password);
             });
             
             // Register form
-            document.getElementById('registerForm').addEventListener('submit', (e) => {
+            document.getElementById('registerForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const name = document.getElementById('registerName').value;
                 const email = document.getElementById('registerEmail').value;
@@ -1073,31 +1112,29 @@
                 const confirmPassword = document.getElementById('registerConfirmPassword').value;
                 
                 if (password !== confirmPassword) {
-                    alert('Passwords do not match');
+                    showError('registerError', 'Passwords do not match');
                     return;
                 }
                 
-                registerUser(name, email, password);
+                await registerUser(name, email, password);
             });
             
             // Google login
             document.getElementById('googleLogin').addEventListener('click', () => {
-                alert('Google login would be implemented with Appwrite OAuth');
+                loginWithGoogle();
             });
             
             // Continue as guest
             document.getElementById('continueAsGuest').addEventListener('click', () => {
-                currentUser = null;
-                showPage('homePage');
-                loadFeed();
+                continueAsGuest();
             });
             
             // New post form
-            document.getElementById('newPostForm').addEventListener('submit', (e) => {
+            document.getElementById('newPostForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const content = document.getElementById('postContent').value;
                 const imageFile = document.getElementById('postImage').files[0];
-                createPost(content, imageFile);
+                await createPost(content, imageFile);
             });
             
             // Edit profile button
@@ -1106,8 +1143,8 @@
             });
             
             // Logout button
-            document.getElementById('logoutBtn').addEventListener('click', () => {
-                logoutUser();
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                await logoutUser();
             });
             
             // Close modal buttons
@@ -1119,12 +1156,12 @@
             });
             
             // Edit profile form
-            document.getElementById('editProfileForm').addEventListener('submit', (e) => {
+            document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const displayName = document.getElementById('editDisplayName').value;
                 const bio = document.getElementById('editBio').value;
                 const avatarFile = document.getElementById('editAvatar').files[0];
-                updateProfile(displayName, bio, avatarFile);
+                await updateProfile(displayName, bio, avatarFile);
             });
             
             // Back to messages button
@@ -1169,86 +1206,135 @@
             });
         }
 
-        // Load initial data
-        function loadInitialData() {
-            // Simulate realtime updates
-            setInterval(() => {
-                if (currentUser) {
-                    updateUnreadCount();
-                    
-                    if (currentPage === 'homePage') {
-                        // Simulate new posts occasionally
-                        if (Math.random() > 0.8) {
-                            addSimulatedPost();
-                        }
-                    }
-                    
-                    if (currentPage === 'notificationsPage') {
-                        loadNotifications();
-                    }
-                    
-                    if (currentPage === 'messagesPage' && currentChatUser) {
-                        loadChat(currentChatUser);
-                    }
-                }
-            }, 10000);
+        // Show error message
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
         }
 
         // Login user
-        function loginUser(email, password) {
-            const users = getDatabaseItem('users');
-            const user = users.find(u => u.email === email && u.password === password);
-            
-            if (user) {
-                currentUser = { ...user };
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                showPage('homePage');
-                loadFeed();
-                updateUnreadCount();
+        async function loginUser(email, password) {
+            if (appwriteConnected) {
+                try {
+                    await account.createEmailSession(email, password);
+                    await checkAuthStatus();
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showError('loginError', 'Invalid email or password');
+                }
             } else {
-                alert('Invalid email or password');
+                // Fallback to localStorage
+                const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                const user = users.find(u => u.email === email && u.password === password);
+                
+                if (user) {
+                    currentUser = { ...user };
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showPage('homePage');
+                    loadFeed();
+                    updateUnreadCount();
+                } else {
+                    showError('loginError', 'Invalid email or password');
+                }
             }
         }
 
         // Register user
-        function registerUser(name, email, password) {
-            const users = getDatabaseItem('users');
-            
-            // Check if user already exists
-            const existingUser = users.find(u => u.email === email);
-            
-            if (existingUser) {
-                alert('User with this email already exists');
-                return;
+        async function registerUser(name, email, password) {
+            if (appwriteConnected) {
+                try {
+                    // Create account in Appwrite
+                    await account.create('unique()', email, password, name);
+                    
+                    // Login the user
+                    await account.createEmailSession(email, password);
+                    
+                    // Create user profile in database
+                    const user = await account.get();
+                    await createUserProfile(user);
+                    
+                    await checkAuthStatus();
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    showError('registerError', 'Registration failed. Please try again.');
+                }
+            } else {
+                // Fallback to localStorage
+                const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                
+                // Check if user already exists
+                const existingUser = users.find(u => u.email === email);
+                
+                if (existingUser) {
+                    showError('registerError', 'User with this email already exists');
+                    return;
+                }
+                
+                // Create new user
+                const newUser = {
+                    $id: 'user' + (users.length + 1),
+                    name,
+                    email,
+                    password,
+                    bio: '',
+                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
+                    createdAt: new Date().toISOString()
+                };
+                
+                users.push(newUser);
+                localStorage.setItem('mycrush_users', JSON.stringify(users));
+                
+                currentUser = { ...newUser };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showPage('homePage');
+                loadFeed();
             }
-            
-            // Create new user
-            const newUser = {
-                id: 'user' + (users.length + 1),
-                name,
-                email,
-                password,
-                bio: '',
-                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
-                createdAt: new Date().toISOString()
-            };
-            
-            addDatabaseItem('users', newUser);
-            currentUser = { ...newUser };
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+
+        // Login with Google
+        async function loginWithGoogle() {
+            if (appwriteConnected) {
+                try {
+                    // Redirect to Google OAuth
+                    account.createOAuth2Session('google', `${window.location.origin}/success.html`, `${window.location.origin}/failure.html`);
+                } catch (error) {
+                    console.error('Google login error:', error);
+                    showError('loginError', 'Google login failed');
+                }
+            } else {
+                alert('Google login requires Appwrite backend connection');
+            }
+        }
+
+        // Continue as guest
+        function continueAsGuest() {
+            currentUser = null;
             showPage('homePage');
             loadFeed();
         }
 
         // Logout user
-        function logoutUser() {
+        async function logoutUser() {
+            if (appwriteConnected) {
+                try {
+                    await account.deleteSession('current');
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+            }
+            
             currentUser = null;
             localStorage.removeItem('currentUser');
             showPage('authPage');
         }
 
         // Load feed posts
-        function loadFeed() {
+        async function loadFeed() {
             const feedContainer = document.getElementById('feedContainer');
             
             if (!currentUser) {
@@ -1265,22 +1351,47 @@
             
             feedContainer.innerHTML = '<div class="spinner"></div>';
             
-            // Simulate API delay
-            setTimeout(() => {
-                // Get posts from followed users and public posts
-                const follows = getDatabaseItem('follows');
-                const followedUsers = follows
-                    .filter(f => f.followerId === currentUser.id)
-                    .map(f => f.followingId);
+            try {
+                let posts = [];
                 
-                const posts = getDatabaseItem('posts');
-                const feedPosts = posts
-                    .filter(post => followedUsers.includes(post.userId) || post.userId === currentUser.id)
-                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                if (appwriteConnected) {
+                    // Get posts from followed users
+                    const follows = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followerId', currentUser.$id)]
+                    );
+                    
+                    const followedUserIds = follows.documents.map(f => f.followingId);
+                    followedUserIds.push(currentUser.$id); // Include current user's posts
+                    
+                    // Get posts from followed users
+                    posts = await databases.listDocuments(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        [Appwrite.Query.equal('userId', followedUserIds)]
+                    );
+                    
+                    posts = posts.documents;
+                } else {
+                    // Fallback to localStorage
+                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    const followedUserIds = follows
+                        .filter(f => f.followerId === currentUser.$id)
+                        .map(f => f.followingId);
+                    
+                    followedUserIds.push(currentUser.$id);
+                    
+                    const allPosts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    posts = allPosts.filter(post => followedUserIds.includes(post.userId));
+                }
+                
+                // Sort posts by date
+                posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 feedContainer.innerHTML = '';
                 
-                if (feedPosts.length === 0) {
+                if (posts.length === 0) {
                     feedContainer.innerHTML = `
                         <div class="card text-center">
                             <div style="padding: 40px 20px;">
@@ -1294,107 +1405,207 @@
                     return;
                 }
                 
-                feedPosts.forEach(post => {
-                    feedContainer.appendChild(createPostElement(post));
-                });
-            }, 800);
-        }
-
-        // Create post element
-        function createPostElement(post) {
-            const users = getDatabaseItem('users');
-            const user = users.find(u => u.id === post.userId);
-            const isLiked = post.likedBy && post.likedBy.includes(currentUser.id);
-            
-            const postEl = document.createElement('div');
-            postEl.className = 'card post-card';
-            postEl.innerHTML = `
-                <div class="user-info">
-                    <img src="${user.avatar}" alt="${user.name}" class="avatar">
-                    <div>
-                        <div class="username">${user.name}</div>
-                        <div class="timestamp">${formatDate(post.createdAt)}</div>
+                for (const post of posts) {
+                    let user;
+                    
+                    if (appwriteConnected) {
+                        try {
+                            user = await databases.getDocument(
+                                DATABASE_ID,
+                                USERS_COLLECTION_ID,
+                                post.userId
+                            );
+                        } catch (error) {
+                            console.error('Error fetching user:', error);
+                            user = {
+                                name: 'Unknown User',
+                                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                            };
+                        }
+                    } else {
+                        // Fallback to localStorage
+                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                        user = users.find(u => u.$id === post.userId) || {
+                            name: 'Unknown User',
+                            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                        };
+                    }
+                    
+                    const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
+                    
+                    const postEl = document.createElement('div');
+                    postEl.className = 'card post-card';
+                    postEl.innerHTML = `
+                        <div class="user-info">
+                            <img src="${user.avatar}" alt="${user.name}" class="avatar">
+                            <div>
+                                <div class="username">${user.name}</div>
+                                <div class="timestamp">${formatDate(post.createdAt)}</div>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <p>${post.text}</p>
+                            ${post.imageFileId ? `<img src="${post.imageUrl || 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80'}" alt="Post image" class="post-image">` : ''}
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.$id}">
+                                <i class="fas fa-heart"></i> <span>${post.likeCount || 0}</span>
+                            </button>
+                            <button class="action-btn" data-post-id="${post.$id}">
+                                <i class="fas fa-comment"></i> <span>${post.commentCount || 0}</span>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-share"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Add like functionality
+                    const likeBtn = postEl.querySelector('.action-btn:first-child');
+                    likeBtn.addEventListener('click', () => {
+                        toggleLike(post.$id);
+                    });
+                    
+                    // Add comment functionality
+                    const commentBtn = postEl.querySelectorAll('.action-btn')[1];
+                    commentBtn.addEventListener('click', () => {
+                        showComments(post.$id);
+                    });
+                    
+                    feedContainer.appendChild(postEl);
+                }
+            } catch (error) {
+                console.error('Error loading feed:', error);
+                feedContainer.innerHTML = `
+                    <div class="card text-center">
+                        <div style="padding: 40px 20px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                            <h3>Error loading feed</h3>
+                            <p>Please try again later</p>
+                        </div>
                     </div>
-                </div>
-                <div class="post-content">
-                    <p>${post.content}</p>
-                    ${post.image ? `<img src="${post.image}" alt="Post image" class="post-image">` : ''}
-                </div>
-                <div class="post-actions">
-                    <button class="action-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.id}">
-                        <i class="fas fa-heart"></i> <span>${post.likeCount}</span>
-                    </button>
-                    <button class="action-btn" data-post-id="${post.id}">
-                        <i class="fas fa-comment"></i> <span>${post.commentCount}</span>
-                    </button>
-                    <button class="action-btn">
-                        <i class="fas fa-share"></i>
-                    </button>
-                </div>
-            `;
-            
-            // Add like functionality
-            const likeBtn = postEl.querySelector('.action-btn:first-child');
-            likeBtn.addEventListener('click', () => {
-                toggleLike(post.id);
-            });
-            
-            // Add comment functionality
-            const commentBtn = postEl.querySelectorAll('.action-btn')[1];
-            commentBtn.addEventListener('click', () => {
-                showComments(post.id);
-            });
-            
-            return postEl;
+                `;
+            }
         }
 
         // Toggle like on a post
-        function toggleLike(postId) {
-            const posts = getDatabaseItem('posts');
-            const post = posts.find(p => p.id === postId);
-            
-            if (!post.likedBy) {
-                post.likedBy = [];
+        async function toggleLike(postId) {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
             }
             
-            const isLiked = post.likedBy.includes(currentUser.id);
-            
-            if (isLiked) {
-                post.likedBy = post.likedBy.filter(id => id !== currentUser.id);
-                post.likeCount--;
-            } else {
-                post.likedBy.push(currentUser.id);
-                post.likeCount++;
-                
-                // Create notification
-                if (post.userId !== currentUser.id) {
-                    const notification = {
-                        id: 'notif' + (getDatabaseItem('notifications').length + 1),
-                        userId: post.userId,
-                        type: 'like',
-                        sourceUserId: currentUser.id,
-                        content: 'liked your post',
-                        read: false,
-                        createdAt: new Date().toISOString()
-                    };
-                    addDatabaseItem('notifications', notification);
-                    updateUnreadCount();
+            try {
+                if (appwriteConnected) {
+                    // Get the post
+                    const post = await databases.getDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        postId
+                    );
+                    
+                    const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
+                    
+                    if (isLiked) {
+                        // Unlike the post
+                        const updatedLikedBy = post.likedBy.filter(id => id !== currentUser.$id);
+                        await databases.updateDocument(
+                            DATABASE_ID,
+                            POSTS_COLLECTION_ID,
+                            postId,
+                            {
+                                likedBy: updatedLikedBy,
+                                likeCount: post.likeCount - 1
+                            }
+                        );
+                    } else {
+                        // Like the post
+                        const updatedLikedBy = [...(post.likedBy || []), currentUser.$id];
+                        await databases.updateDocument(
+                            DATABASE_ID,
+                            POSTS_COLLECTION_ID,
+                            postId,
+                            {
+                                likedBy: updatedLikedBy,
+                                likeCount: post.likeCount + 1
+                            }
+                        );
+                        
+                        // Create notification if not the post owner
+                        if (post.userId !== currentUser.$id) {
+                            await databases.createDocument(
+                                DATABASE_ID,
+                                NOTIFICATIONS_COLLECTION_ID,
+                                'unique()',
+                                {
+                                    userId: post.userId,
+                                    type: 'like',
+                                    sourceUserId: currentUser.$id,
+                                    postId: postId,
+                                    read: false,
+                                    createdAt: new Date().toISOString()
+                                }
+                            );
+                            
+                            updateUnreadCount();
+                        }
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    const postIndex = posts.findIndex(p => p.$id === postId);
+                    
+                    if (postIndex !== -1) {
+                        const post = posts[postIndex];
+                        
+                        if (!post.likedBy) {
+                            post.likedBy = [];
+                        }
+                        
+                        const isLiked = post.likedBy.includes(currentUser.$id);
+                        
+                        if (isLiked) {
+                            post.likedBy = post.likedBy.filter(id => id !== currentUser.$id);
+                            post.likeCount--;
+                        } else {
+                            post.likedBy.push(currentUser.$id);
+                            post.likeCount++;
+                            
+                            // Create notification
+                            if (post.userId !== currentUser.$id) {
+                                const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                                notifications.push({
+                                    $id: 'notif' + (notifications.length + 1),
+                                    userId: post.userId,
+                                    type: 'like',
+                                    sourceUserId: currentUser.$id,
+                                    postId: postId,
+                                    read: false,
+                                    createdAt: new Date().toISOString()
+                                });
+                                localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
+                                updateUnreadCount();
+                            }
+                        }
+                        
+                        posts[postIndex] = post;
+                        localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                    }
                 }
-            }
-            
-            // Update database
-            setDatabaseItem('posts', posts);
-            
-            // Update UI
-            if (currentPage === 'homePage') {
-                loadFeed();
-            } else if (currentPage === 'profilePage') {
-                loadProfile();
+                
+                // Update UI
+                if (currentPage === 'homePage') {
+                    loadFeed();
+                } else if (currentPage === 'profilePage') {
+                    loadProfile();
+                }
+            } catch (error) {
+                console.error('Error toggling like:', error);
             }
         }
 
         // Show comments for a post
-        function showComments(postId) {
+        async function showComments(postId) {
             if (!currentUser) {
                 alert('Please login to view comments');
                 showPage('authPage');
@@ -1403,129 +1614,267 @@
             
             currentPostId = postId;
             document.getElementById('commentModal').style.display = 'flex';
-            loadComments();
+            await loadComments();
         }
 
         // Load comments for a post
-        function loadComments() {
+        async function loadComments() {
             const commentsContainer = document.getElementById('commentsContainer');
             commentsContainer.innerHTML = '<div class="spinner"></div>';
             
-            setTimeout(() => {
-                const comments = getDatabaseItem('comments');
-                const postComments = comments
-                    .filter(c => c.postId === currentPostId)
-                    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            try {
+                let comments = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        COMMENTS_COLLECTION_ID,
+                        [Appwrite.Query.equal('postId', currentPostId)]
+                    );
+                    comments = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    const allComments = JSON.parse(localStorage.getItem('mycrush_comments') || '[]');
+                    comments = allComments.filter(c => c.postId === currentPostId);
+                }
+                
+                // Sort comments by date
+                comments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
                 
                 commentsContainer.innerHTML = '';
                 
-                if (postComments.length === 0) {
+                if (comments.length === 0) {
                     commentsContainer.innerHTML = '<p class="text-center">No comments yet</p>';
                 } else {
-                    const users = getDatabaseItem('users');
-                    postComments.forEach(comment => {
-                        const user = users.find(u => u.id === comment.userId);
+                    for (const comment of comments) {
+                        let user;
+                        
+                        if (appwriteConnected) {
+                            try {
+                                user = await databases.getDocument(
+                                    DATABASE_ID,
+                                    USERS_COLLECTION_ID,
+                                    comment.userId
+                                );
+                            } catch (error) {
+                                console.error('Error fetching user:', error);
+                                user = {
+                                    name: 'Unknown User',
+                                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                                };
+                            }
+                        } else {
+                            // Fallback to localStorage
+                            const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                            user = users.find(u => u.$id === comment.userId) || {
+                                name: 'Unknown User',
+                                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                            };
+                        }
+                        
                         const commentEl = document.createElement('div');
                         commentEl.className = 'comment';
                         commentEl.innerHTML = `
                             <img src="${user.avatar}" alt="${user.name}" class="comment-avatar">
                             <div class="comment-content">
                                 <div class="username">${user.name}</div>
-                                <p>${comment.content}</p>
+                                <p>${comment.text}</p>
                                 <div class="timestamp">${formatDate(comment.createdAt)}</div>
                             </div>
                         `;
                         commentsContainer.appendChild(commentEl);
-                    });
+                    }
                 }
-            }, 500);
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                commentsContainer.innerHTML = '<p class="text-center">Error loading comments</p>';
+            }
         }
 
         // Post a comment
-        function postComment() {
+        async function postComment() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
             const commentInput = document.getElementById('commentInput');
             const content = commentInput.value.trim();
             
             if (!content) return;
             
-            const newComment = {
-                id: 'comment' + (getDatabaseItem('comments').length + 1),
-                postId: currentPostId,
-                userId: currentUser.id,
-                content,
-                createdAt: new Date().toISOString()
-            };
-            
-            addDatabaseItem('comments', newComment);
-            
-            // Update post comment count
-            const posts = getDatabaseItem('posts');
-            const post = posts.find(p => p.id === currentPostId);
-            post.commentCount++;
-            setDatabaseItem('posts', posts);
-            
-            // Create notification
-            if (post.userId !== currentUser.id) {
-                const notification = {
-                    id: 'notif' + (getDatabaseItem('notifications').length + 1),
-                    userId: post.userId,
-                    type: 'comment',
-                    sourceUserId: currentUser.id,
-                    content: 'commented on your post',
-                    read: false,
-                    createdAt: new Date().toISOString()
-                };
-                addDatabaseItem('notifications', notification);
-                updateUnreadCount();
-            }
-            
-            // Clear input and reload comments
-            commentInput.value = '';
-            loadComments();
-            
-            // Update post in feed
-            if (currentPage === 'homePage') {
-                loadFeed();
-            } else if (currentPage === 'profilePage') {
-                loadProfile();
+            try {
+                if (appwriteConnected) {
+                    // Create comment
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        COMMENTS_COLLECTION_ID,
+                        'unique()',
+                        {
+                            postId: currentPostId,
+                            userId: currentUser.$id,
+                            text: content,
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                    
+                    // Update post comment count
+                    const post = await databases.getDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        currentPostId
+                    );
+                    
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        currentPostId,
+                        {
+                            commentCount: (post.commentCount || 0) + 1
+                        }
+                    );
+                    
+                    // Create notification if not the post owner
+                    if (post.userId !== currentUser.$id) {
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            NOTIFICATIONS_COLLECTION_ID,
+                            'unique()',
+                            {
+                                userId: post.userId,
+                                type: 'comment',
+                                sourceUserId: currentUser.$id,
+                                postId: currentPostId,
+                                read: false,
+                                createdAt: new Date().toISOString()
+                            }
+                        );
+                        
+                        updateUnreadCount();
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const comments = JSON.parse(localStorage.getItem('mycrush_comments') || '[]');
+                    comments.push({
+                        $id: 'comment' + (comments.length + 1),
+                        postId: currentPostId,
+                        userId: currentUser.$id,
+                        text: content,
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('mycrush_comments', JSON.stringify(comments));
+                    
+                    // Update post comment count
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    const postIndex = posts.findIndex(p => p.$id === currentPostId);
+                    
+                    if (postIndex !== -1) {
+                        const post = posts[postIndex];
+                        post.commentCount = (post.commentCount || 0) + 1;
+                        posts[postIndex] = post;
+                        localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                        
+                        // Create notification
+                        if (post.userId !== currentUser.$id) {
+                            const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                            notifications.push({
+                                $id: 'notif' + (notifications.length + 1),
+                                userId: post.userId,
+                                type: 'comment',
+                                sourceUserId: currentUser.$id,
+                                postId: currentPostId,
+                                read: false,
+                                createdAt: new Date().toISOString()
+                            });
+                            localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
+                            updateUnreadCount();
+                        }
+                    }
+                }
+                
+                // Clear input and reload comments
+                commentInput.value = '';
+                await loadComments();
+                
+                // Update post in feed
+                if (currentPage === 'homePage') {
+                    await loadFeed();
+                } else if (currentPage === 'profilePage') {
+                    await loadProfile();
+                }
+            } catch (error) {
+                console.error('Error posting comment:', error);
             }
         }
 
         // Create a new post
-        function createPost(content, imageFile) {
+        async function createPost(content, imageFile) {
             if (!currentUser) {
                 alert('Please login to create a post');
                 showPage('authPage');
                 return;
             }
             
-            // In a real app, this would upload the image to Appwrite Storage
-            const imageUrl = imageFile ? 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' : '';
-            
-            const newPost = {
-                id: 'post' + (getDatabaseItem('posts').length + 1),
-                userId: currentUser.id,
-                content,
-                image: imageUrl,
-                likeCount: 0,
-                commentCount: 0,
-                createdAt: new Date().toISOString(),
-                likedBy: []
-            };
-            
-            addDatabaseItem('posts', newPost);
-            
-            // Reset form and go back to feed
-            document.getElementById('newPostForm').reset();
-            showPage('homePage');
-            loadFeed();
-            
-            // Show success message
-            alert('Post created successfully!');
+            try {
+                let imageFileId = null;
+                
+                if (appwriteConnected) {
+                    // Upload image if provided
+                    if (imageFile) {
+                        const file = await storage.createFile(
+                            POST_IMAGES_BUCKET_ID,
+                            'unique()',
+                            imageFile
+                        );
+                        imageFileId = file.$id;
+                    }
+                    
+                    // Create post
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        'unique()',
+                        {
+                            userId: currentUser.$id,
+                            text: content,
+                            imageFileId: imageFileId,
+                            likeCount: 0,
+                            commentCount: 0,
+                            likedBy: [],
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                } else {
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    posts.push({
+                        $id: 'post' + (posts.length + 1),
+                        userId: currentUser.$id,
+                        text: content,
+                        imageFileId: imageFile ? 'image' + posts.length : null,
+                        likeCount: 0,
+                        commentCount: 0,
+                        likedBy: [],
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                }
+                
+                // Reset form and go back to feed
+                document.getElementById('newPostForm').reset();
+                showPage('homePage');
+                await loadFeed();
+                
+                // Show success message
+                alert('Post created successfully!');
+            } catch (error) {
+                console.error('Error creating post:', error);
+                alert('Error creating post. Please try again.');
+            }
         }
 
         // Load user profile
-        function loadProfile() {
+        async function loadProfile() {
             if (!currentUser) {
                 showPage('authPage');
                 return;
@@ -1533,29 +1882,74 @@
             
             // Update profile info
             document.getElementById('profileName').textContent = currentUser.name;
-            document.getElementById('profileBio').textContent = currentUser.bio;
-            document.getElementById('profileAvatar').src = currentUser.avatar;
+            document.getElementById('profileBio').textContent = currentUser.bio || '';
+            document.getElementById('profileAvatar').src = currentUser.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80';
             
-            // Update stats
-            const posts = getDatabaseItem('posts');
-            const follows = getDatabaseItem('follows');
-            
-            const postCount = posts.filter(p => p.userId === currentUser.id).length;
-            const followingCount = follows.filter(f => f.followerId === currentUser.id).length;
-            const followersCount = follows.filter(f => f.followingId === currentUser.id).length;
-            
-            document.getElementById('postsCount').textContent = postCount;
-            document.getElementById('followingCount').textContent = followingCount;
-            document.getElementById('followersCount').textContent = followersCount;
-            
-            // Load user's posts
-            const postsContainer = document.getElementById('userPostsContainer');
-            postsContainer.innerHTML = '<div class="spinner"></div>';
-            
-            setTimeout(() => {
-                const userPosts = posts
-                    .filter(post => post.userId === currentUser.id)
-                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            try {
+                let postCount = 0;
+                let followingCount = 0;
+                let followersCount = 0;
+                
+                if (appwriteConnected) {
+                    // Get user's posts
+                    const posts = await databases.listDocuments(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        [Appwrite.Query.equal('userId', currentUser.$id)]
+                    );
+                    postCount = posts.total;
+                    
+                    // Get following count
+                    const following = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followerId', currentUser.$id)]
+                    );
+                    followingCount = following.total;
+                    
+                    // Get followers count
+                    const followers = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followingId', currentUser.$id)]
+                    );
+                    followersCount = followers.total;
+                } else {
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    postCount = posts.filter(p => p.userId === currentUser.$id).length;
+                    
+                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    followingCount = follows.filter(f => f.followerId === currentUser.$id).length;
+                    followersCount = follows.filter(f => f.followingId === currentUser.$id).length;
+                }
+                
+                // Update stats
+                document.getElementById('postsCount').textContent = postCount;
+                document.getElementById('followingCount').textContent = followingCount;
+                document.getElementById('followersCount').textContent = followersCount;
+                
+                // Load user's posts
+                const postsContainer = document.getElementById('userPostsContainer');
+                postsContainer.innerHTML = '<div class="spinner"></div>';
+                
+                let userPosts = [];
+                
+                if (appwriteConnected) {
+                    const posts = await databases.listDocuments(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        [Appwrite.Query.equal('userId', currentUser.$id)]
+                    );
+                    userPosts = posts.documents;
+                } else {
+                    // Fallback to localStorage
+                    const allPosts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    userPosts = allPosts.filter(post => post.userId === currentUser.$id);
+                }
+                
+                // Sort posts by date
+                userPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 postsContainer.innerHTML = '';
                 
@@ -1573,56 +1967,146 @@
                     return;
                 }
                 
-                userPosts.forEach(post => {
-                    postsContainer.appendChild(createPostElement(post));
-                });
-            }, 800);
+                for (const post of userPosts) {
+                    const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
+                    
+                    const postEl = document.createElement('div');
+                    postEl.className = 'card post-card';
+                    postEl.innerHTML = `
+                        <div class="user-info">
+                            <img src="${currentUser.avatar}" alt="${currentUser.name}" class="avatar">
+                            <div>
+                                <div class="username">${currentUser.name}</div>
+                                <div class="timestamp">${formatDate(post.createdAt)}</div>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <p>${post.text}</p>
+                            ${post.imageFileId ? `<img src="${post.imageUrl || 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80'}" alt="Post image" class="post-image">` : ''}
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.$id}">
+                                <i class="fas fa-heart"></i> <span>${post.likeCount || 0}</span>
+                            </button>
+                            <button class="action-btn" data-post-id="${post.$id}">
+                                <i class="fas fa-comment"></i> <span>${post.commentCount || 0}</span>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-share"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Add like functionality
+                    const likeBtn = postEl.querySelector('.action-btn:first-child');
+                    likeBtn.addEventListener('click', () => {
+                        toggleLike(post.$id);
+                    });
+                    
+                    // Add comment functionality
+                    const commentBtn = postEl.querySelectorAll('.action-btn')[1];
+                    commentBtn.addEventListener('click', () => {
+                        showComments(post.$id);
+                    });
+                    
+                    postsContainer.appendChild(postEl);
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('userPostsContainer').innerHTML = `
+                    <div class="card text-center">
+                        <div style="padding: 40px 20px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                            <h3>Error loading profile</h3>
+                            <p>Please try again later</p>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         // Show edit profile modal
         function showEditProfileModal() {
             document.getElementById('editDisplayName').value = currentUser.name;
-            document.getElementById('editBio').value = currentUser.bio;
+            document.getElementById('editBio').value = currentUser.bio || '';
             document.getElementById('editProfileModal').style.display = 'flex';
         }
 
         // Update user profile
-        function updateProfile(displayName, bio, avatarFile) {
-            // In a real app, this would upload the image to Appwrite Storage
-            const avatarUrl = avatarFile ? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80' : currentUser.avatar;
-            
-            // Update current user
-            currentUser.name = displayName;
-            currentUser.bio = bio;
-            currentUser.avatar = avatarUrl;
-            
-            // Update in database
-            const users = getDatabaseItem('users');
-            const userIndex = users.findIndex(u => u.id === currentUser.id);
-            if (userIndex !== -1) {
-                users[userIndex].name = displayName;
-                users[userIndex].bio = bio;
-                users[userIndex].avatar = avatarUrl;
-                setDatabaseItem('users', users);
+        async function updateProfile(displayName, bio, avatarFile) {
+            try {
+                let avatarFileId = currentUser.avatarFileId;
+                
+                if (appwriteConnected) {
+                    // Upload new avatar if provided
+                    if (avatarFile) {
+                        const file = await storage.createFile(
+                            AVATARS_BUCKET_ID,
+                            'unique()',
+                            avatarFile
+                        );
+                        avatarFileId = file.$id;
+                    }
+                    
+                    // Update user profile in database
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        USERS_COLLECTION_ID,
+                        currentUser.$id,
+                        {
+                            displayName: displayName,
+                            bio: bio,
+                            avatarFileId: avatarFileId
+                        }
+                    );
+                    
+                    // Update account name
+                    await account.updateName(displayName);
+                } else {
+                    // Fallback to localStorage
+                    const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                    const userIndex = users.findIndex(u => u.$id === currentUser.$id);
+                    
+                    if (userIndex !== -1) {
+                        users[userIndex].name = displayName;
+                        users[userIndex].bio = bio;
+                        localStorage.setItem('mycrush_users', JSON.stringify(users));
+                    }
+                }
+                
+                // Update current user
+                currentUser.name = displayName;
+                currentUser.bio = bio;
+                
+                if (avatarFile) {
+                    // In a real app, this would be the URL from Appwrite Storage
+                    currentUser.avatar = URL.createObjectURL(avatarFile);
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Update UI
+                document.getElementById('profileName').textContent = displayName;
+                document.getElementById('profileBio').textContent = bio;
+                
+                if (avatarFile) {
+                    document.getElementById('profileAvatar').src = URL.createObjectURL(avatarFile);
+                }
+                
+                // Close modal
+                document.getElementById('editProfileModal').style.display = 'none';
+                
+                // Show success message
+                alert('Profile updated successfully!');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Error updating profile. Please try again.');
             }
-            
-            // Save to localStorage
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
-            // Update UI
-            document.getElementById('profileName').textContent = displayName;
-            document.getElementById('profileBio').textContent = bio;
-            document.getElementById('profileAvatar').src = avatarUrl;
-            
-            // Close modal
-            document.getElementById('editProfileModal').style.display = 'none';
-            
-            // Show success message
-            alert('Profile updated successfully!');
         }
 
         // Load notifications
-        function loadNotifications() {
+        async function loadNotifications() {
             if (!currentUser) {
                 showPage('authPage');
                 return;
@@ -1631,30 +2115,64 @@
             const notificationsContainer = document.getElementById('notificationsContainer');
             notificationsContainer.innerHTML = '<div class="spinner"></div>';
             
-            setTimeout(() => {
-                const notifications = getDatabaseItem('notifications');
-                const userNotifications = notifications
-                    .filter(n => n.userId === currentUser.id)
-                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            try {
+                let notifications = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        NOTIFICATIONS_COLLECTION_ID,
+                        [Appwrite.Query.equal('userId', currentUser.$id)]
+                    );
+                    notifications = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                    notifications = notifications.filter(n => n.userId === currentUser.$id);
+                }
+                
+                // Sort notifications by date
+                notifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 notificationsContainer.innerHTML = '';
                 
-                if (userNotifications.length === 0) {
+                if (notifications.length === 0) {
                     notificationsContainer.innerHTML = '<p class="text-center">No notifications yet</p>';
                     return;
                 }
                 
-                const users = getDatabaseItem('users');
-                userNotifications.forEach(notif => {
-                    const user = users.find(u => u.id === notif.sourceUserId);
+                for (const notif of notifications) {
+                    let user;
+                    
+                    if (appwriteConnected) {
+                        try {
+                            user = await databases.getDocument(
+                                DATABASE_ID,
+                                USERS_COLLECTION_ID,
+                                notif.sourceUserId
+                            );
+                        } catch (error) {
+                            console.error('Error fetching user:', error);
+                            user = {
+                                name: 'Unknown User'
+                            };
+                        }
+                    } else {
+                        // Fallback to localStorage
+                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                        user = users.find(u => u.$id === notif.sourceUserId) || {
+                            name: 'Unknown User'
+                        };
+                    }
+                    
                     const notifEl = document.createElement('div');
                     notifEl.className = `card notification-item ${notif.read ? '' : 'unread'}`;
                     notifEl.innerHTML = `
                         <div class="notification-icon">
-                            <i class="fas fa-${notif.type === 'like' ? 'heart' : 'comment'}"></i>
+                            <i class="fas fa-${notif.type === 'like' ? 'heart' : notif.type === 'comment' ? 'comment' : 'user-plus'}"></i>
                         </div>
                         <div>
-                            <p><strong>${user.name}</strong> ${notif.content}</p>
+                            <p><strong>${user.name}</strong> ${notif.type === 'like' ? 'liked' : notif.type === 'comment' ? 'commented on' : 'started following'} your ${notif.type === 'follow' ? '' : 'post'}</p>
                             <div class="timestamp">${formatDate(notif.createdAt)}</div>
                         </div>
                     `;
@@ -1662,39 +2180,73 @@
                     
                     // Mark as read when clicked
                     if (!notif.read) {
-                        notifEl.addEventListener('click', () => {
-                            const notifications = getDatabaseItem('notifications');
-                            const notification = notifications.find(n => n.id === notif.id);
-                            notification.read = true;
-                            setDatabaseItem('notifications', notifications);
+                        notifEl.addEventListener('click', async () => {
+                            if (appwriteConnected) {
+                                await databases.updateDocument(
+                                    DATABASE_ID,
+                                    NOTIFICATIONS_COLLECTION_ID,
+                                    notif.$id,
+                                    { read: true }
+                                );
+                            } else {
+                                // Fallback to localStorage
+                                const allNotifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                                const notifIndex = allNotifications.findIndex(n => n.$id === notif.$id);
+                                
+                                if (notifIndex !== -1) {
+                                    allNotifications[notifIndex].read = true;
+                                    localStorage.setItem('mycrush_notifications', JSON.stringify(allNotifications));
+                                }
+                            }
+                            
                             updateUnreadCount();
                             loadNotifications();
                         });
                     }
-                });
-            }, 800);
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                notificationsContainer.innerHTML = '<p class="text-center">Error loading notifications</p>';
+            }
         }
 
         // Update unread notification count
-        function updateUnreadCount() {
+        async function updateUnreadCount() {
             if (!currentUser) return;
             
-            const notifications = getDatabaseItem('notifications');
-            const unreadCount = notifications.filter(
-                n => n.userId === currentUser.id && !n.read
-            ).length;
-            
-            const badge = document.getElementById('notificationBadge');
-            if (unreadCount > 0) {
-                badge.textContent = unreadCount;
-                badge.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
+            try {
+                let unreadCount = 0;
+                
+                if (appwriteConnected) {
+                    const notifications = await databases.listDocuments(
+                        DATABASE_ID,
+                        NOTIFICATIONS_COLLECTION_ID,
+                        [
+                            Appwrite.Query.equal('userId', currentUser.$id),
+                            Appwrite.Query.equal('read', false)
+                        ]
+                    );
+                    unreadCount = notifications.total;
+                } else {
+                    // Fallback to localStorage
+                    const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                    unreadCount = notifications.filter(n => n.userId === currentUser.$id && !n.read).length;
+                }
+                
+                const badge = document.getElementById('notificationBadge');
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error updating unread count:', error);
             }
         }
 
         // Load conversations
-        function loadConversations() {
+        async function loadConversations() {
             if (!currentUser) {
                 showPage('authPage');
                 return;
@@ -1703,17 +2255,36 @@
             const conversationsContainer = document.getElementById('conversationsContainer');
             conversationsContainer.innerHTML = '<div class="spinner"></div>';
             
-            setTimeout(() => {
-                const messages = getDatabaseItem('messages');
-                const users = getDatabaseItem('users');
+            try {
+                let messages = [];
                 
-                // Get unique users that current user has messaged with
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        MESSAGES_COLLECTION_ID,
+                        [
+                            Appwrite.Query.or(
+                                Appwrite.Query.equal('senderId', currentUser.$id),
+                                Appwrite.Query.equal('receiverId', currentUser.$id)
+                            )
+                        ]
+                    );
+                    messages = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    messages = JSON.parse(localStorage.getItem('mycrush_messages') || '[]');
+                    messages = messages.filter(m => 
+                        m.senderId === currentUser.$id || m.receiverId === currentUser.$id
+                    );
+                }
+                
+                // Get unique conversation partners
                 const conversationPartners = new Set();
                 
                 messages.forEach(msg => {
-                    if (msg.senderId === currentUser.id) {
+                    if (msg.senderId === currentUser.$id) {
                         conversationPartners.add(msg.receiverId);
-                    } else if (msg.receiverId === currentUser.id) {
+                    } else if (msg.receiverId === currentUser.$id) {
                         conversationPartners.add(msg.senderId);
                     }
                 });
@@ -1734,12 +2305,37 @@
                     return;
                 }
                 
-                Array.from(conversationPartners).forEach(userId => {
-                    const user = users.find(u => u.id === userId);
+                for (const userId of conversationPartners) {
+                    let user;
+                    
+                    if (appwriteConnected) {
+                        try {
+                            user = await databases.getDocument(
+                                DATABASE_ID,
+                                USERS_COLLECTION_ID,
+                                userId
+                            );
+                        } catch (error) {
+                            console.error('Error fetching user:', error);
+                            user = {
+                                name: 'Unknown User',
+                                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                            };
+                        }
+                    } else {
+                        // Fallback to localStorage
+                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                        user = users.find(u => u.$id === userId) || {
+                            name: 'Unknown User',
+                            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                        };
+                    }
+                    
+                    // Get last message in conversation
                     const lastMessage = messages
                         .filter(m => 
-                            (m.senderId === currentUser.id && m.receiverId === userId) ||
-                            (m.senderId === userId && m.receiverId === currentUser.id)
+                            (m.senderId === currentUser.$id && m.receiverId === userId) ||
+                            (m.senderId === userId && m.receiverId === currentUser.$id)
                         )
                         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
                     
@@ -1755,7 +2351,7 @@
                                     <div class="username">${user.name}</div>
                                     <div class="timestamp">${formatDate(lastMessage.createdAt)}</div>
                                 </div>
-                                <p>${lastMessage.content}</p>
+                                <p>${lastMessage.text}</p>
                             </div>
                         </div>
                     `;
@@ -1769,30 +2365,66 @@
                     });
                     
                     conversationsContainer.appendChild(conversationEl);
-                });
-            }, 800);
+                }
+            } catch (error) {
+                console.error('Error loading conversations:', error);
+                conversationsContainer.innerHTML = `
+                    <div class="card text-center">
+                        <div style="padding: 40px 20px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                            <h3>Error loading messages</h3>
+                            <p>Please try again later</p>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         // Load chat with a user
-        function loadChat(user) {
+        async function loadChat(user) {
             const messageThread = document.getElementById('messageThread');
             messageThread.innerHTML = '<div class="spinner"></div>';
             
-            setTimeout(() => {
-                const messages = getDatabaseItem('messages')
-                    .filter(m => 
-                        (m.senderId === currentUser.id && m.receiverId === user.id) ||
-                        (m.senderId === user.id && m.receiverId === currentUser.id)
-                    )
-                    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            try {
+                let messages = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        MESSAGES_COLLECTION_ID,
+                        [
+                            Appwrite.Query.or(
+                                [
+                                    Appwrite.Query.equal('senderId', currentUser.$id),
+                                    Appwrite.Query.equal('receiverId', user.$id)
+                                ],
+                                [
+                                    Appwrite.Query.equal('senderId', user.$id),
+                                    Appwrite.Query.equal('receiverId', currentUser.$id)
+                                ]
+                            )
+                        ]
+                    );
+                    messages = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    const allMessages = JSON.parse(localStorage.getItem('mycrush_messages') || '[]');
+                    messages = allMessages.filter(m => 
+                        (m.senderId === currentUser.$id && m.receiverId === user.$id) ||
+                        (m.senderId === user.$id && m.receiverId === currentUser.$id)
+                    );
+                }
+                
+                // Sort messages by date
+                messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
                 
                 messageThread.innerHTML = '';
                 
                 messages.forEach(msg => {
                     const messageEl = document.createElement('div');
-                    messageEl.className = `message ${msg.senderId === currentUser.id ? 'sent' : 'received'}`;
+                    messageEl.className = `message ${msg.senderId === currentUser.$id ? 'sent' : 'received'}`;
                     messageEl.innerHTML = `
-                        <div>${msg.content}</div>
+                        <div>${msg.text}</div>
                         <div class="message-time">${formatTime(msg.createdAt)}</div>
                     `;
                     messageThread.appendChild(messageEl);
@@ -1800,11 +2432,14 @@
                 
                 // Scroll to bottom
                 messageThread.scrollTop = messageThread.scrollHeight;
-            }, 500);
+            } catch (error) {
+                console.error('Error loading chat:', error);
+                messageThread.innerHTML = '<p class="text-center">Error loading messages</p>';
+            }
         }
 
         // Send a message
-        function sendMessage() {
+        async function sendMessage() {
             if (!currentUser) {
                 showPage('authPage');
                 return;
@@ -1815,32 +2450,67 @@
             
             if (!content || !currentChatUser) return;
             
-            const newMessage = {
-                id: 'msg' + (getDatabaseItem('messages').length + 1),
-                threadKey: `${currentUser.id}_${currentChatUser.id}`,
-                senderId: currentUser.id,
-                receiverId: currentChatUser.id,
-                content,
-                createdAt: new Date().toISOString()
-            };
-            
-            addDatabaseItem('messages', newMessage);
-            
-            // Clear input and reload chat
-            messageInput.value = '';
-            loadChat(currentChatUser);
-            
-            // Create notification
-            const notification = {
-                id: 'notif' + (getDatabaseItem('notifications').length + 1),
-                userId: currentChatUser.id,
-                type: 'message',
-                sourceUserId: currentUser.id,
-                content: 'sent you a message',
-                read: false,
-                createdAt: new Date().toISOString()
-            };
-            addDatabaseItem('notifications', notification);
+            try {
+                if (appwriteConnected) {
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        MESSAGES_COLLECTION_ID,
+                        'unique()',
+                        {
+                            threadKey: `${currentUser.$id}_${currentChatUser.$id}`,
+                            senderId: currentUser.$id,
+                            receiverId: currentChatUser.$id,
+                            text: content,
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                    
+                    // Create notification
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        NOTIFICATIONS_COLLECTION_ID,
+                        'unique()',
+                        {
+                            userId: currentChatUser.$id,
+                            type: 'message',
+                            sourceUserId: currentUser.$id,
+                            read: false,
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                } else {
+                    // Fallback to localStorage
+                    const messages = JSON.parse(localStorage.getItem('mycrush_messages') || '[]');
+                    messages.push({
+                        $id: 'msg' + (messages.length + 1),
+                        threadKey: `${currentUser.$id}_${currentChatUser.$id}`,
+                        senderId: currentUser.$id,
+                        receiverId: currentChatUser.$id,
+                        text: content,
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('mycrush_messages', JSON.stringify(messages));
+                    
+                    // Create notification
+                    const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                    notifications.push({
+                        $id: 'notif' + (notifications.length + 1),
+                        userId: currentChatUser.$id,
+                        type: 'message',
+                        sourceUserId: currentUser.$id,
+                        read: false,
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
+                }
+                
+                // Clear input and reload chat
+                messageInput.value = '';
+                await loadChat(currentChatUser);
+                updateUnreadCount();
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
         }
 
         // Initialize search
@@ -1850,7 +2520,7 @@
         }
 
         // Handle search input
-        function handleSearch() {
+        async function handleSearch() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             const searchResults = document.getElementById('searchResults');
             
@@ -1859,99 +2529,208 @@
                 return;
             }
             
-            const users = getDatabaseItem('users');
-            const results = users.filter(user => 
-                user.name.toLowerCase().includes(query) && user.id !== currentUser.id
-            );
-            
-            searchResults.innerHTML = '';
-            
-            if (results.length === 0) {
-                searchResults.innerHTML = '<p class="text-center">No users found</p>';
-                return;
-            }
-            
-            const follows = getDatabaseItem('follows');
-            results.forEach(user => {
-                const userEl = document.createElement('div');
-                userEl.className = 'card user-item';
-                userEl.innerHTML = `
-                    <img src="${user.avatar}" alt="${user.name}" class="avatar">
-                    <div style="flex: 1;">
-                        <div class="username">${user.name}</div>
-                        <div>${user.bio}</div>
-                    </div>
-                    <button class="btn btn-primary" data-user-id="${user.id}">Follow</button>
-                `;
+            try {
+                let users = [];
                 
-                // Add follow functionality
-                const followBtn = userEl.querySelector('button');
-                const isFollowing = follows.some(
-                    f => f.followerId === currentUser.id && f.followingId === user.id
-                );
-                
-                if (isFollowing) {
-                    followBtn.textContent = 'Unfollow';
-                    followBtn.classList.remove('btn-primary');
-                    followBtn.classList.add('btn-secondary');
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        USERS_COLLECTION_ID
+                    );
+                    users = result.documents.filter(user => 
+                        user.displayName.toLowerCase().includes(query) && user.userId !== currentUser.$id
+                    );
+                } else {
+                    // Fallback to localStorage
+                    const allUsers = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                    users = allUsers.filter(user => 
+                        user.name.toLowerCase().includes(query) && user.$id !== currentUser.$id
+                    );
                 }
                 
-                followBtn.addEventListener('click', () => {
-                    toggleFollow(user.id);
-                });
+                searchResults.innerHTML = '';
                 
-                searchResults.appendChild(userEl);
-            });
+                if (users.length === 0) {
+                    searchResults.innerHTML = '<p class="text-center">No users found</p>';
+                    return;
+                }
+                
+                let follows = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followerId', currentUser.$id)]
+                    );
+                    follows = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    follows = follows.filter(f => f.followerId === currentUser.$id);
+                }
+                
+                for (const user of users) {
+                    const userId = appwriteConnected ? user.userId : user.$id;
+                    const userName = appwriteConnected ? user.displayName : user.name;
+                    const userBio = appwriteConnected ? user.bio : user.bio;
+                    const userAvatar = appwriteConnected ? 
+                        (user.avatarFileId ? await getFilePreview(user.avatarFileId) : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80') 
+                        : user.avatar;
+                    
+                    const userEl = document.createElement('div');
+                    userEl.className = 'card user-item';
+                    userEl.innerHTML = `
+                        <img src="${userAvatar}" alt="${userName}" class="avatar">
+                        <div style="flex: 1;">
+                            <div class="username">${userName}</div>
+                            <div>${userBio || ''}</div>
+                        </div>
+                        <button class="btn btn-primary" data-user-id="${userId}">Follow</button>
+                    `;
+                    
+                    // Add follow functionality
+                    const followBtn = userEl.querySelector('button');
+                    const isFollowing = follows.some(f => f.followingId === userId);
+                    
+                    if (isFollowing) {
+                        followBtn.textContent = 'Unfollow';
+                        followBtn.classList.remove('btn-primary');
+                        followBtn.classList.add('btn-secondary');
+                    }
+                    
+                    followBtn.addEventListener('click', () => {
+                        toggleFollow(userId);
+                    });
+                    
+                    searchResults.appendChild(userEl);
+                }
+            } catch (error) {
+                console.error('Error searching users:', error);
+                searchResults.innerHTML = '<p class="text-center">Error searching users</p>';
+            }
+        }
+
+        // Get file preview URL
+        async function getFilePreview(fileId) {
+            try {
+                return await storage.getFilePreview(
+                    AVATARS_BUCKET_ID,
+                    fileId
+                );
+            } catch (error) {
+                console.error('Error getting file preview:', error);
+                return 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80';
+            }
         }
 
         // Toggle follow
-        function toggleFollow(userId) {
+        async function toggleFollow(userId) {
             if (!currentUser) {
                 showPage('authPage');
                 return;
             }
             
-            const follows = getDatabaseItem('follows');
-            const existingFollow = follows.find(
-                f => f.followerId === currentUser.id && f.followingId === userId
-            );
-            
-            if (existingFollow) {
-                // Unfollow
-                setDatabaseItem('follows', follows.filter(f => f.id !== existingFollow.id));
-            } else {
-                // Follow
-                const newFollow = {
-                    id: 'follow' + (follows.length + 1),
-                    followerId: currentUser.id,
-                    followingId: userId,
-                    createdAt: new Date().toISOString()
-                };
-                addDatabaseItem('follows', newFollow);
+            try {
+                let isFollowing = false;
                 
-                // Create notification
-                const users = getDatabaseItem('users');
-                const user = users.find(u => u.id === userId);
+                if (appwriteConnected) {
+                    // Check if already following
+                    const follows = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [
+                            Appwrite.Query.equal('followerId', currentUser.$id),
+                            Appwrite.Query.equal('followingId', userId)
+                        ]
+                    );
+                    
+                    isFollowing = follows.total > 0;
+                    
+                    if (isFollowing) {
+                        // Unfollow
+                        await databases.deleteDocument(
+                            DATABASE_ID,
+                            FOLLOWS_COLLECTION_ID,
+                            follows.documents[0].$id
+                        );
+                    } else {
+                        // Follow
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            FOLLOWS_COLLECTION_ID,
+                            'unique()',
+                            {
+                                followerId: currentUser.$id,
+                                followingId: userId,
+                                createdAt: new Date().toISOString()
+                            }
+                        );
+                        
+                        // Create notification
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            NOTIFICATIONS_COLLECTION_ID,
+                            'unique()',
+                            {
+                                userId: userId,
+                                type: 'follow',
+                                sourceUserId: currentUser.$id,
+                                read: false,
+                                createdAt: new Date().toISOString()
+                            }
+                        );
+                        
+                        updateUnreadCount();
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    const existingFollow = follows.find(f => 
+                        f.followerId === currentUser.$id && f.followingId === userId
+                    );
+                    
+                    isFollowing = !!existingFollow;
+                    
+                    if (isFollowing) {
+                        // Unfollow
+                        localStorage.setItem('mycrush_follows', JSON.stringify(
+                            follows.filter(f => f.$id !== existingFollow.$id)
+                        ));
+                    } else {
+                        // Follow
+                        follows.push({
+                            $id: 'follow' + (follows.length + 1),
+                            followerId: currentUser.$id,
+                            followingId: userId,
+                            createdAt: new Date().toISOString()
+                        });
+                        localStorage.setItem('mycrush_follows', JSON.stringify(follows));
+                        
+                        // Create notification
+                        const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                        notifications.push({
+                            $id: 'notif' + (notifications.length + 1),
+                            userId: userId,
+                            type: 'follow',
+                            sourceUserId: currentUser.$id,
+                            read: false,
+                            createdAt: new Date().toISOString()
+                        });
+                        localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
+                        updateUnreadCount();
+                    }
+                }
                 
-                const notification = {
-                    id: 'notif' + (getDatabaseItem('notifications').length + 1),
-                    userId: userId,
-                    type: 'follow',
-                    sourceUserId: currentUser.id,
-                    content: 'started following you',
-                    read: false,
-                    createdAt: new Date().toISOString()
-                };
-                addDatabaseItem('notifications', notification);
-                updateUnreadCount();
-            }
-            
-            // Update UI
-            handleSearch();
-            
-            // Update profile stats if on profile page
-            if (currentPage === 'profilePage') {
-                loadProfile();
+                // Update UI
+                handleSearch();
+                
+                // Update profile stats if on profile page
+                if (currentPage === 'profilePage') {
+                    loadProfile();
+                }
+            } catch (error) {
+                console.error('Error toggling follow:', error);
             }
         }
 
@@ -1974,46 +2753,6 @@
         // Format time
         function formatTime(date) {
             return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-
-        // Add simulated post (for demo purposes)
-        function addSimulatedPost() {
-            const users = getDatabaseItem('users').filter(u => u.id !== currentUser.id);
-            const randomUser = users[Math.floor(Math.random() * users.length)];
-            
-            const simulatedPosts = [
-                {
-                    content: 'Just finished reading an amazing book! 📚 #reading',
-                    image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80'
-                },
-                {
-                    content: 'Beautiful day for a hike! 🏞️ #nature #hiking',
-                    image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80'
-                },
-                {
-                    content: 'Working on a new project. Can\'t wait to share it with you all! 💻 #coding',
-                    image: ''
-                }
-            ];
-            
-            const randomPost = simulatedPosts[Math.floor(Math.random() * simulatedPosts.length)];
-            
-            const newPost = {
-                id: 'post' + (getDatabaseItem('posts').length + 1),
-                userId: randomUser.id,
-                content: randomPost.content,
-                image: randomPost.image,
-                likeCount: 0,
-                commentCount: 0,
-                createdAt: new Date().toISOString(),
-                likedBy: []
-            };
-            
-            addDatabaseItem('posts', newPost);
-            
-            if (currentPage === 'homePage') {
-                loadFeed();
-            }
         }
 
         // Initialize the app when the DOM is loaded

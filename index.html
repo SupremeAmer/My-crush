@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Crush - Social App</title>
+    <title>My Crush - Social Media App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@10.0.0"></script>
     <style>
         :root {
             --primary-color: #e91e63;
@@ -111,6 +110,7 @@
             align-items: center;
             font-size: 0.8rem;
             color: var(--text-color);
+            position: relative;
         }
 
         .nav-item.active {
@@ -154,7 +154,6 @@
             display: flex;
             align-items: center;
             margin-bottom: 10px;
-            cursor: pointer;
         }
 
         .avatar {
@@ -411,7 +410,6 @@
         /* Search */
         .search-container {
             margin-bottom: 15px;
-            position: relative;
         }
 
         .search-input {
@@ -422,19 +420,6 @@
             background-color: var(--card-bg);
             color: var(--text-color);
             font-size: 1rem;
-            padding-right: 40px;
-        }
-
-        .search-close {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #888;
-            font-size: 1.2rem;
-            cursor: pointer;
         }
 
         .user-list {
@@ -575,30 +560,15 @@
             color: var(--text-color);
         }
 
-        /* Verification notice */
-        .verification-notice {
-            background-color: var(--primary-light);
-            padding: 10px 15px;
-            border-radius: 4px;
-            margin: 15px 0;
+        /* Login prompt */
+        .login-prompt {
             text-align: center;
+            padding: 40px 20px;
         }
 
-        .verification-notice button {
-            color: var(--primary-dark);
-            font-weight: bold;
-            background: none;
-            border: none;
-            text-decoration: underline;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-
-        /* Search close button */
-        .search-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .login-prompt i {
+            font-size: 3rem;
+            color: #ccc;
             margin-bottom: 15px;
         }
     </style>
@@ -672,6 +642,7 @@
                 <h2 id="profileName">User Name</h2>
                 <p id="profileBio">Bio goes here</p>
                 <button class="btn btn-primary mt-1" id="editProfileBtn">Edit Profile</button>
+                <button class="btn btn-secondary mt-1" id="logoutBtn">Logout</button>
             </div>
             <div class="profile-stats">
                 <div class="stat" id="postsStat">
@@ -694,13 +665,9 @@
 
         <!-- Search Page -->
         <section id="searchPage" class="page">
-            <div class="search-header">
-                <h2 class="text-center">Search</h2>
-                <button class="close-btn" id="closeSearch">&times;</button>
-            </div>
+            <h2 class="text-center">Search</h2>
             <div class="search-container">
                 <input type="text" class="search-input" id="searchInput" placeholder="Search users...">
-                <button class="search-close" id="clearSearch">&times;</button>
             </div>
             <div id="searchResults">
                 <p class="text-center">Start typing to search for users</p>
@@ -741,23 +708,11 @@
                     <div class="form-group">
                         <input type="password" class="form-input" id="registerPassword" placeholder="Password" required>
                     </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="registerConfirmPassword" placeholder="Confirm Password" required>
+                    </div>
                     <button type="submit" class="btn btn-primary btn-block">Register</button>
                 </form>
-            </div>
-        </section>
-
-        <!-- Email Verification Notice -->
-        <section id="verificationNotice" class="page">
-            <div class="auth-container">
-                <div class="card text-center">
-                    <div style="padding: 30px 20px;">
-                        <i class="fas fa-envelope" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 15px;"></i>
-                        <h2>Verify Your Email</h2>
-                        <p>We've sent a verification link to your email address. Please check your inbox and click the link to verify your account.</p>
-                        <p>Didn't receive the email? <button id="resendVerification">Resend verification email</button></p>
-                        <button class="btn btn-primary mt-2" id="continueAfterVerification">Continue</button>
-                    </div>
-                </div>
             </div>
         </section>
     </main>
@@ -828,29 +783,169 @@
     </div>
 
     <script>
-        // Initialize Appwrite
-        const client = new Appwrite.Client();
-        
-        // Replace with your Appwrite project details
-        client
-            .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
-            .setProject('YOUR_PROJECT_ID'); // Your project ID
+        // Database initialization
+        function initializeDatabase() {
+            if (!localStorage.getItem('mycrush_users')) {
+                const demoUsers = [
+                    {
+                        id: 'user1',
+                        name: 'Demo User',
+                        email: 'demo@example.com',
+                        password: 'password',
+                        bio: 'This is my bio',
+                        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 'user2',
+                        name: 'Jane Doe',
+                        email: 'jane@example.com',
+                        password: 'password',
+                        bio: 'Coffee lover ☕️',
+                        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 'user3',
+                        name: 'John Smith',
+                        email: 'john@example.com',
+                        password: 'password',
+                        bio: 'Photographer 📸',
+                        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('mycrush_users', JSON.stringify(demoUsers));
+            }
 
-        const account = new Appwrite.Account(client);
-        const database = new Appwrite.Databases(client, 'my-crush-db');
-        const storage = new Appwrite.Storage(client);
+            if (!localStorage.getItem('mycrush_posts')) {
+                const demoPosts = [
+                    {
+                        id: 'post1',
+                        userId: 'user2',
+                        content: 'Just had the best coffee ever! ☕️ #coffee #morning',
+                        image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80',
+                        likeCount: 15,
+                        commentCount: 3,
+                        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                        likedBy: ['user1']
+                    },
+                    {
+                        id: 'post2',
+                        userId: 'user3',
+                        content: 'Beautiful sunset at the beach today 🌅',
+                        image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80',
+                        likeCount: 42,
+                        commentCount: 7,
+                        createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+                        likedBy: ['user1', 'user2']
+                    }
+                ];
+                localStorage.setItem('mycrush_posts', JSON.stringify(demoPosts));
+            }
 
-        // Appwrite Collection IDs (replace with your actual collection IDs)
-        const USERS_COLLECTION_ID = 'users';
-        const POSTS_COLLECTION_ID = 'posts';
-        const COMMENTS_COLLECTION_ID = 'comments';
-        const FOLLOWS_COLLECTION_ID = 'follows';
-        const MESSAGES_COLLECTION_ID = 'messages';
-        const NOTIFICATIONS_COLLECTION_ID = 'notifications';
+            if (!localStorage.getItem('mycrush_comments')) {
+                const demoComments = [
+                    {
+                        id: 'comment1',
+                        postId: 'post1',
+                        userId: 'user3',
+                        content: 'Looks amazing! Where is this?',
+                        createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: 'comment2',
+                        postId: 'post1',
+                        userId: 'user2',
+                        content: 'This is at Central Perk!',
+                        createdAt: new Date(Date.now() - 50 * 60 * 1000).toISOString()
+                    }
+                ];
+                localStorage.setItem('mycrush_comments', JSON.stringify(demoComments));
+            }
 
-        // Appwrite Bucket IDs (replace with your actual bucket IDs)
-        const AVATARS_BUCKET_ID = 'avatars';
-        const POST_IMAGES_BUCKET_ID = 'post-images';
+            if (!localStorage.getItem('mycrush_follows')) {
+                const demoFollows = [
+                    { id: 'follow1', followerId: 'user1', followingId: 'user2', createdAt: new Date().toISOString() },
+                    { id: 'follow2', followerId: 'user1', followingId: 'user3', createdAt: new Date().toISOString() },
+                    { id: 'follow3', followerId: 'user2', followingId: 'user1', createdAt: new Date().toISOString() }
+                ];
+                localStorage.setItem('mycrush_follows', JSON.stringify(demoFollows));
+            }
+
+            if (!localStorage.getItem('mycrush_messages')) {
+                const demoMessages = [
+                    {
+                        id: 'msg1',
+                        threadKey: 'user1_user2',
+                        senderId: 'user2',
+                        receiverId: 'user1',
+                        content: 'Hey there! How are you?',
+                        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: 'msg2',
+                        threadKey: 'user1_user2',
+                        senderId: 'user1',
+                        receiverId: 'user2',
+                        content: 'I\'m good! Just posted a new photo',
+                        createdAt: new Date(Date.now() - 1.5 * 60 * 60 * 1000).toISOString()
+                    }
+                ];
+                localStorage.setItem('mycrush_messages', JSON.stringify(demoMessages));
+            }
+
+            if (!localStorage.getItem('mycrush_notifications')) {
+                const demoNotifications = [
+                    {
+                        id: 'notif1',
+                        userId: 'user1',
+                        type: 'like',
+                        sourceUserId: 'user2',
+                        content: 'liked your post',
+                        read: false,
+                        createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: 'notif2',
+                        userId: 'user1',
+                        type: 'comment',
+                        sourceUserId: 'user3',
+                        content: 'commented on your post',
+                        read: true,
+                        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+                    }
+                ];
+                localStorage.setItem('mycrush_notifications', JSON.stringify(demoNotifications));
+            }
+        }
+
+        // Database functions
+        function getDatabaseItem(key) {
+            return JSON.parse(localStorage.getItem(`mycrush_${key}`) || '[]');
+        }
+
+        function setDatabaseItem(key, value) {
+            localStorage.setItem(`mycrush_${key}`, JSON.stringify(value));
+        }
+
+        function addDatabaseItem(key, item) {
+            const items = getDatabaseItem(key);
+            items.push(item);
+            setDatabaseItem(key, items);
+            return item;
+        }
+
+        function updateDatabaseItem(key, id, updates) {
+            const items = getDatabaseItem(key);
+            const index = items.findIndex(item => item.id === id);
+            if (index !== -1) {
+                items[index] = { ...items[index], ...updates };
+                setDatabaseItem(key, items);
+                return items[index];
+            }
+            return null;
+        }
 
         // State Management
         let currentUser = null;
@@ -865,12 +960,15 @@
         const themeToggle = document.getElementById('themeToggle');
 
         // Initialize the app
-        async function initApp() {
+        function initApp() {
+            // Initialize database
+            initializeDatabase();
+            
             // Set the theme
             setTheme(currentTheme);
             
             // Check if user is logged in
-            await checkAuthStatus();
+            checkAuthStatus();
             
             // Set up event listeners
             setupEventListeners();
@@ -887,68 +985,15 @@
         }
 
         // Check authentication status
-        async function checkAuthStatus() {
-            try {
-                const user = await account.get();
-                currentUser = user;
-                
-                // Check if user is verified
-                if (!currentUser.emailVerification) {
-                    showPage('verificationNotice');
-                    return;
-                }
-                
-                // Check if user profile exists in database
-                try {
-                    const userProfile = await database.getDocument(
-                        USERS_COLLECTION_ID,
-                        currentUser.$id
-                    );
-                    
-                    // Update currentUser with profile data
-                    currentUser = { ...currentUser, ...userProfile };
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    
-                    showPage('homePage');
-                    await loadFeed();
-                    await updateUnreadCount();
-                } catch (error) {
-                    // User profile doesn't exist, create it
-                    await createUserProfile();
-                    showPage('homePage');
-                    await loadFeed();
-                }
-            } catch (error) {
-                // Not logged in
+        function checkAuthStatus() {
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                currentUser = JSON.parse(userData);
+                showPage('homePage');
+                loadFeed();
+                updateUnreadCount();
+            } else {
                 showPage('authPage');
-            }
-        }
-
-        // Create user profile in database
-        async function createUserProfile() {
-            try {
-                const userProfile = {
-                    name: currentUser.name,
-                    email: currentUser.email,
-                    bio: '',
-                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
-                    followers: 0,
-                    following: 0,
-                    posts: 0
-                };
-                
-                const response = await database.createDocument(
-                    USERS_COLLECTION_ID,
-                    currentUser.$id,
-                    userProfile
-                );
-                
-                // Update currentUser with profile data
-                currentUser = { ...currentUser, ...response };
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            } catch (error) {
-                console.error('Error creating user profile:', error);
-                alert('Error creating profile. Please try again.');
             }
         }
 
@@ -1012,26 +1057,32 @@
             });
             
             // Login form
-            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
-                await loginUser(email, password);
+                loginUser(email, password);
             });
             
             // Register form
-            document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            document.getElementById('registerForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const name = document.getElementById('registerName').value;
                 const email = document.getElementById('registerEmail').value;
                 const password = document.getElementById('registerPassword').value;
-                await registerUser(name, email, password);
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+                
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match');
+                    return;
+                }
+                
+                registerUser(name, email, password);
             });
             
             // Google login
             document.getElementById('googleLogin').addEventListener('click', () => {
-                // Redirect to Google OAuth
-                account.createOAuth2Session('google', 'https://yourdomain.com/success', 'https://yourdomain.com/failure');
+                alert('Google login would be implemented with Appwrite OAuth');
             });
             
             // Continue as guest
@@ -1042,16 +1093,21 @@
             });
             
             // New post form
-            document.getElementById('newPostForm').addEventListener('submit', async (e) => {
+            document.getElementById('newPostForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const content = document.getElementById('postContent').value;
                 const imageFile = document.getElementById('postImage').files[0];
-                await createPost(content, imageFile);
+                createPost(content, imageFile);
             });
             
             // Edit profile button
             document.getElementById('editProfileBtn').addEventListener('click', () => {
                 showEditProfileModal();
+            });
+            
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                logoutUser();
             });
             
             // Close modal buttons
@@ -1063,12 +1119,12 @@
             });
             
             // Edit profile form
-            document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+            document.getElementById('editProfileForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const displayName = document.getElementById('editDisplayName').value;
                 const bio = document.getElementById('editBio').value;
                 const avatarFile = document.getElementById('editAvatar').files[0];
-                await updateProfile(displayName, bio, avatarFile);
+                updateProfile(displayName, bio, avatarFile);
             });
             
             // Back to messages button
@@ -1099,17 +1155,6 @@
             // Search input
             document.getElementById('searchInput').addEventListener('input', handleSearch);
             
-            // Clear search button
-            document.getElementById('clearSearch').addEventListener('click', () => {
-                document.getElementById('searchInput').value = '';
-                document.getElementById('searchResults').innerHTML = '<p class="text-center">Start typing to search for users</p>';
-            });
-            
-            // Close search page button
-            document.getElementById('closeSearch').addEventListener('click', () => {
-                showPage('homePage');
-            });
-            
             // Profile stats clicks
             document.getElementById('postsStat').addEventListener('click', () => {
                 document.getElementById('userPostsContainer').scrollIntoView({ behavior: 'smooth' });
@@ -1122,147 +1167,120 @@
             document.getElementById('followersStat').addEventListener('click', () => {
                 alert('Followers list would be shown here');
             });
-            
-            // Verification resend
-            document.getElementById('resendVerification').addEventListener('click', async () => {
-                try {
-                    await account.createVerification('https://yourdomain.com/verify');
-                    alert('Verification email sent!');
-                } catch (error) {
-                    console.error('Error sending verification:', error);
-                    alert('Error sending verification email. Please try again.');
-                }
-            });
-            
-            // Continue after verification
-            document.getElementById('continueAfterVerification').addEventListener('click', async () => {
-                try {
-                    // Check if user is now verified
-                    const user = await account.get();
-                    if (user.emailVerification) {
-                        currentUser = user;
-                        await checkAuthStatus();
-                    } else {
-                        alert('Please verify your email first.');
-                    }
-                } catch (error) {
-                    console.error('Error checking verification status:', error);
-                }
-            });
         }
 
         // Load initial data
         function loadInitialData() {
             // Simulate realtime updates
-            setInterval(async () => {
+            setInterval(() => {
                 if (currentUser) {
-                    await updateUnreadCount();
+                    updateUnreadCount();
                     
                     if (currentPage === 'homePage') {
-                        await loadFeed();
+                        // Simulate new posts occasionally
+                        if (Math.random() > 0.8) {
+                            addSimulatedPost();
+                        }
                     }
                     
                     if (currentPage === 'notificationsPage') {
-                        await loadNotifications();
+                        loadNotifications();
                     }
                     
                     if (currentPage === 'messagesPage' && currentChatUser) {
-                        await loadChat(currentChatUser);
+                        loadChat(currentChatUser);
                     }
                 }
-            }, 30000); // Check for updates every 30 seconds
+            }, 10000);
         }
 
-        // Login user with Appwrite
-        async function loginUser(email, password) {
-            try {
-                const session = await account.createEmailSession(email, password);
-                const user = await account.get();
-                currentUser = user;
-                
-                // Check if user is verified
-                if (!currentUser.emailVerification) {
-                    showPage('verificationNotice');
-                    return;
-                }
-                
-                // Get user profile from database
-                try {
-                    const userProfile = await database.getDocument(
-                        USERS_COLLECTION_ID,
-                        currentUser.$id
-                    );
-                    
-                    // Update currentUser with profile data
-                    currentUser = { ...currentUser, ...userProfile };
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    
-                    showPage('homePage');
-                    await loadFeed();
-                    await updateUnreadCount();
-                } catch (error) {
-                    // User profile doesn't exist, create it
-                    await createUserProfile();
-                    showPage('homePage');
-                    await loadFeed();
-                }
-            } catch (error) {
-                console.error('Login error:', error);
+        // Login user
+        function loginUser(email, password) {
+            const users = getDatabaseItem('users');
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                currentUser = { ...user };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showPage('homePage');
+                loadFeed();
+                updateUnreadCount();
+            } else {
                 alert('Invalid email or password');
             }
         }
 
-        // Register user with Appwrite
-        async function registerUser(name, email, password) {
-            try {
-                // Create account in Appwrite
-                const user = await account.create(
-                    Appwrite.ID.unique(),
-                    email,
-                    password,
-                    name
-                );
-                
-                // Send verification email
-                await account.createVerification('https://yourdomain.com/verify');
-                
-                // Show verification notice
-                showPage('verificationNotice');
-            } catch (error) {
-                console.error('Registration error:', error);
-                alert('Error creating account. Please try again.');
+        // Register user
+        function registerUser(name, email, password) {
+            const users = getDatabaseItem('users');
+            
+            // Check if user already exists
+            const existingUser = users.find(u => u.email === email);
+            
+            if (existingUser) {
+                alert('User with this email already exists');
+                return;
             }
+            
+            // Create new user
+            const newUser = {
+                id: 'user' + (users.length + 1),
+                name,
+                email,
+                password,
+                bio: '',
+                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
+                createdAt: new Date().toISOString()
+            };
+            
+            addDatabaseItem('users', newUser);
+            currentUser = { ...newUser };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showPage('homePage');
+            loadFeed();
         }
 
-        // Load feed posts from Appwrite
-        async function loadFeed() {
+        // Logout user
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showPage('authPage');
+        }
+
+        // Load feed posts
+        function loadFeed() {
             const feedContainer = document.getElementById('feedContainer');
+            
+            if (!currentUser) {
+                feedContainer.innerHTML = `
+                    <div class="card login-prompt">
+                        <i class="fas fa-rss"></i>
+                        <h3>Login to see your feed</h3>
+                        <p>Sign in to view posts from users you follow</p>
+                        <button class="btn btn-primary mt-1" onclick="showPage('authPage')">Login</button>
+                    </div>
+                `;
+                return;
+            }
+            
             feedContainer.innerHTML = '<div class="spinner"></div>';
             
-            try {
-                // Get posts from followed users
-                const followedUsers = await database.listDocuments(
-                    FOLLOWS_COLLECTION_ID,
-                    [
-                        Appwrite.Query.equal('followerId', currentUser.$id)
-                    ]
-                );
+            // Simulate API delay
+            setTimeout(() => {
+                // Get posts from followed users and public posts
+                const follows = getDatabaseItem('follows');
+                const followedUsers = follows
+                    .filter(f => f.followerId === currentUser.id)
+                    .map(f => f.followingId);
                 
-                const followedUserIds = followedUsers.documents.map(f => f.followingId);
-                followedUserIds.push(currentUser.$id); // Include own posts
-                
-                // Get posts from followed users
-                const feedPosts = await database.listDocuments(
-                    POSTS_COLLECTION_ID,
-                    [
-                        Appwrite.Query.equal('userId', followedUserIds),
-                        Appwrite.Query.orderDesc('createdAt')
-                    ]
-                );
+                const posts = getDatabaseItem('posts');
+                const feedPosts = posts
+                    .filter(post => followedUsers.includes(post.userId) || post.userId === currentUser.id)
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 feedContainer.innerHTML = '';
                 
-                if (feedPosts.documents.length === 0) {
+                if (feedPosts.length === 0) {
                     feedContainer.innerHTML = `
                         <div class="card text-center">
                             <div style="padding: 40px 20px;">
@@ -1276,20 +1294,17 @@
                     return;
                 }
                 
-                for (const post of feedPosts.documents) {
-                    const user = await database.getDocument(USERS_COLLECTION_ID, post.userId);
-                    feedContainer.appendChild(await createPostElement(post, user));
-                }
-            } catch (error) {
-                console.error('Error loading feed:', error);
-                feedContainer.innerHTML = '<p class="text-center">Error loading feed</p>';
-            }
+                feedPosts.forEach(post => {
+                    feedContainer.appendChild(createPostElement(post));
+                });
+            }, 800);
         }
 
         // Create post element
-        async function createPostElement(post, user) {
-            // Check if post is liked by current user
-            const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
+        function createPostElement(post) {
+            const users = getDatabaseItem('users');
+            const user = users.find(u => u.id === post.userId);
+            const isLiked = post.likedBy && post.likedBy.includes(currentUser.id);
             
             const postEl = document.createElement('div');
             postEl.className = 'card post-card';
@@ -1306,10 +1321,10 @@
                     ${post.image ? `<img src="${post.image}" alt="Post image" class="post-image">` : ''}
                 </div>
                 <div class="post-actions">
-                    <button class="action-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.$id}">
+                    <button class="action-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.id}">
                         <i class="fas fa-heart"></i> <span>${post.likeCount}</span>
                     </button>
-                    <button class="action-btn" data-post-id="${post.$id}">
+                    <button class="action-btn" data-post-id="${post.id}">
                         <i class="fas fa-comment"></i> <span>${post.commentCount}</span>
                     </button>
                     <button class="action-btn">
@@ -1321,101 +1336,95 @@
             // Add like functionality
             const likeBtn = postEl.querySelector('.action-btn:first-child');
             likeBtn.addEventListener('click', () => {
-                toggleLike(post.$id);
+                toggleLike(post.id);
             });
             
             // Add comment functionality
             const commentBtn = postEl.querySelectorAll('.action-btn')[1];
             commentBtn.addEventListener('click', () => {
-                showComments(post.$id);
+                showComments(post.id);
             });
             
             return postEl;
         }
 
         // Toggle like on a post
-        async function toggleLike(postId) {
-            try {
-                const post = await database.getDocument(POSTS_COLLECTION_ID, postId);
+        function toggleLike(postId) {
+            const posts = getDatabaseItem('posts');
+            const post = posts.find(p => p.id === postId);
+            
+            if (!post.likedBy) {
+                post.likedBy = [];
+            }
+            
+            const isLiked = post.likedBy.includes(currentUser.id);
+            
+            if (isLiked) {
+                post.likedBy = post.likedBy.filter(id => id !== currentUser.id);
+                post.likeCount--;
+            } else {
+                post.likedBy.push(currentUser.id);
+                post.likeCount++;
                 
-                if (!post.likedBy) {
-                    post.likedBy = [];
+                // Create notification
+                if (post.userId !== currentUser.id) {
+                    const notification = {
+                        id: 'notif' + (getDatabaseItem('notifications').length + 1),
+                        userId: post.userId,
+                        type: 'like',
+                        sourceUserId: currentUser.id,
+                        content: 'liked your post',
+                        read: false,
+                        createdAt: new Date().toISOString()
+                    };
+                    addDatabaseItem('notifications', notification);
+                    updateUnreadCount();
                 }
-                
-                const isLiked = post.likedBy.includes(currentUser.$id);
-                
-                if (isLiked) {
-                    // Unlike the post
-                    post.likedBy = post.likedBy.filter(id => id !== currentUser.$id);
-                    post.likeCount--;
-                } else {
-                    // Like the post
-                    post.likedBy.push(currentUser.$id);
-                    post.likeCount++;
-                    
-                    // Create notification if not own post
-                    if (post.userId !== currentUser.$id) {
-                        await database.createDocument(
-                            NOTIFICATIONS_COLLECTION_ID,
-                            Appwrite.ID.unique(),
-                            {
-                                userId: post.userId,
-                                type: 'like',
-                                sourceUserId: currentUser.$id,
-                                content: 'liked your post',
-                                read: false,
-                                createdAt: new Date().toISOString()
-                            }
-                        );
-                        await updateUnreadCount();
-                    }
-                }
-                
-                // Update the post in database
-                await database.updateDocument(POSTS_COLLECTION_ID, postId, {
-                    likedBy: post.likedBy,
-                    likeCount: post.likeCount
-                });
-                
-                // Update UI
-                if (currentPage === 'homePage') {
-                    await loadFeed();
-                } else if (currentPage === 'profilePage') {
-                    await loadProfile();
-                }
-            } catch (error) {
-                console.error('Error toggling like:', error);
+            }
+            
+            // Update database
+            setDatabaseItem('posts', posts);
+            
+            // Update UI
+            if (currentPage === 'homePage') {
+                loadFeed();
+            } else if (currentPage === 'profilePage') {
+                loadProfile();
             }
         }
 
         // Show comments for a post
-        async function showComments(postId) {
+        function showComments(postId) {
+            if (!currentUser) {
+                alert('Please login to view comments');
+                showPage('authPage');
+                return;
+            }
+            
             currentPostId = postId;
             document.getElementById('commentModal').style.display = 'flex';
-            await loadComments();
+            loadComments();
         }
 
-        // Load comments for a post from Appwrite
-        async function loadComments() {
+        // Load comments for a post
+        function loadComments() {
             const commentsContainer = document.getElementById('commentsContainer');
             commentsContainer.innerHTML = '<div class="spinner"></div>';
             
-            try {
-                const postComments = await database.listDocuments(
-                    COMMENTS_COLLECTION_ID,
-                    [
-                        Appwrite.Query.equal('postId', currentPostId),
-                        Appwrite.Query.orderAsc('createdAt')
-                    ]
-                );
+            setTimeout(() => {
+                const comments = getDatabaseItem('comments');
+                const postComments = comments
+                    .filter(c => c.postId === currentPostId)
+                    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
                 
                 commentsContainer.innerHTML = '';
                 
-                if (postComments.documents.length === 0) {
+                if (postComments.length === 0) {
                     commentsContainer.innerHTML = '<p class="text-center">No comments yet</p>';
                 } else {
-                    for (const comment of postComments.documents) {
-                        const user = await database.getDocument(USERS_COLLECTION_ID, comment.userId);
+                    const users = getDatabaseItem('users');
+                    postComments.forEach(comment => {
+                        const user = users.find(u => u.id === comment.userId);
                         const commentEl = document.createElement('div');
                         commentEl.className = 'comment';
                         commentEl.innerHTML = `
@@ -1427,183 +1436,130 @@
                             </div>
                         `;
                         commentsContainer.appendChild(commentEl);
-                    }
+                    });
                 }
-            } catch (error) {
-                console.error('Error loading comments:', error);
-                commentsContainer.innerHTML = '<p class="text-center">Error loading comments</p>';
-            }
+            }, 500);
         }
 
-        // Post a comment using Appwrite
-        async function postComment() {
+        // Post a comment
+        function postComment() {
             const commentInput = document.getElementById('commentInput');
             const content = commentInput.value.trim();
             
             if (!content) return;
             
-            try {
-                // Create comment
-                const newComment = await database.createDocument(
-                    COMMENTS_COLLECTION_ID,
-                    Appwrite.ID.unique(),
-                    {
-                        postId: currentPostId,
-                        userId: currentUser.$id,
-                        content,
-                        createdAt: new Date().toISOString()
-                    }
-                );
-                
-                // Update post comment count
-                const post = await database.getDocument(POSTS_COLLECTION_ID, currentPostId);
-                await database.updateDocument(POSTS_COLLECTION_ID, currentPostId, {
-                    commentCount: post.commentCount + 1
-                });
-                
-                // Create notification if not own post
-                if (post.userId !== currentUser.$id) {
-                    await database.createDocument(
-                        NOTIFICATIONS_COLLECTION_ID,
-                        Appwrite.ID.unique(),
-                        {
-                            userId: post.userId,
-                            type: 'comment',
-                            sourceUserId: currentUser.$id,
-                            content: 'commented on your post',
-                            read: false,
-                            createdAt: new Date().toISOString()
-                        }
-                    );
-                    await updateUnreadCount();
-                }
-                
-                // Clear input and reload comments
-                commentInput.value = '';
-                await loadComments();
-                
-                // Update post in feed
-                if (currentPage === 'homePage') {
-                    await loadFeed();
-                } else if (currentPage === 'profilePage') {
-                    await loadProfile();
-                }
-            } catch (error) {
-                console.error('Error posting comment:', error);
-                alert('Error posting comment. Please try again.');
-            }
-        }
-
-        // Create a new post with Appwrite
-        async function createPost(content, imageFile) {
-            try {
-                let imageUrl = '';
-                
-                // Upload image if provided
-                if (imageFile) {
-                    const response = await storage.createFile(
-                        POST_IMAGES_BUCKET_ID,
-                        Appwrite.ID.unique(),
-                        imageFile
-                    );
-                    
-                    // Get the image URL
-                    imageUrl = await storage.getFileView(POST_IMAGES_BUCKET_ID, response.$id);
-                }
-                
-                // Create post in database
-                const newPost = await database.createDocument(
-                    POSTS_COLLECTION_ID,
-                    Appwrite.ID.unique(),
-                    {
-                        userId: currentUser.$id,
-                        content,
-                        image: imageUrl,
-                        likeCount: 0,
-                        commentCount: 0,
-                        likedBy: [],
-                        createdAt: new Date().toISOString()
-                    }
-                );
-                
-                // Update user's post count
-                await database.updateDocument(USERS_COLLECTION_ID, currentUser.$id, {
-                    posts: currentUser.posts + 1
-                });
-                
-                // Reset form and go back to feed
-                document.getElementById('newPostForm').reset();
-                showPage('homePage');
-                await loadFeed();
-                
-                // Show success message
-                alert('Post created successfully!');
-            } catch (error) {
-                console.error('Error creating post:', error);
-                alert('Error creating post. Please try again.');
-            }
-        }
-
-        // Load user profile from Appwrite
-        async function loadProfile() {
-            if (!currentUser) return;
+            const newComment = {
+                id: 'comment' + (getDatabaseItem('comments').length + 1),
+                postId: currentPostId,
+                userId: currentUser.id,
+                content,
+                createdAt: new Date().toISOString()
+            };
             
-            try {
-                // Get updated user data
-                const userData = await database.getDocument(USERS_COLLECTION_ID, currentUser.$id);
-                currentUser = { ...currentUser, ...userData };
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                
-                // Update profile info
-                document.getElementById('profileName').textContent = currentUser.name;
-                document.getElementById('profileBio').textContent = currentUser.bio;
-                document.getElementById('profileAvatar').src = currentUser.avatar;
-                
-                // Update stats
-                document.getElementById('postsCount').textContent = currentUser.posts || 0;
-                
-                // Get follow counts
-                const followingCount = await database.listDocuments(
-                    FOLLOWS_COLLECTION_ID,
-                    [
-                        Appwrite.Query.equal('followerId', currentUser.$id)
-                    ]
-                );
-                
-                const followersCount = await database.listDocuments(
-                    FOLLOWS_COLLECTION_ID,
-                    [
-                        Appwrite.Query.equal('followingId', currentUser.$id)
-                    ]
-                );
-                
-                document.getElementById('followingCount').textContent = followingCount.total;
-                document.getElementById('followersCount').textContent = followersCount.total;
-                
-                // Load user's posts
-                await loadUserPosts();
-            } catch (error) {
-                console.error('Error loading profile:', error);
+            addDatabaseItem('comments', newComment);
+            
+            // Update post comment count
+            const posts = getDatabaseItem('posts');
+            const post = posts.find(p => p.id === currentPostId);
+            post.commentCount++;
+            setDatabaseItem('posts', posts);
+            
+            // Create notification
+            if (post.userId !== currentUser.id) {
+                const notification = {
+                    id: 'notif' + (getDatabaseItem('notifications').length + 1),
+                    userId: post.userId,
+                    type: 'comment',
+                    sourceUserId: currentUser.id,
+                    content: 'commented on your post',
+                    read: false,
+                    createdAt: new Date().toISOString()
+                };
+                addDatabaseItem('notifications', notification);
+                updateUnreadCount();
+            }
+            
+            // Clear input and reload comments
+            commentInput.value = '';
+            loadComments();
+            
+            // Update post in feed
+            if (currentPage === 'homePage') {
+                loadFeed();
+            } else if (currentPage === 'profilePage') {
+                loadProfile();
             }
         }
 
-        // Load user's posts from Appwrite
-        async function loadUserPosts() {
+        // Create a new post
+        function createPost(content, imageFile) {
+            if (!currentUser) {
+                alert('Please login to create a post');
+                showPage('authPage');
+                return;
+            }
+            
+            // In a real app, this would upload the image to Appwrite Storage
+            const imageUrl = imageFile ? 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80' : '';
+            
+            const newPost = {
+                id: 'post' + (getDatabaseItem('posts').length + 1),
+                userId: currentUser.id,
+                content,
+                image: imageUrl,
+                likeCount: 0,
+                commentCount: 0,
+                createdAt: new Date().toISOString(),
+                likedBy: []
+            };
+            
+            addDatabaseItem('posts', newPost);
+            
+            // Reset form and go back to feed
+            document.getElementById('newPostForm').reset();
+            showPage('homePage');
+            loadFeed();
+            
+            // Show success message
+            alert('Post created successfully!');
+        }
+
+        // Load user profile
+        function loadProfile() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            // Update profile info
+            document.getElementById('profileName').textContent = currentUser.name;
+            document.getElementById('profileBio').textContent = currentUser.bio;
+            document.getElementById('profileAvatar').src = currentUser.avatar;
+            
+            // Update stats
+            const posts = getDatabaseItem('posts');
+            const follows = getDatabaseItem('follows');
+            
+            const postCount = posts.filter(p => p.userId === currentUser.id).length;
+            const followingCount = follows.filter(f => f.followerId === currentUser.id).length;
+            const followersCount = follows.filter(f => f.followingId === currentUser.id).length;
+            
+            document.getElementById('postsCount').textContent = postCount;
+            document.getElementById('followingCount').textContent = followingCount;
+            document.getElementById('followersCount').textContent = followersCount;
+            
+            // Load user's posts
             const postsContainer = document.getElementById('userPostsContainer');
             postsContainer.innerHTML = '<div class="spinner"></div>';
             
-            try {
-                const userPosts = await database.listDocuments(
-                    POSTS_COLLECTION_ID,
-                    [
-                        Appwrite.Query.equal('userId', currentUser.$id),
-                        Appwrite.Query.orderDesc('createdAt')
-                    ]
-                );
+            setTimeout(() => {
+                const userPosts = posts
+                    .filter(post => post.userId === currentUser.id)
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 postsContainer.innerHTML = '';
                 
-                if (userPosts.documents.length === 0) {
+                if (userPosts.length === 0) {
                     postsContainer.innerHTML = `
                         <div class="card text-center">
                             <div style="padding: 40px 20px;">
@@ -1617,13 +1573,10 @@
                     return;
                 }
                 
-                for (const post of userPosts.documents) {
-                    postsContainer.appendChild(await createPostElement(post, currentUser));
-                }
-            } catch (error) {
-                console.error('Error loading user posts:', error);
-                postsContainer.innerHTML = '<p class="text-center">Error loading posts</p>';
-            }
+                userPosts.forEach(post => {
+                    postsContainer.appendChild(createPostElement(post));
+                });
+            }, 800);
         }
 
         // Show edit profile modal
@@ -1633,82 +1586,72 @@
             document.getElementById('editProfileModal').style.display = 'flex';
         }
 
-        // Update user profile with Appwrite
-        async function updateProfile(displayName, bio, avatarFile) {
-            try {
-                let avatarUrl = currentUser.avatar;
-                
-                // Upload new avatar if provided
-                if (avatarFile) {
-                    const response = await storage.createFile(
-                        AVATARS_BUCKET_ID,
-                        Appwrite.ID.unique(),
-                        avatarFile
-                    );
-                    
-                    // Get the avatar URL
-                    avatarUrl = await storage.getFileView(AVATARS_BUCKET_ID, response.$id);
-                }
-                
-                // Update user in database
-                await database.updateDocument(USERS_COLLECTION_ID, currentUser.$id, {
-                    name: displayName,
-                    bio,
-                    avatar: avatarUrl
-                });
-                
-                // Update current user
-                currentUser.name = displayName;
-                currentUser.bio = bio;
-                currentUser.avatar = avatarUrl;
-                
-                // Save to localStorage
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                
-                // Update UI
-                document.getElementById('profileName').textContent = displayName;
-                document.getElementById('profileBio').textContent = bio;
-                document.getElementById('profileAvatar').src = avatarUrl;
-                
-                // Close modal
-                document.getElementById('editProfileModal').style.display = 'none';
-                
-                // Show success message
-                alert('Profile updated successfully!');
-            } catch (error) {
-                console.error('Error updating profile:', error);
-                alert('Error updating profile. Please try again.');
+        // Update user profile
+        function updateProfile(displayName, bio, avatarFile) {
+            // In a real app, this would upload the image to Appwrite Storage
+            const avatarUrl = avatarFile ? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80' : currentUser.avatar;
+            
+            // Update current user
+            currentUser.name = displayName;
+            currentUser.bio = bio;
+            currentUser.avatar = avatarUrl;
+            
+            // Update in database
+            const users = getDatabaseItem('users');
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex].name = displayName;
+                users[userIndex].bio = bio;
+                users[userIndex].avatar = avatarUrl;
+                setDatabaseItem('users', users);
             }
+            
+            // Save to localStorage
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Update UI
+            document.getElementById('profileName').textContent = displayName;
+            document.getElementById('profileBio').textContent = bio;
+            document.getElementById('profileAvatar').src = avatarUrl;
+            
+            // Close modal
+            document.getElementById('editProfileModal').style.display = 'none';
+            
+            // Show success message
+            alert('Profile updated successfully!');
         }
 
-        // Load notifications from Appwrite
-        async function loadNotifications() {
+        // Load notifications
+        function loadNotifications() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
             const notificationsContainer = document.getElementById('notificationsContainer');
             notificationsContainer.innerHTML = '<div class="spinner"></div>';
             
-            try {
-                const userNotifications = await database.listDocuments(
-                    NOTIFICATIONS_COLLECTION_ID,
-                    [
-                        Appwrite.Query.equal('userId', currentUser.$id),
-                        Appwrite.Query.orderDesc('createdAt')
-                    ]
-                );
+            setTimeout(() => {
+                const notifications = getDatabaseItem('notifications');
+                const userNotifications = notifications
+                    .filter(n => n.userId === currentUser.id)
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 notificationsContainer.innerHTML = '';
                 
-                if (userNotifications.documents.length === 0) {
+                if (userNotifications.length === 0) {
                     notificationsContainer.innerHTML = '<p class="text-center">No notifications yet</p>';
                     return;
                 }
                 
-                for (const notif of userNotifications.documents) {
-                    const user = await database.getDocument(USERS_COLLECTION_ID, notif.sourceUserId);
+                const users = getDatabaseItem('users');
+                userNotifications.forEach(notif => {
+                    const user = users.find(u => u.id === notif.sourceUserId);
                     const notifEl = document.createElement('div');
                     notifEl.className = `card notification-item ${notif.read ? '' : 'unread'}`;
                     notifEl.innerHTML = `
                         <div class="notification-icon">
-                            <i class="fas fa-${notif.type === 'like' ? 'heart' : notif.type === 'comment' ? 'comment' : 'user-plus'}"></i>
+                            <i class="fas fa-${notif.type === 'like' ? 'heart' : 'comment'}"></i>
                         </div>
                         <div>
                             <p><strong>${user.name}</strong> ${notif.content}</p>
@@ -1719,42 +1662,185 @@
                     
                     // Mark as read when clicked
                     if (!notif.read) {
-                        notifEl.addEventListener('click', async () => {
-                            await database.updateDocument(NOTIFICATIONS_COLLECTION_ID, notif.$id, {
-                                read: true
-                            });
-                            await updateUnreadCount();
-                            await loadNotifications();
+                        notifEl.addEventListener('click', () => {
+                            const notifications = getDatabaseItem('notifications');
+                            const notification = notifications.find(n => n.id === notif.id);
+                            notification.read = true;
+                            setDatabaseItem('notifications', notifications);
+                            updateUnreadCount();
+                            loadNotifications();
                         });
                     }
-                }
-            } catch (error) {
-                console.error('Error loading notifications:', error);
-                notificationsContainer.innerHTML = '<p class="text-center">Error loading notifications</p>';
+                });
+            }, 800);
+        }
+
+        // Update unread notification count
+        function updateUnreadCount() {
+            if (!currentUser) return;
+            
+            const notifications = getDatabaseItem('notifications');
+            const unreadCount = notifications.filter(
+                n => n.userId === currentUser.id && !n.read
+            ).length;
+            
+            const badge = document.getElementById('notificationBadge');
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
             }
         }
 
-        // Update unread notification count from Appwrite
-        async function updateUnreadCount() {
-            try {
-                const unreadNotifications = await database.listDocuments(
-                    NOTIFICATIONS_COLLECTION_ID,
-                    [
-                        Appwrite.Query.equal('userId', currentUser.$id),
-                        Appwrite.Query.equal('read', false)
-                    ]
-                );
-                
-                const badge = document.getElementById('notificationBadge');
-                if (unreadNotifications.total > 0) {
-                    badge.textContent = unreadNotifications.total;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Error updating unread count:', error);
+        // Load conversations
+        function loadConversations() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
             }
+            
+            const conversationsContainer = document.getElementById('conversationsContainer');
+            conversationsContainer.innerHTML = '<div class="spinner"></div>';
+            
+            setTimeout(() => {
+                const messages = getDatabaseItem('messages');
+                const users = getDatabaseItem('users');
+                
+                // Get unique users that current user has messaged with
+                const conversationPartners = new Set();
+                
+                messages.forEach(msg => {
+                    if (msg.senderId === currentUser.id) {
+                        conversationPartners.add(msg.receiverId);
+                    } else if (msg.receiverId === currentUser.id) {
+                        conversationPartners.add(msg.senderId);
+                    }
+                });
+                
+                conversationsContainer.innerHTML = '';
+                
+                if (conversationPartners.size === 0) {
+                    conversationsContainer.innerHTML = `
+                        <div class="card text-center">
+                            <div style="padding: 40px 20px;">
+                                <i class="fas fa-comments" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                                <h3>No messages yet</h3>
+                                <p>Start a conversation with someone</p>
+                                <button class="btn btn-primary mt-1" onclick="showPage('searchPage')">Find Users</button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                Array.from(conversationPartners).forEach(userId => {
+                    const user = users.find(u => u.id === userId);
+                    const lastMessage = messages
+                        .filter(m => 
+                            (m.senderId === currentUser.id && m.receiverId === userId) ||
+                            (m.senderId === userId && m.receiverId === currentUser.id)
+                        )
+                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+                    
+                    const conversationEl = document.createElement('div');
+                    conversationEl.className = 'card';
+                    conversationEl.style.padding = '15px';
+                    conversationEl.style.marginBottom = '10px';
+                    conversationEl.innerHTML = `
+                        <div style="display: flex; align-items: center;">
+                            <img src="${user.avatar}" alt="${user.name}" class="avatar">
+                            <div style="flex: 1; margin-left: 10px; cursor: pointer;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <div class="username">${user.name}</div>
+                                    <div class="timestamp">${formatDate(lastMessage.createdAt)}</div>
+                                </div>
+                                <p>${lastMessage.content}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Add click event to open chat
+                    conversationEl.addEventListener('click', () => {
+                        currentChatUser = user;
+                        document.getElementById('chatUserName').textContent = user.name;
+                        showPage('chatPage');
+                        loadChat(user);
+                    });
+                    
+                    conversationsContainer.appendChild(conversationEl);
+                });
+            }, 800);
+        }
+
+        // Load chat with a user
+        function loadChat(user) {
+            const messageThread = document.getElementById('messageThread');
+            messageThread.innerHTML = '<div class="spinner"></div>';
+            
+            setTimeout(() => {
+                const messages = getDatabaseItem('messages')
+                    .filter(m => 
+                        (m.senderId === currentUser.id && m.receiverId === user.id) ||
+                        (m.senderId === user.id && m.receiverId === currentUser.id)
+                    )
+                    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                
+                messageThread.innerHTML = '';
+                
+                messages.forEach(msg => {
+                    const messageEl = document.createElement('div');
+                    messageEl.className = `message ${msg.senderId === currentUser.id ? 'sent' : 'received'}`;
+                    messageEl.innerHTML = `
+                        <div>${msg.content}</div>
+                        <div class="message-time">${formatTime(msg.createdAt)}</div>
+                    `;
+                    messageThread.appendChild(messageEl);
+                });
+                
+                // Scroll to bottom
+                messageThread.scrollTop = messageThread.scrollHeight;
+            }, 500);
+        }
+
+        // Send a message
+        function sendMessage() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            const messageInput = document.getElementById('messageInput');
+            const content = messageInput.value.trim();
+            
+            if (!content || !currentChatUser) return;
+            
+            const newMessage = {
+                id: 'msg' + (getDatabaseItem('messages').length + 1),
+                threadKey: `${currentUser.id}_${currentChatUser.id}`,
+                senderId: currentUser.id,
+                receiverId: currentChatUser.id,
+                content,
+                createdAt: new Date().toISOString()
+            };
+            
+            addDatabaseItem('messages', newMessage);
+            
+            // Clear input and reload chat
+            messageInput.value = '';
+            loadChat(currentChatUser);
+            
+            // Create notification
+            const notification = {
+                id: 'notif' + (getDatabaseItem('notifications').length + 1),
+                userId: currentChatUser.id,
+                type: 'message',
+                sourceUserId: currentUser.id,
+                content: 'sent you a message',
+                read: false,
+                createdAt: new Date().toISOString()
+            };
+            addDatabaseItem('notifications', notification);
         }
 
         // Initialize search
@@ -1764,7 +1850,7 @@
         }
 
         // Handle search input
-        async function handleSearch() {
+        function handleSearch() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             const searchResults = document.getElementById('searchResults');
             
@@ -1773,130 +1859,99 @@
                 return;
             }
             
-            try {
-                const results = await database.listDocuments(
-                    USERS_COLLECTION_ID,
-                    [
-                        Appwrite.Query.search('name', query),
-                        Appwrite.Query.notEqual('$id', currentUser.$id)
-                    ]
+            const users = getDatabaseItem('users');
+            const results = users.filter(user => 
+                user.name.toLowerCase().includes(query) && user.id !== currentUser.id
+            );
+            
+            searchResults.innerHTML = '';
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = '<p class="text-center">No users found</p>';
+                return;
+            }
+            
+            const follows = getDatabaseItem('follows');
+            results.forEach(user => {
+                const userEl = document.createElement('div');
+                userEl.className = 'card user-item';
+                userEl.innerHTML = `
+                    <img src="${user.avatar}" alt="${user.name}" class="avatar">
+                    <div style="flex: 1;">
+                        <div class="username">${user.name}</div>
+                        <div>${user.bio}</div>
+                    </div>
+                    <button class="btn btn-primary" data-user-id="${user.id}">Follow</button>
+                `;
+                
+                // Add follow functionality
+                const followBtn = userEl.querySelector('button');
+                const isFollowing = follows.some(
+                    f => f.followerId === currentUser.id && f.followingId === user.id
                 );
                 
-                searchResults.innerHTML = '';
-                
-                if (results.documents.length === 0) {
-                    searchResults.innerHTML = '<p class="text-center">No users found</p>';
-                    return;
+                if (isFollowing) {
+                    followBtn.textContent = 'Unfollow';
+                    followBtn.classList.remove('btn-primary');
+                    followBtn.classList.add('btn-secondary');
                 }
                 
-                for (const user of results.documents) {
-                    const userEl = document.createElement('div');
-                    userEl.className = 'card user-item';
-                    userEl.innerHTML = `
-                        <img src="${user.avatar}" alt="${user.name}" class="avatar">
-                        <div style="flex: 1;">
-                            <div class="username">${user.name}</div>
-                            <div>${user.bio}</div>
-                        </div>
-                        <button class="btn btn-primary" data-user-id="${user.$id}">Follow</button>
-                    `;
-                    
-                    // Add follow functionality
-                    const followBtn = userEl.querySelector('button');
-                    const isFollowing = await checkIfFollowing(user.$id);
-                    
-                    if (isFollowing) {
-                        followBtn.textContent = 'Unfollow';
-                        followBtn.classList.remove('btn-primary');
-                        followBtn.classList.add('btn-secondary');
-                    }
-                    
-                    followBtn.addEventListener('click', () => {
-                        toggleFollow(user.$id);
-                    });
-                    
-                    searchResults.appendChild(userEl);
-                }
-            } catch (error) {
-                console.error('Error searching users:', error);
-                searchResults.innerHTML = '<p class="text-center">Error searching users</p>';
-            }
-        }
-
-        // Check if current user is following a specific user
-        async function checkIfFollowing(userId) {
-            try {
-                const follows = await database.listDocuments(
-                    FOLLOWS_COLLECTION_ID,
-                    [
-                        Appwrite.Query.equal('followerId', currentUser.$id),
-                        Appwrite.Query.equal('followingId', userId)
-                    ]
-                );
+                followBtn.addEventListener('click', () => {
+                    toggleFollow(user.id);
+                });
                 
-                return follows.total > 0;
-            } catch (error) {
-                console.error('Error checking follow status:', error);
-                return false;
-            }
+                searchResults.appendChild(userEl);
+            });
         }
 
         // Toggle follow
-        async function toggleFollow(userId) {
-            try {
-                const isFollowing = await checkIfFollowing(userId);
+        function toggleFollow(userId) {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            const follows = getDatabaseItem('follows');
+            const existingFollow = follows.find(
+                f => f.followerId === currentUser.id && f.followingId === userId
+            );
+            
+            if (existingFollow) {
+                // Unfollow
+                setDatabaseItem('follows', follows.filter(f => f.id !== existingFollow.id));
+            } else {
+                // Follow
+                const newFollow = {
+                    id: 'follow' + (follows.length + 1),
+                    followerId: currentUser.id,
+                    followingId: userId,
+                    createdAt: new Date().toISOString()
+                };
+                addDatabaseItem('follows', newFollow);
                 
-                if (isFollowing) {
-                    // Unfollow
-                    const follows = await database.listDocuments(
-                        FOLLOWS_COLLECTION_ID,
-                        [
-                            Appwrite.Query.equal('followerId', currentUser.$id),
-                            Appwrite.Query.equal('followingId', userId)
-                        ]
-                    );
-                    
-                    if (follows.documents.length > 0) {
-                        await database.deleteDocument(FOLLOWS_COLLECTION_ID, follows.documents[0].$id);
-                    }
-                } else {
-                    // Follow
-                    await database.createDocument(
-                        FOLLOWS_COLLECTION_ID,
-                        Appwrite.ID.unique(),
-                        {
-                            followerId: currentUser.$id,
-                            followingId: userId,
-                            createdAt: new Date().toISOString()
-                        }
-                    );
-                    
-                    // Create notification
-                    await database.createDocument(
-                        NOTIFICATIONS_COLLECTION_ID,
-                        Appwrite.ID.unique(),
-                        {
-                            userId: userId,
-                            type: 'follow',
-                            sourceUserId: currentUser.$id,
-                            content: 'started following you',
-                            read: false,
-                            createdAt: new Date().toISOString()
-                        }
-                    );
-                    await updateUnreadCount();
-                }
+                // Create notification
+                const users = getDatabaseItem('users');
+                const user = users.find(u => u.id === userId);
                 
-                // Update UI
-                await handleSearch();
-                
-                // Update profile stats if on profile page
-                if (currentPage === 'profilePage') {
-                    await loadProfile();
-                }
-            } catch (error) {
-                console.error('Error toggling follow:', error);
-                alert('Error following user. Please try again.');
+                const notification = {
+                    id: 'notif' + (getDatabaseItem('notifications').length + 1),
+                    userId: userId,
+                    type: 'follow',
+                    sourceUserId: currentUser.id,
+                    content: 'started following you',
+                    read: false,
+                    createdAt: new Date().toISOString()
+                };
+                addDatabaseItem('notifications', notification);
+                updateUnreadCount();
+            }
+            
+            // Update UI
+            handleSearch();
+            
+            // Update profile stats if on profile page
+            if (currentPage === 'profilePage') {
+                loadProfile();
             }
         }
 
@@ -1914,6 +1969,51 @@
             if (days < 7) return `${days}d ago`;
             
             return new Date(date).toLocaleDateString();
+        }
+
+        // Format time
+        function formatTime(date) {
+            return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Add simulated post (for demo purposes)
+        function addSimulatedPost() {
+            const users = getDatabaseItem('users').filter(u => u.id !== currentUser.id);
+            const randomUser = users[Math.floor(Math.random() * users.length)];
+            
+            const simulatedPosts = [
+                {
+                    content: 'Just finished reading an amazing book! 📚 #reading',
+                    image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80'
+                },
+                {
+                    content: 'Beautiful day for a hike! 🏞️ #nature #hiking',
+                    image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80'
+                },
+                {
+                    content: 'Working on a new project. Can\'t wait to share it with you all! 💻 #coding',
+                    image: ''
+                }
+            ];
+            
+            const randomPost = simulatedPosts[Math.floor(Math.random() * simulatedPosts.length)];
+            
+            const newPost = {
+                id: 'post' + (getDatabaseItem('posts').length + 1),
+                userId: randomUser.id,
+                content: randomPost.content,
+                image: randomPost.image,
+                likeCount: 0,
+                commentCount: 0,
+                createdAt: new Date().toISOString(),
+                likedBy: []
+            };
+            
+            addDatabaseItem('posts', newPost);
+            
+            if (currentPage === 'homePage') {
+                loadFeed();
+            }
         }
 
         // Initialize the app when the DOM is loaded

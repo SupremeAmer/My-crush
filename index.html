@@ -11,6 +11,10 @@
             --primary-color: #1da1f2; /* Twitter blue */
             --primary-light: #8ecdf7;
             --primary-dark: #1a91da;
+            --instagram-color: #e1306c;
+            --whatsapp-color: #25d366;
+            --facebook-color: #3b5998;
+            --telegram-color: #0088cc;
             --secondary-color: #17bf63; /* Twitter green */
             --text-color: #14171a;
             --bg-color: #f5f8fa;
@@ -19,8 +23,9 @@
             --success-color: #17bf63;
             --error-color: #e0245e;
             --warning-color: #ffad1f;
-            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
             --transition: all 0.3s ease;
+            --story-border: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
         }
 
         [data-theme="dark"] {
@@ -28,7 +33,7 @@
             --bg-color: #15202b;
             --card-bg: #192734;
             --border-color: #38444d;
-            --shadow: 0 2px 4px rgba(0,0,0,0.4);
+            --shadow: 0 2px 10px rgba(0,0,0,0.4);
         }
 
         * {
@@ -75,6 +80,7 @@
             align-items: center;
             box-shadow: var(--shadow);
             z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
         .logo {
@@ -101,6 +107,17 @@
             font-size: 1.2rem;
             color: var(--text-color);
             margin-left: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(29, 161, 242, 0.1);
         }
 
         .tweet-btn {
@@ -110,6 +127,11 @@
             padding: 8px 16px;
             font-weight: bold;
             margin-left: 15px;
+            transition: var(--transition);
+        }
+
+        .tweet-btn:hover {
+            background-color: var(--primary-dark);
         }
 
         /* Navigation */
@@ -122,8 +144,9 @@
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
-            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
         .nav-item {
@@ -133,10 +156,14 @@
             font-size: 0.8rem;
             color: var(--text-color);
             position: relative;
+            padding: 5px 10px;
+            border-radius: 15px;
+            transition: var(--transition);
         }
 
         .nav-item.active {
             color: var(--primary-color);
+            background-color: rgba(29, 161, 242, 0.1);
         }
 
         .nav-icon {
@@ -167,6 +194,11 @@
             margin-bottom: 15px;
             overflow: hidden;
             border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
         .post-card {
@@ -283,10 +315,17 @@
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 10px;
             background-color: var(--card-bg);
             color: var(--text-color);
             font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
         }
 
         .form-textarea {
@@ -315,6 +354,26 @@
 
         .btn-secondary {
             background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-instagram {
+            background-color: var(--instagram-color);
+            color: white;
+        }
+
+        .btn-whatsapp {
+            background-color: var(--whatsapp-color);
+            color: white;
+        }
+
+        .btn-facebook {
+            background-color: var(--facebook-color);
+            color: white;
+        }
+
+        .btn-telegram {
+            background-color: var(--telegram-color);
             color: white;
         }
 
@@ -361,6 +420,7 @@
             border-bottom: 2px solid transparent;
             cursor: pointer;
             font-weight: bold;
+            transition: var(--transition);
         }
 
         .auth-tab.active {
@@ -373,6 +433,7 @@
             height: calc(100vh - 180px);
             overflow-y: auto;
             padding: 10px;
+            background-color: var(--bg-color);
         }
 
         .message {
@@ -382,6 +443,12 @@
             max-width: 80%;
             word-wrap: break-word;
             position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .message.sent {
@@ -431,6 +498,11 @@
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
+            transition: var(--transition);
+        }
+
+        .notification-item:hover {
+            background-color: rgba(29, 161, 242, 0.05);
         }
 
         .notification-item.unread {
@@ -462,6 +534,8 @@
             border-radius: 16px 16px 0 0;
             margin: -20px -20px 20px -20px;
             background-image: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            background-size: cover;
+            background-position: center;
         }
 
         .profile-avatar {
@@ -487,6 +561,13 @@
         .stat {
             text-align: center;
             cursor: pointer;
+            transition: var(--transition);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .stat:hover {
+            background-color: rgba(29, 161, 242, 0.1);
         }
 
         .stat-value {
@@ -518,6 +599,13 @@
             color: var(--text-color);
             font-size: 1rem;
             padding-left: 45px;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
         }
 
         .search-icon {
@@ -537,6 +625,11 @@
             align-items: center;
             padding: 10px 15px;
             border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .user-item:hover {
+            background-color: rgba(29, 161, 242, 0.05);
         }
 
         /* Trending section */
@@ -588,6 +681,11 @@
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
+            transition: var(--transition);
+        }
+
+        .follow-item:hover {
+            background-color: rgba(29, 161, 242, 0.05);
         }
 
         .follow-info {
@@ -655,6 +753,134 @@
             background-color: var(--primary-color);
             border-radius: 2px;
             margin-top: 5px;
+        }
+
+        /* Stories */
+        .stories-container {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin-bottom: 15px;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .stories-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
+
+        .story {
+            flex: 0 0 auto;
+            width: 80px;
+            margin: 0 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .story-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            padding: 2px;
+            background: var(--story-border);
+            margin: 0 auto;
+        }
+
+        .story-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid var(--card-bg);
+        }
+
+        .story-username {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Instagram-style post */
+        .instagram-post {
+            border-radius: 0;
+            margin-bottom: 20px;
+        }
+
+        .instagram-post .post-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .instagram-post .post-image {
+            border-radius: 0;
+            max-height: none;
+        }
+
+        .instagram-post .post-actions {
+            padding: 10px 15px;
+        }
+
+        /* WhatsApp-style chat */
+        .whatsapp-chat {
+            background-color: #e5ddd5;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23aaaaaa' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        .whatsapp-message.sent {
+            background-color: #d9fdd3;
+            border-top-right-radius: 0;
+        }
+
+        .whatsapp-message.received {
+            background-color: white;
+            border-top-left-radius: 0;
+        }
+
+        /* Telegram-style chat */
+        .telegram-chat {
+            background-color: #e6ebf5;
+        }
+
+        .telegram-message.sent {
+            background-color: #e3ffc7;
+            border-top-right-radius: 0;
+        }
+
+        .telegram-message.received {
+            background-color: white;
+            border-top-left-radius: 0;
+        }
+
+        /* Facebook-style post */
+        .facebook-post {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .facebook-post .post-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+        }
+
+        .facebook-post .post-image {
+            border-radius: 0;
+            max-height: none;
+        }
+
+        .facebook-post .post-actions {
+            padding: 10px 15px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .facebook-post .action-btn {
+            flex: 1;
+            justify-content: center;
         }
 
         /* Utilities */
@@ -744,6 +970,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            animation: fadeIn 0.3s ease;
         }
 
         .modal {
@@ -754,6 +981,12 @@
             padding: 20px;
             max-height: 90vh;
             overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .modal-header {
@@ -777,6 +1010,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: var(--transition);
         }
 
         .close-btn:hover {
@@ -886,6 +1120,11 @@
             font-size: 1.5rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             z-index: 99;
+            transition: var(--transition);
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
         }
 
         /* Character counter */
@@ -902,6 +1141,93 @@
 
         .char-counter.over-limit {
             color: #e0245e;
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .toast.success {
+            background-color: var(--success-color);
+        }
+
+        .toast.error {
+            background-color: var(--error-color);
+        }
+
+        /* Online status indicator */
+        .online-status {
+            width: 12px;
+            height: 12px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            border: 2px solid var(--card-bg);
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+
+        /* Reaction emojis */
+        .reactions {
+            display: flex;
+            margin-top: 5px;
+        }
+
+        .reaction {
+            margin-right: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            padding: 10px;
+            background-color: var(--card-bg);
+            border-radius: 18px;
+            width: fit-content;
+            margin-bottom: 10px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #657786;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-5px);
+            }
         }
     </style>
 </head>
@@ -941,25 +1267,8 @@
                 <div class="trending-header">
                     Trends for you
                 </div>
-                <div class="trending-item">
-                    <div class="trending-category">Trending in Technology</div>
-                    <div class="trending-name">#WebDevelopment</div>
-                    <div class="trending-count">50.5K Tweets</div>
-                </div>
-                <div class="trending-item">
-                    <div class="trending-category">Trending Worldwide</div>
-                    <div class="trending-name">#MondayMotivation</div>
-                    <div class="trending-count">120K Tweets</div>
-                </div>
-                <div class="trending-item">
-                    <div class="trending-category">Sports · Trending</div>
-                    <div class="trending-name">#ChampionsLeague</div>
-                    <div class="trending-count">35.2K Tweets</div>
-                </div>
-                <div class="trending-item">
-                    <div class="trending-category">Politics · Trending</div>
-                    <div class="trending-name">#ClimateAction</div>
-                    <div class="trending-count">18.7K Tweets</div>
+                <div id="trendingContainer">
+                    <div class="spinner"></div>
                 </div>
             </div>
 
@@ -967,29 +1276,8 @@
                 <div class="trending-header">
                     Who to follow
                 </div>
-                <div class="follow-item">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="avatar">
-                    <div class="follow-info">
-                        <div class="username">John Doe</div>
-                        <div class="user-handle">@johndoe</div>
-                    </div>
-                    <button class="btn btn-outline">Follow</button>
-                </div>
-                <div class="follow-item">
-                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="avatar">
-                    <div class="follow-info">
-                        <div class="username">Jane Smith</div>
-                        <div class="user-handle">@janesmith</div>
-                    </div>
-                    <button class="btn btn-outline">Follow</button>
-                </div>
-                <div class="follow-item">
-                    <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="User" class="avatar">
-                    <div class="follow-info">
-                        <div class="username">Mike Johnson</div>
-                        <div class="user-handle">@mikejohnson</div>
-                    </div>
-                    <button class="btn btn-outline">Follow</button>
+                <div id="suggestedUsers">
+                    <div class="spinner"></div>
                 </div>
             </div>
         </aside>
@@ -998,9 +1286,16 @@
         <div class="main-content">
             <!-- Home/Feed Page -->
             <section id="homePage" class="page active">
+                <!-- Stories Section -->
+                <div class="card">
+                    <div class="stories-container" id="storiesContainer">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
                 <div class="card">
                     <div class="user-info" style="padding: 15px 15px 0;">
-                        <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" class="avatar">
+                        <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" class="avatar" id="currentUserAvatar">
                         <div style="flex: 1;">
                             <input type="text" class="form-input" placeholder="What's happening?" id="quickTweetInput">
                         </div>
@@ -1090,7 +1385,7 @@
             <!-- Profile Page -->
             <section id="profilePage" class="page">
                 <div class="card">
-                    <div class="profile-cover"></div>
+                    <div class="profile-cover" id="profileCover"></div>
                     <div class="profile-header">
                         <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile" class="profile-avatar" id="profileAvatar">
                         <h2 id="profileName">User Name</h2>
@@ -1187,9 +1482,6 @@
                         <button type="submit" class="btn btn-primary btn-block">Login</button>
                         <div class="text-center mt-2">
                             <button type="button" class="btn btn-secondary" id="googleLogin">Login with Google</button>
-                        </div>
-                        <div class="text-center mt-2">
-                            <button type="button" id="continueAsGuest">Continue as Guest</button>
                         </div>
                     </form>
 
@@ -1352,7 +1644,7 @@
     <script>
         // Appwrite Configuration
         // IMPORTANT: Replace these with your actual Appwrite project details
-        const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
+        const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
         const APPWRITE_PROJECT_ID = 'YOUR_PROJECT_ID'; // Replace with your Appwrite project ID
         
         // Database IDs (replace with your actual database and collection IDs)
@@ -1385,7 +1677,6 @@
         let currentPage = 'homePage';
         let currentPostId = null;
         let currentChatUser = null;
-        let appwriteConnected = false;
 
         // DOM Elements
         const pages = document.querySelectorAll('.page');
@@ -1396,11 +1687,6 @@
         // Initialize the app
         async function initApp() {
             try {
-                // Test Appwrite connection
-                await client.get();
-                appwriteConnected = true;
-                updateConnectionStatus('connected', 'Connected to Appwrite');
-                
                 // Set the theme
                 setTheme(currentTheme);
                 
@@ -1414,116 +1700,13 @@
                 if (currentUser) {
                     loadFeed();
                     updateUnreadCount();
+                    loadStories();
+                    loadTrending();
+                    loadSuggestedUsers();
                 }
             } catch (error) {
-                console.error('Appwrite connection failed:', error);
-                appwriteConnected = false;
-                updateConnectionStatus('disconnected', 'Appwrite connection failed - using demo mode');
-                
-                // Fall back to localStorage if Appwrite is not available
-                if (!localStorage.getItem('mycrush_users')) {
-                    initializeLocalStorage();
-                }
-                
-                setTheme(currentTheme);
-                checkAuthStatus();
-                setupEventListeners();
-                
-                // Load demo data
-                if (currentUser) {
-                    loadFeed();
-                    updateUnreadCount();
-                }
-            }
-        }
-
-        // Update connection status UI
-        function updateConnectionStatus(status, message) {
-            connectionStatus.textContent = message;
-            connectionStatus.className = `connection-status ${status}`;
-            connectionStatus.style.display = 'block';
-            
-            // Hide after 3 seconds
-            setTimeout(() => {
-                connectionStatus.style.display = 'none';
-            }, 3000);
-        }
-
-        // Initialize localStorage as fallback
-        function initializeLocalStorage() {
-            if (!localStorage.getItem('mycrush_users')) {
-                const demoUsers = [
-                    {
-                        $id: 'user1',
-                        name: 'Demo User',
-                        username: 'demouser',
-                        email: 'demo@example.com',
-                        password: 'password',
-                        bio: 'This is my bio',
-                        avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-                        cover: 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        $id: 'user2',
-                        name: 'Jane Smith',
-                        username: 'janesmith',
-                        email: 'jane@example.com',
-                        password: 'password',
-                        bio: 'Another demo user',
-                        avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-                        cover: 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-                        createdAt: new Date().toISOString()
-                    }
-                ];
-                localStorage.setItem('mycrush_users', JSON.stringify(demoUsers));
-            }
-
-            // Initialize other collections if needed
-            if (!localStorage.getItem('mycrush_posts')) {
-                const demoPosts = [
-                    {
-                        $id: 'post1',
-                        userId: 'user1',
-                        text: 'Just setting up my Twitter clone! #MyCrush #WebDev',
-                        imageFileId: null,
-                        likeCount: 5,
-                        commentCount: 2,
-                        retweetCount: 3,
-                        likedBy: ['user2'],
-                        retweetedBy: ['user2'],
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        $id: 'post2',
-                        userId: 'user2',
-                        text: 'Loving this new social media platform! 😍',
-                        imageFileId: null,
-                        likeCount: 10,
-                        commentCount: 3,
-                        retweetCount: 1,
-                        likedBy: ['user1'],
-                        retweetedBy: [],
-                        createdAt: new Date(Date.now() - 3600000).toISOString()
-                    }
-                ];
-                localStorage.setItem('mycrush_posts', JSON.stringify(demoPosts));
-            }
-            
-            if (!localStorage.getItem('mycrush_comments')) {
-                localStorage.setItem('mycrush_comments', JSON.stringify([]));
-            }
-            if (!localStorage.getItem('mycrush_follows')) {
-                localStorage.setItem('mycrush_follows', JSON.stringify([
-                    { $id: 'follow1', followerId: 'user1', followingId: 'user2', createdAt: new Date().toISOString() },
-                    { $id: 'follow2', followerId: 'user2', followingId: 'user1', createdAt: new Date().toISOString() }
-                ]));
-            }
-            if (!localStorage.getItem('mycrush_messages')) {
-                localStorage.setItem('mycrush_messages', JSON.stringify([]));
-            }
-            if (!localStorage.getItem('mycrush_notifications')) {
-                localStorage.setItem('mycrush_notifications', JSON.stringify([]));
+                console.error('App initialization error:', error);
+                showToast('Error initializing app', 'error');
             }
         }
 
@@ -1536,60 +1719,41 @@
 
         // Check authentication status
         async function checkAuthStatus() {
-            if (appwriteConnected) {
+            try {
+                const user = await account.get();
+                currentUser = {
+                    $id: user.$id,
+                    name: user.name,
+                    email: user.email,
+                };
+                
+                // Get user profile from database
                 try {
-                    const user = await account.get();
+                    const userProfile = await databases.getDocument(
+                        DATABASE_ID,
+                        USERS_COLLECTION_ID,
+                        user.$id
+                    );
+                    
                     currentUser = {
-                        $id: user.$id,
-                        name: user.name,
-                        email: user.email,
-                        // Additional user data will be fetched from the database
+                        ...currentUser,
+                        ...userProfile
                     };
-                    
-                    // Get user profile from database
-                    try {
-                        const userProfile = await databases.getDocument(
-                            DATABASE_ID,
-                            USERS_COLLECTION_ID,
-                            user.$id
-                        );
-                        
-                        currentUser = {
-                            ...currentUser,
-                            ...userProfile
-                        };
-                    } catch (error) {
-                        console.log('User profile not found in database, creating one...');
-                        // Create user profile in database
-                        await createUserProfile(user);
-                    }
-                    
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    showPage('homePage');
-                    loadFeed();
-                    updateUnreadCount();
                 } catch (error) {
-                    console.log('No active session:', error);
-                    showPage('authPage');
+                    console.log('User profile not found in database, creating one...');
+                    // Create user profile in database
+                    await createUserProfile(user);
                 }
-            } else {
-                // Fallback to localStorage
-                const userData = localStorage.getItem('currentUser');
-                if (userData) {
-                    currentUser = JSON.parse(userData);
-                    showPage('homePage');
-                    loadFeed();
-                    updateUnreadCount();
-                } else {
-                    showPage('authPage');
-                }
+                
+                showPage('homePage');
+            } catch (error) {
+                console.log('No active session:', error);
+                showPage('authPage');
             }
         }
 
         // Create user profile in database
         async function createUserProfile(user) {
-            if (!appwriteConnected) return;
-            
             try {
                 const userProfile = {
                     userId: user.$id,
@@ -1614,6 +1778,7 @@
                 };
             } catch (error) {
                 console.error('Error creating user profile:', error);
+                throw error;
             }
         }
 
@@ -1764,11 +1929,6 @@
                 loginWithGoogle();
             });
             
-            // Continue as guest
-            document.getElementById('continueAsGuest').addEventListener('click', () => {
-                continueAsGuest();
-            });
-            
             // New post form
             document.getElementById('newPostForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -1889,133 +2049,73 @@
             }, 5000);
         }
 
+        // Show toast notification
+        function showToast(message, type = 'default') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
         // Login user
         async function loginUser(email, password) {
-            if (appwriteConnected) {
-                try {
-                    await account.createEmailSession(email, password);
-                    await checkAuthStatus();
-                } catch (error) {
-                    console.error('Login error:', error);
-                    showError('loginError', 'Invalid email or password');
-                }
-            } else {
-                // Fallback to localStorage
-                const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
-                const user = users.find(u => u.email === email && u.password === password);
-                
-                if (user) {
-                    currentUser = { ...user };
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    showPage('homePage');
-                    loadFeed();
-                    updateUnreadCount();
-                } else {
-                    showError('loginError', 'Invalid email or password');
-                }
+            try {
+                await account.createEmailSession(email, password);
+                await checkAuthStatus();
+                showToast('Login successful!', 'success');
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('loginError', 'Invalid email or password');
             }
         }
 
         // Register user
         async function registerUser(name, username, email, password) {
-            if (appwriteConnected) {
-                try {
-                    // Create account in Appwrite
-                    await account.create('unique()', email, password, name);
-                    
-                    // Login the user
-                    await account.createEmailSession(email, password);
-                    
-                    // Create user profile in database
-                    const user = await account.get();
-                    await createUserProfile(user);
-                    
-                    await checkAuthStatus();
-                } catch (error) {
-                    console.error('Registration error:', error);
-                    showError('registerError', 'Registration failed. Please try again.');
-                }
-            } else {
-                // Fallback to localStorage
-                const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+            try {
+                // Create account in Appwrite
+                await account.create('unique()', email, password, name);
                 
-                // Check if user already exists
-                const existingUser = users.find(u => u.email === email || u.username === username);
+                // Login the user
+                await account.createEmailSession(email, password);
                 
-                if (existingUser) {
-                    showError('registerError', 'User with this email or username already exists');
-                    return;
-                }
+                // Create user profile in database
+                const user = await account.get();
+                await createUserProfile(user);
                 
-                // Create new user
-                const newUser = {
-                    $id: 'user' + (users.length + 1),
-                    name,
-                    username,
-                    email,
-                    password,
-                    bio: '',
-                    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-                    cover: 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-                    createdAt: new Date().toISOString()
-                };
-                
-                users.push(newUser);
-                localStorage.setItem('mycrush_users', JSON.stringify(users));
-                
-                currentUser = { ...newUser };
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                showPage('homePage');
-                loadFeed();
+                await checkAuthStatus();
+                showToast('Registration successful!', 'success');
+            } catch (error) {
+                console.error('Registration error:', error);
+                showError('registerError', 'Registration failed. Please try again.');
             }
         }
 
         // Login with Google
         async function loginWithGoogle() {
-            if (appwriteConnected) {
-                try {
-                    // Redirect to Google OAuth
-                    account.createOAuth2Session('google', `${window.location.origin}/success.html`, `${window.location.origin}/failure.html`);
-                } catch (error) {
-                    console.error('Google login error:', error);
-                    showError('loginError', 'Google login failed');
-                }
-            } else {
-                alert('Google login requires Appwrite backend connection');
+            try {
+                // Redirect to Google OAuth
+                account.createOAuth2Session('google', `${window.location.origin}/success.html`, `${window.location.origin}/failure.html`);
+            } catch (error) {
+                console.error('Google login error:', error);
+                showError('loginError', 'Google login failed');
             }
-        }
-
-        // Continue as guest
-        function continueAsGuest() {
-            // Create a temporary guest user
-            currentUser = {
-                $id: 'guest',
-                name: 'Guest User',
-                username: 'guest',
-                email: '',
-                bio: 'I am a guest user',
-                avatar: 'https://randomuser.me/api/portraits/men/0.jpg',
-                cover: 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-                isGuest: true
-            };
-            
-            showPage('homePage');
-            loadFeed();
         }
 
         // Logout user
         async function logoutUser() {
-            if (appwriteConnected) {
-                try {
-                    await account.deleteSession('current');
-                } catch (error) {
-                    console.error('Logout error:', error);
-                }
+            try {
+                await account.deleteSession('current');
+            } catch (error) {
+                console.error('Logout error:', error);
             }
             
             currentUser = null;
-            localStorage.removeItem('currentUser');
             showPage('authPage');
+            showToast('Logged out successfully');
         }
 
         // Load feed posts
@@ -2037,46 +2137,29 @@
             feedContainer.innerHTML = '<div class="spinner"></div>';
             
             try {
-                let posts = [];
+                // Get posts from followed users
+                const follows = await databases.listDocuments(
+                    DATABASE_ID,
+                    FOLLOWS_COLLECTION_ID,
+                    [Appwrite.Query.equal('followerId', currentUser.$id)]
+                );
                 
-                if (appwriteConnected) {
-                    // Get posts from followed users
-                    const follows = await databases.listDocuments(
-                        DATABASE_ID,
-                        FOLLOWS_COLLECTION_ID,
-                        [Appwrite.Query.equal('followerId', currentUser.$id)]
-                    );
-                    
-                    const followedUserIds = follows.documents.map(f => f.followingId);
-                    followedUserIds.push(currentUser.$id); // Include current user's posts
-                    
-                    // Get posts from followed users
-                    posts = await databases.listDocuments(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
-                        [Appwrite.Query.equal('userId', followedUserIds)]
-                    );
-                    
-                    posts = posts.documents;
-                } else {
-                    // Fallback to localStorage
-                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
-                    const followedUserIds = follows
-                        .filter(f => f.followerId === currentUser.$id)
-                        .map(f => f.followingId);
-                    
-                    followedUserIds.push(currentUser.$id);
-                    
-                    const allPosts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
-                    posts = allPosts.filter(post => followedUserIds.includes(post.userId));
-                }
+                const followedUserIds = follows.documents.map(f => f.followingId);
+                followedUserIds.push(currentUser.$id); // Include current user's posts
+                
+                // Get posts from followed users
+                const posts = await databases.listDocuments(
+                    DATABASE_ID,
+                    POSTS_COLLECTION_ID,
+                    [Appwrite.Query.equal('userId', followedUserIds)]
+                );
                 
                 // Sort posts by date
-                posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                posts.documents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 feedContainer.innerHTML = '';
                 
-                if (posts.length === 0) {
+                if (posts.documents.length === 0) {
                     feedContainer.innerHTML = `
                         <div class="card text-center">
                             <div style="padding: 40px 20px;">
@@ -2090,28 +2173,18 @@
                     return;
                 }
                 
-                for (const post of posts) {
+                for (const post of posts.documents) {
                     let user;
                     
-                    if (appwriteConnected) {
-                        try {
-                            user = await databases.getDocument(
-                                DATABASE_ID,
-                                USERS_COLLECTION_ID,
-                                post.userId
-                            );
-                        } catch (error) {
-                            console.error('Error fetching user:', error);
-                            user = {
-                                name: 'Unknown User',
-                                username: 'unknown',
-                                avatar: 'https://randomuser.me/api/portraits/men/0.jpg'
-                            };
-                        }
-                    } else {
-                        // Fallback to localStorage
-                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
-                        user = users.find(u => u.$id === post.userId) || {
+                    try {
+                        user = await databases.getDocument(
+                            DATABASE_ID,
+                            USERS_COLLECTION_ID,
+                            post.userId
+                        );
+                    } catch (error) {
+                        console.error('Error fetching user:', error);
+                        user = {
                             name: 'Unknown User',
                             username: 'unknown',
                             avatar: 'https://randomuser.me/api/portraits/men/0.jpg'
@@ -2139,7 +2212,7 @@
                         </div>
                         ` : ''}
                         <div class="user-info">
-                            <img src="${user.avatar}" alt="${user.name}" class="avatar">
+                            <img src="${user.avatar || 'https://randomuser.me/api/portraits/men/0.jpg'}" alt="${user.name}" class="avatar">
                             <div>
                                 <div class="username">${user.name} <span class="user-handle">@${user.username}</span></div>
                                 <div class="timestamp">${formatDate(post.createdAt)}</div>
@@ -2202,6 +2275,177 @@
             }
         }
 
+        // Load stories
+        async function loadStories() {
+            const storiesContainer = document.getElementById('storiesContainer');
+            storiesContainer.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                // Get users that the current user follows
+                const follows = await databases.listDocuments(
+                    DATABASE_ID,
+                    FOLLOWS_COLLECTION_ID,
+                    [Appwrite.Query.equal('followerId', currentUser.$id)]
+                );
+                
+                const followedUserIds = follows.documents.map(f => f.followingId);
+                
+                // Get users with stories
+                const users = await databases.listDocuments(
+                    DATABASE_ID,
+                    USERS_COLLECTION_ID,
+                    [Appwrite.Query.equal('userId', followedUserIds)]
+                );
+                
+                storiesContainer.innerHTML = '';
+                
+                // Add current user's story first
+                const currentUserStory = document.createElement('div');
+                currentUserStory.className = 'story';
+                currentUserStory.innerHTML = `
+                    <div class="story-avatar">
+                        <img src="${currentUser.avatar || 'https://randomuser.me/api/portraits/men/0.jpg'}" alt="${currentUser.name}">
+                    </div>
+                    <div class="story-username">Your Story</div>
+                `;
+                storiesContainer.appendChild(currentUserStory);
+                
+                // Add other users' stories
+                for (const user of users.documents) {
+                    const story = document.createElement('div');
+                    story.className = 'story';
+                    story.innerHTML = `
+                        <div class="story-avatar">
+                            <img src="${user.avatar || 'https://randomuser.me/api/portraits/men/0.jpg'}" alt="${user.name}">
+                        </div>
+                        <div class="story-username">${user.name}</div>
+                    `;
+                    storiesContainer.appendChild(story);
+                }
+            } catch (error) {
+                console.error('Error loading stories:', error);
+                storiesContainer.innerHTML = '<p class="text-center">Error loading stories</p>';
+            }
+        }
+
+        // Load trending topics
+        async function loadTrending() {
+            const trendingContainer = document.getElementById('trendingContainer');
+            
+            try {
+                // In a real app, you would fetch trending topics from your backend
+                // For now, we'll use static data
+                
+                trendingContainer.innerHTML = `
+                    <div class="trending-item">
+                        <div class="trending-category">Trending in Technology</div>
+                        <div class="trending-name">#WebDevelopment</div>
+                        <div class="trending-count">50.5K Tweets</div>
+                    </div>
+                    <div class="trending-item">
+                        <div class="trending-category">Trending Worldwide</div>
+                        <div class="trending-name">#MondayMotivation</div>
+                        <div class="trending-count">120K Tweets</div>
+                    </div>
+                    <div class="trending-item">
+                        <div class="trending-category">Sports · Trending</div>
+                        <div class="trending-name">#ChampionsLeague</div>
+                        <div class="trending-count">35.2K Tweets</div>
+                    </div>
+                    <div class="trending-item">
+                        <div class="trending-category">Politics · Trending</div>
+                        <div class="trending-name">#ClimateAction</div>
+                        <div class="trending-count">18.7K Tweets</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading trending:', error);
+                trendingContainer.innerHTML = '<p class="text-center">Error loading trends</p>';
+            }
+        }
+
+        // Load suggested users
+        async function loadSuggestedUsers() {
+            const suggestedUsersContainer = document.getElementById('suggestedUsers');
+            
+            try {
+                // Get random users (not followed by current user)
+                const users = await databases.listDocuments(
+                    DATABASE_ID,
+                    USERS_COLLECTION_ID,
+                    [Appwrite.Query.notEqual('userId', currentUser.$id)]
+                );
+                
+                // Get users that current user follows
+                const follows = await databases.listDocuments(
+                    DATABASE_ID,
+                    FOLLOWS_COLLECTION_ID,
+                    [Appwrite.Query.equal('followerId', currentUser.$id)]
+                );
+                
+                const followedUserIds = follows.documents.map(f => f.followingId);
+                
+                // Filter out users that current user already follows
+                const suggestedUsers = users.documents.filter(user => !followedUserIds.includes(user.userId));
+                
+                suggestedUsersContainer.innerHTML = '';
+                
+                // Show up to 3 suggested users
+                for (let i = 0; i < Math.min(3, suggestedUsers.length); i++) {
+                    const user = suggestedUsers[i];
+                    
+                    const userItem = document.createElement('div');
+                    userItem.className = 'follow-item';
+                    userItem.innerHTML = `
+                        <img src="${user.avatar || 'https://randomuser.me/api/portraits/men/0.jpg'}" alt="User" class="avatar">
+                        <div class="follow-info">
+                            <div class="username">${user.name}</div>
+                            <div class="user-handle">@${user.username}</div>
+                        </div>
+                        <button class="btn btn-outline" data-user-id="${user.userId}">Follow</button>
+                    `;
+                    
+                    // Add follow functionality
+                    const followBtn = userItem.querySelector('.btn-outline');
+                    followBtn.addEventListener('click', () => {
+                        followUser(user.userId);
+                    });
+                    
+                    suggestedUsersContainer.appendChild(userItem);
+                }
+            } catch (error) {
+                console.error('Error loading suggested users:', error);
+                suggestedUsersContainer.innerHTML = '<p class="text-center">Error loading suggestions</p>';
+            }
+        }
+
+        // Follow user
+        async function followUser(userId) {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            try {
+                await databases.createDocument(
+                    DATABASE_ID,
+                    FOLLOWS_COLLECTION_ID,
+                    'unique()',
+                    {
+                        followerId: currentUser.$id,
+                        followingId: userId,
+                        createdAt: new Date().toISOString()
+                    }
+                );
+                
+                showToast('User followed successfully');
+                loadSuggestedUsers();
+            } catch (error) {
+                console.error('Error following user:', error);
+                showToast('Error following user', 'error');
+            }
+        }
+
         // Toggle like on a post
         async function toggleLike(postId) {
             if (!currentUser) {
@@ -2210,100 +2454,57 @@
             }
             
             try {
-                if (appwriteConnected) {
-                    // Get the post
-                    const post = await databases.getDocument(
+                // Get the post
+                const post = await databases.getDocument(
+                    DATABASE_ID,
+                    POSTS_COLLECTION_ID,
+                    postId
+                );
+                
+                const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
+                
+                if (isLiked) {
+                    // Unlike the post
+                    const updatedLikedBy = post.likedBy.filter(id => id !== currentUser.$id);
+                    await databases.updateDocument(
                         DATABASE_ID,
                         POSTS_COLLECTION_ID,
-                        postId
+                        postId,
+                        {
+                            likedBy: updatedLikedBy,
+                            likeCount: post.likeCount - 1
+                        }
+                    );
+                } else {
+                    // Like the post
+                    const updatedLikedBy = [...(post.likedBy || []), currentUser.$id];
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        postId,
+                        {
+                            likedBy: updatedLikedBy,
+                            likeCount: post.likeCount + 1
+                        }
                     );
                     
-                    const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
-                    
-                    if (isLiked) {
-                        // Unlike the post
-                        const updatedLikedBy = post.likedBy.filter(id => id !== currentUser.$id);
-                        await databases.updateDocument(
+                    // Create notification if not the post owner
+                    if (post.userId !== currentUser.$id) {
+                        await databases.createDocument(
                             DATABASE_ID,
-                            POSTS_COLLECTION_ID,
-                            postId,
+                            NOTIFICATIONS_COLLECTION_ID,
+                            'unique()',
                             {
-                                likedBy: updatedLikedBy,
-                                likeCount: post.likeCount - 1
-                            }
-                        );
-                    } else {
-                        // Like the post
-                        const updatedLikedBy = [...(post.likedBy || []), currentUser.$id];
-                        await databases.updateDocument(
-                            DATABASE_ID,
-                            POSTS_COLLECTION_ID,
-                            postId,
-                            {
-                                likedBy: updatedLikedBy,
-                                likeCount: post.likeCount + 1
+                                userId: post.userId,
+                                type: 'like',
+                                sourceUserId: currentUser.$id,
+                                postId: postId,
+                                read: false,
+                                createdAt: new Date().toISOString()
                             }
                         );
                         
-                        // Create notification if not the post owner
-                        if (post.userId !== currentUser.$id) {
-                            await databases.createDocument(
-                                DATABASE_ID,
-                                NOTIFICATIONS_COLLECTION_ID,
-                                'unique()',
-                                {
-                                    userId: post.userId,
-                                    type: 'like',
-                                    sourceUserId: currentUser.$id,
-                                    postId: postId,
-                                    read: false,
-                                    createdAt: new Date().toISOString()
-                                }
-                            );
-                            
-                            updateUnreadCount();
-                        }
-                    }
-                } else {
-                    // Fallback to localStorage
-                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
-                    const postIndex = posts.findIndex(p => p.$id === postId);
-                    
-                    if (postIndex !== -1) {
-                        const post = posts[postIndex];
-                        
-                        if (!post.likedBy) {
-                            post.likedBy = [];
-                        }
-                        
-                        const isLiked = post.likedBy.includes(currentUser.$id);
-                        
-                        if (isLiked) {
-                            post.likedBy = post.likedBy.filter(id => id !== currentUser.$id);
-                            post.likeCount--;
-                        } else {
-                            post.likedBy.push(currentUser.$id);
-                            post.likeCount++;
-                            
-                            // Create notification
-                            if (post.userId !== currentUser.$id) {
-                                const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
-                                notifications.push({
-                                    $id: 'notif' + (notifications.length + 1),
-                                    userId: post.userId,
-                                    type: 'like',
-                                    sourceUserId: currentUser.$id,
-                                    postId: postId,
-                                    read: false,
-                                    createdAt: new Date().toISOString()
-                                });
-                                localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
-                                updateUnreadCount();
-                            }
-                        }
-                        
-                        posts[postIndex] = post;
-                        localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                        updateUnreadCount();
                     }
                 }
                 
@@ -2315,6 +2516,7 @@
                 }
             } catch (error) {
                 console.error('Error toggling like:', error);
+                showToast('Error toggling like', 'error');
             }
         }
 
@@ -2326,136 +2528,77 @@
             }
             
             try {
-                if (appwriteConnected) {
-                    // Get the post
-                    const post = await databases.getDocument(
+                // Get the post
+                const post = await databases.getDocument(
+                    DATABASE_ID,
+                    POSTS_COLLECTION_ID,
+                    postId
+                );
+                
+                const isRetweeted = post.retweetedBy && post.retweetedBy.includes(currentUser.$id);
+                
+                if (isRetweeted) {
+                    // Unretweet the post
+                    const updatedRetweetedBy = post.retweetedBy.filter(id => id !== currentUser.$id);
+                    await databases.updateDocument(
                         DATABASE_ID,
                         POSTS_COLLECTION_ID,
-                        postId
+                        postId,
+                        {
+                            retweetedBy: updatedRetweetedBy,
+                            retweetCount: post.retweetCount - 1
+                        }
+                    );
+                } else {
+                    // Retweet the post
+                    const updatedRetweetedBy = [...(post.retweetedBy || []), currentUser.$id];
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        postId,
+                        {
+                            retweetedBy: updatedRetweetedBy,
+                            retweetCount: post.retweetCount + 1
+                        }
                     );
                     
-                    const isRetweeted = post.retweetedBy && post.retweetedBy.includes(currentUser.$id);
+                    // Create a retweet post
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        'unique()',
+                        {
+                            userId: currentUser.$id,
+                            text: post.text,
+                            imageFileId: post.imageFileId,
+                            isRetweet: true,
+                            originalPostId: postId,
+                            likeCount: 0,
+                            commentCount: 0,
+                            retweetCount: 0,
+                            likedBy: [],
+                            retweetedBy: [],
+                            createdAt: new Date().toISOString()
+                        }
+                    );
                     
-                    if (isRetweeted) {
-                        // Unretweet the post
-                        const updatedRetweetedBy = post.retweetedBy.filter(id => id !== currentUser.$id);
-                        await databases.updateDocument(
-                            DATABASE_ID,
-                            POSTS_COLLECTION_ID,
-                            postId,
-                            {
-                                retweetedBy: updatedRetweetedBy,
-                                retweetCount: post.retweetCount - 1
-                            }
-                        );
-                    } else {
-                        // Retweet the post
-                        const updatedRetweetedBy = [...(post.retweetedBy || []), currentUser.$id];
-                        await databases.updateDocument(
-                            DATABASE_ID,
-                            POSTS_COLLECTION_ID,
-                            postId,
-                            {
-                                retweetedBy: updatedRetweetedBy,
-                                retweetCount: post.retweetCount + 1
-                            }
-                        );
-                        
-                        // Create a retweet post
+                    // Create notification if not the post owner
+                    if (post.userId !== currentUser.$id) {
                         await databases.createDocument(
                             DATABASE_ID,
-                            POSTS_COLLECTION_ID,
+                            NOTIFICATIONS_COLLECTION_ID,
                             'unique()',
                             {
-                                userId: currentUser.$id,
-                                text: post.text,
-                                imageFileId: post.imageFileId,
-                                isRetweet: true,
-                                originalPostId: postId,
-                                likeCount: 0,
-                                commentCount: 0,
-                                retweetCount: 0,
-                                likedBy: [],
-                                retweetedBy: [],
+                                userId: post.userId,
+                                type: 'retweet',
+                                sourceUserId: currentUser.$id,
+                                postId: postId,
+                                read: false,
                                 createdAt: new Date().toISOString()
                             }
                         );
                         
-                        // Create notification if not the post owner
-                        if (post.userId !== currentUser.$id) {
-                            await databases.createDocument(
-                                DATABASE_ID,
-                                NOTIFICATIONS_COLLECTION_ID,
-                                'unique()',
-                                {
-                                    userId: post.userId,
-                                    type: 'retweet',
-                                    sourceUserId: currentUser.$id,
-                                    postId: postId,
-                                    read: false,
-                                    createdAt: new Date().toISOString()
-                                }
-                            );
-                            
-                            updateUnreadCount();
-                        }
-                    }
-                } else {
-                    // Fallback to localStorage
-                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
-                    const postIndex = posts.findIndex(p => p.$id === postId);
-                    
-                    if (postIndex !== -1) {
-                        const post = posts[postIndex];
-                        
-                        if (!post.retweetedBy) {
-                            post.retweetedBy = [];
-                        }
-                        
-                        const isRetweeted = post.retweetedBy.includes(currentUser.$id);
-                        
-                        if (isRetweeted) {
-                            post.retweetedBy = post.retweetedBy.filter(id => id !== currentUser.$id);
-                            post.retweetCount--;
-                        } else {
-                            post.retweetedBy.push(currentUser.$id);
-                            post.retweetCount++;
-                            
-                            // Create a retweet post
-                            posts.push({
-                                $id: 'post' + (posts.length + 1),
-                                userId: currentUser.$id,
-                                text: post.text,
-                                imageFileId: post.imageFileId,
-                                isRetweet: true,
-                                originalPostId: postId,
-                                likeCount: 0,
-                                commentCount: 0,
-                                retweetCount: 0,
-                                likedBy: [],
-                                retweetedBy: [],
-                                createdAt: new Date().toISOString()
-                            });
-                            
-                            // Create notification
-                            if (post.userId !== currentUser.$id) {
-                                const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
-                                notifications.push({
-                                    $id: 'notif' + (notifications.length + 1),
-                                    userId: post.userId,
-                                    type: 'retweet',
-                                    sourceUserId: currentUser.$id,
-                                    postId: postId,
-                                    read: false,
-                                    createdAt: new Date().toISOString()
-                                });
-                                localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
-                                updateUnreadCount();
-                            }
-                        }
-                        
-                        posts[postIndex] = post;
-                        localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                        updateUnreadCount();
                     }
                 }
                 
@@ -2467,6 +2610,7 @@
                 }
             } catch (error) {
                 console.error('Error retweeting post:', error);
+                showToast('Error retweeting post', 'error');
             }
         }
 
@@ -2489,51 +2633,32 @@
             commentsContainer.innerHTML = '<div class="spinner"></div>';
             
             try {
-                let comments = [];
-                
-                if (appwriteConnected) {
-                    const result = await databases.listDocuments(
-                        DATABASE_ID,
-                        COMMENTS_COLLECTION_ID,
-                        [Appwrite.Query.equal('postId', currentPostId)]
-                    );
-                    comments = result.documents;
-                } else {
-                    // Fallback to localStorage
-                    const allComments = JSON.parse(localStorage.getItem('mycrush_comments') || '[]');
-                    comments = allComments.filter(c => c.postId === currentPostId);
-                }
+                const comments = await databases.listDocuments(
+                    DATABASE_ID,
+                    COMMENTS_COLLECTION_ID,
+                    [Appwrite.Query.equal('postId', currentPostId)]
+                );
                 
                 // Sort comments by date
-                comments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                comments.documents.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
                 
                 commentsContainer.innerHTML = '';
                 
-                if (comments.length === 0) {
+                if (comments.documents.length === 0) {
                     commentsContainer.innerHTML = '<p class="text-center">No comments yet</p>';
                 } else {
-                    for (const comment of comments) {
+                    for (const comment of comments.documents) {
                         let user;
                         
-                        if (appwriteConnected) {
-                            try {
-                                user = await databases.getDocument(
-                                    DATABASE_ID,
-                                    USERS_COLLECTION_ID,
-                                    comment.userId
-                                );
-                            } catch (error) {
-                                console.error('Error fetching user:', error);
-                                user = {
-                                    name: 'Unknown User',
-                                    username: 'unknown',
-                                    avatar: 'https://randomuser.me/api/portraits/men/0.jpg'
-                                };
-                            }
-                        } else {
-                            // Fallback to localStorage
-                            const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
-                            user = users.find(u => u.$id === comment.userId) || {
+                        try {
+                            user = await databases.getDocument(
+                                DATABASE_ID,
+                                USERS_COLLECTION_ID,
+                                comment.userId
+                            );
+                        } catch (error) {
+                            console.error('Error fetching user:', error);
+                            user = {
                                 name: 'Unknown User',
                                 username: 'unknown',
                                 avatar: 'https://randomuser.me/api/portraits/men/0.jpg'
@@ -2543,7 +2668,7 @@
                         const commentEl = document.createElement('div');
                         commentEl.className = 'comment';
                         commentEl.innerHTML = `
-                            <img src="${user.avatar}" alt="${user.name}" class="comment-avatar">
+                            <img src="${user.avatar || 'https://randomuser.me/api/portraits/men/0.jpg'}" alt="${user.name}" class="comment-avatar">
                             <div class="comment-content">
                                 <div class="username">${user.name} <span class="user-handle">@${user.username}</span></div>
                                 <p>${comment.text}</p>
@@ -2572,92 +2697,52 @@
             if (!content) return;
             
             try {
-                if (appwriteConnected) {
-                    // Create comment
-                    await databases.createDocument(
-                        DATABASE_ID,
-                        COMMENTS_COLLECTION_ID,
-                        'unique()',
-                        {
-                            postId: currentPostId,
-                            userId: currentUser.$id,
-                            text: content,
-                            createdAt: new Date().toISOString()
-                        }
-                    );
-                    
-                    // Update post comment count
-                    const post = await databases.getDocument(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
-                        currentPostId
-                    );
-                    
-                    await databases.updateDocument(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
-                        currentPostId,
-                        {
-                            commentCount: (post.commentCount || 0) + 1
-                        }
-                    );
-                    
-                    // Create notification if not the post owner
-                    if (post.userId !== currentUser.$id) {
-                        await databases.createDocument(
-                            DATABASE_ID,
-                            NOTIFICATIONS_COLLECTION_ID,
-                            'unique()',
-                            {
-                                userId: post.userId,
-                                type: 'comment',
-                                sourceUserId: currentUser.$id,
-                                postId: currentPostId,
-                                read: false,
-                                createdAt: new Date().toISOString()
-                            }
-                        );
-                        
-                        updateUnreadCount();
-                    }
-                } else {
-                    // Fallback to localStorage
-                    const comments = JSON.parse(localStorage.getItem('mycrush_comments') || '[]');
-                    comments.push({
-                        $id: 'comment' + (comments.length + 1),
+                // Create comment
+                await databases.createDocument(
+                    DATABASE_ID,
+                    COMMENTS_COLLECTION_ID,
+                    'unique()',
+                    {
                         postId: currentPostId,
                         userId: currentUser.$id,
                         text: content,
                         createdAt: new Date().toISOString()
-                    });
-                    localStorage.setItem('mycrush_comments', JSON.stringify(comments));
-                    
-                    // Update post comment count
-                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
-                    const postIndex = posts.findIndex(p => p.$id === currentPostId);
-                    
-                    if (postIndex !== -1) {
-                        const post = posts[postIndex];
-                        post.commentCount = (post.commentCount || 0) + 1;
-                        posts[postIndex] = post;
-                        localStorage.setItem('mycrush_posts', JSON.stringify(posts));
-                        
-                        // Create notification
-                        if (post.userId !== currentUser.$id) {
-                            const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
-                            notifications.push({
-                                $id: 'notif' + (notifications.length + 1),
-                                userId: post.userId,
-                                type: 'comment',
-                                sourceUserId: currentUser.$id,
-                                postId: currentPostId,
-                                read: false,
-                                createdAt: new Date().toISOString()
-                            });
-                            localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
-                            updateUnreadCount();
-                        }
                     }
+                );
+                
+                // Update post comment count
+                const post = await databases.getDocument(
+                    DATABASE_ID,
+                    POSTS_COLLECTION_ID,
+                    currentPostId
+                );
+                
+                await databases.updateDocument(
+                    DATABASE_ID,
+                    POSTS_COLLECTION_ID,
+                    currentPostId,
+                    {
+                        commentCount: (post.commentCount || 0) + 1
+                    }
+                );
+                
+                // Create notification if not the post owner
+                if (post.userId !== currentUser.$id) {
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        NOTIFICATIONS_COLLECTION_ID,
+                        'unique()',
+                        {
+                            userId: post.userId,
+                            type: 'comment',
+                            sourceUserId: currentUser.$id,
+                            postId: currentPostId,
+                            read: false,
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                    
+                    updateUnreadCount();
                 }
                 
                 // Clear input and reload comments
@@ -2672,12 +2757,13 @@
                 }
             } catch (error) {
                 console.error('Error posting comment:', error);
+                showToast('Error posting comment', 'error');
             }
         }
 
         // Create a new post
         async function createPost(content, imageFile) {
-            if (!currentUser || currentUser.isGuest) {
+            if (!currentUser) {
                 alert('Please login to create a post');
                 showPage('authPage');
                 return;
@@ -2686,51 +2772,33 @@
             try {
                 let imageFileId = null;
                 
-                if (appwriteConnected) {
-                    // Upload image if provided
-                    if (imageFile) {
-                        const file = await storage.createFile(
-                            POST_IMAGES_BUCKET_ID,
-                            'unique()',
-                            imageFile
-                        );
-                        imageFileId = file.$id;
-                    }
-                    
-                    // Create post
-                    await databases.createDocument(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
+                // Upload image if provided
+                if (imageFile) {
+                    const file = await storage.createFile(
+                        POST_IMAGES_BUCKET_ID,
                         'unique()',
-                        {
-                            userId: currentUser.$id,
-                            text: content,
-                            imageFileId: imageFileId,
-                            likeCount: 0,
-                            commentCount: 0,
-                            retweetCount: 0,
-                            likedBy: [],
-                            retweetedBy: [],
-                            createdAt: new Date().toISOString()
-                        }
+                        imageFile
                     );
-                } else {
-                    // Fallback to localStorage
-                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
-                    posts.push({
-                        $id: 'post' + (posts.length + 1),
+                    imageFileId = file.$id;
+                }
+                
+                // Create post
+                await databases.createDocument(
+                    DATABASE_ID,
+                    POSTS_COLLECTION_ID,
+                    'unique()',
+                    {
                         userId: currentUser.$id,
                         text: content,
-                        imageFileId: imageFile ? 'image' + posts.length : null,
+                        imageFileId: imageFileId,
                         likeCount: 0,
                         commentCount: 0,
                         retweetCount: 0,
                         likedBy: [],
                         retweetedBy: [],
                         createdAt: new Date().toISOString()
-                    });
-                    localStorage.setItem('mycrush_posts', JSON.stringify(posts));
-                }
+                    }
+                );
                 
                 // Reset form and go back to feed
                 document.getElementById('newPostForm').reset();
@@ -2739,16 +2807,16 @@
                 await loadFeed();
                 
                 // Show success message
-                alert('Post created successfully!');
+                showToast('Post created successfully!');
             } catch (error) {
                 console.error('Error creating post:', error);
-                alert('Error creating post. Please try again.');
+                showToast('Error creating post. Please try again.', 'error');
             }
         }
 
         // Create a post with a poll
         async function createPostWithPoll(content, options, imageFile) {
-            if (!currentUser || currentUser.isGuest) {
+            if (!currentUser) {
                 alert('Please login to create a post');
                 showPage('authPage');
                 return;
@@ -2757,44 +2825,25 @@
             try {
                 let imageFileId = null;
                 
-                if (appwriteConnected) {
-                    // Upload image if provided
-                    if (imageFile) {
-                        const file = await storage.createFile(
-                            POST_IMAGES_BUCKET_ID,
-                            'unique()',
-                            imageFile
-                        );
-                        imageFileId = file.$id;
-                    }
-                    
-                    // Create post with poll
-                    await databases.createDocument(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
+                // Upload image if provided
+                if (imageFile) {
+                    const file = await storage.createFile(
+                        POST_IMAGES_BUCKET_ID,
                         'unique()',
-                        {
-                            userId: currentUser.$id,
-                            text: content,
-                            imageFileId: imageFileId,
-                            pollOptions: options,
-                            pollVotes: Array(options.length).fill(0),
-                            likeCount: 0,
-                            commentCount: 0,
-                            retweetCount: 0,
-                            likedBy: [],
-                            retweetedBy: [],
-                            createdAt: new Date().toISOString()
-                        }
+                        imageFile
                     );
-                } else {
-                    // Fallback to localStorage
-                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
-                    posts.push({
-                        $id: 'post' + (posts.length + 1),
+                    imageFileId = file.$id;
+                }
+                
+                // Create post with poll
+                await databases.createDocument(
+                    DATABASE_ID,
+                    POSTS_COLLECTION_ID,
+                    'unique()',
+                    {
                         userId: currentUser.$id,
                         text: content,
-                        imageFileId: imageFile ? 'image' + posts.length : null,
+                        imageFileId: imageFileId,
                         pollOptions: options,
                         pollVotes: Array(options.length).fill(0),
                         likeCount: 0,
@@ -2803,9 +2852,8 @@
                         likedBy: [],
                         retweetedBy: [],
                         createdAt: new Date().toISOString()
-                    });
-                    localStorage.setItem('mycrush_posts', JSON.stringify(posts));
-                }
+                    }
+                );
                 
                 // Reset form and go back to feed
                 document.getElementById('newPostForm').reset();
@@ -2814,10 +2862,10 @@
                 await loadFeed();
                 
                 // Show success message
-                alert('Post with poll created successfully!');
+                showToast('Post with poll created successfully!');
             } catch (error) {
                 console.error('Error creating post with poll:', error);
-                alert('Error creating post. Please try again.');
+                showToast('Error creating post. Please try again.', 'error');
             }
         }
 
@@ -2835,80 +2883,48 @@
             document.getElementById('profileAvatar').src = currentUser.avatar || 'https://randomuser.me/api/portraits/men/1.jpg';
             
             // Set cover background
-            const coverEl = document.querySelector('.profile-cover');
+            const coverEl = document.getElementById('profileCover');
             if (currentUser.cover) {
                 coverEl.style.backgroundImage = `url(${currentUser.cover})`;
             }
             
             try {
-                let postCount = 0;
-                let followingCount = 0;
-                let followersCount = 0;
+                // Get user's posts
+                const posts = await databases.listDocuments(
+                    DATABASE_ID,
+                    POSTS_COLLECTION_ID,
+                    [Appwrite.Query.equal('userId', currentUser.$id)]
+                );
                 
-                if (appwriteConnected) {
-                    // Get user's posts
-                    const posts = await databases.listDocuments(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
-                        [Appwrite.Query.equal('userId', currentUser.$id)]
-                    );
-                    postCount = posts.total;
-                    
-                    // Get following count
-                    const following = await databases.listDocuments(
-                        DATABASE_ID,
-                        FOLLOWS_COLLECTION_ID,
-                        [Appwrite.Query.equal('followerId', currentUser.$id)]
-                    );
-                    followingCount = following.total;
-                    
-                    // Get followers count
-                    const followers = await databases.listDocuments(
-                        DATABASE_ID,
-                        FOLLOWS_COLLECTION_ID,
-                        [Appwrite.Query.equal('followingId', currentUser.$id)]
-                    );
-                    followersCount = followers.total;
-                } else {
-                    // Fallback to localStorage
-                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
-                    postCount = posts.filter(p => p.userId === currentUser.$id).length;
-                    
-                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
-                    followingCount = follows.filter(f => f.followerId === currentUser.$id).length;
-                    followersCount = follows.filter(f => f.followingId === currentUser.$id).length;
-                }
+                // Get following count
+                const following = await databases.listDocuments(
+                    DATABASE_ID,
+                    FOLLOWS_COLLECTION_ID,
+                    [Appwrite.Query.equal('followerId', currentUser.$id)]
+                );
+                
+                // Get followers count
+                const followers = await databases.listDocuments(
+                    DATABASE_ID,
+                    FOLLOWS_COLLECTION_ID,
+                    [Appwrite.Query.equal('followingId', currentUser.$id)]
+                );
                 
                 // Update stats
-                document.getElementById('postsCount').textContent = postCount;
-                document.getElementById('followingCount').textContent = followingCount;
-                document.getElementById('followersCount').textContent = followersCount;
+                document.getElementById('postsCount').textContent = posts.total;
+                document.getElementById('followingCount').textContent = following.total;
+                document.getElementById('followersCount').textContent = followers.total;
                 
                 // Load user's posts
                 const postsContainer = document.getElementById('userPostsContainer');
                 postsContainer.innerHTML = '<div class="spinner"></div>';
                 
-                let userPosts = [];
-                
-                if (appwriteConnected) {
-                    const posts = await databases.listDocuments(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
-                        [Appwrite.Query.equal('userId', currentUser.$id)]
-                    );
-                    userPosts = posts.documents;
-                } else {
-                    // Fallback to localStorage
-                    const allPosts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
-                    userPosts = allPosts.filter(post => post.userId === currentUser.$id);
-                }
-                
                 // Sort posts by date
-                userPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                posts.documents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 postsContainer.innerHTML = '';
                 
-                if (userPosts.length === 0) {
+                if (posts.documents.length === 0) {
                     postsContainer.innerHTML = `
                         <div class="card text-center">
                             <div style="padding: 40px 20px;">
@@ -2922,7 +2938,7 @@
                     return;
                 }
                 
-                for (const post of userPosts) {
+                for (const post of posts.documents) {
                     const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
                     const isRetweeted = post.retweetedBy && post.retweetedBy.includes(currentUser.$id);
                     
@@ -2940,7 +2956,7 @@
                         </div>
                         ` : ''}
                         <div class="user-info">
-                            <img src="${currentUser.avatar}" alt="${currentUser.name}" class="avatar">
+                            <img src="${currentUser.avatar || 'https://randomuser.me/api/portraits/men/1.jpg'}" alt="${currentUser.name}" class="avatar">
                             <div>
                                 <div class="username">${currentUser.name} <span class="user-handle">@${currentUser.username}</span></div>
                                 <div class="timestamp">${formatDate(post.createdAt)}</div>
@@ -3032,66 +3048,34 @@
             }
             
             try {
-                if (appwriteConnected) {
-                    // Get the post
-                    const post = await databases.getDocument(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
-                        postId
-                    );
-                    
-                    // Check if user already voted
-                    if (post.pollVoters && post.pollVoters.includes(currentUser.$id)) {
-                        alert('You have already voted in this poll');
-                        return;
-                    }
-                    
-                    // Update poll votes
-                    const updatedPollVotes = [...post.pollVotes];
-                    updatedPollVotes[optionIndex] = (updatedPollVotes[optionIndex] || 0) + 1;
-                    
-                    const updatedPollVoters = [...(post.pollVoters || []), currentUser.$id];
-                    
-                    await databases.updateDocument(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
-                        postId,
-                        {
-                            pollVotes: updatedPollVotes,
-                            pollVoters: updatedPollVoters
-                        }
-                    );
-                } else {
-                    // Fallback to localStorage
-                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
-                    const postIndex = posts.findIndex(p => p.$id === postId);
-                    
-                    if (postIndex !== -1) {
-                        const post = posts[postIndex];
-                        
-                        // Check if user already voted
-                        if (post.pollVoters && post.pollVoters.includes(currentUser.$id)) {
-                            alert('You have already voted in this poll');
-                            return;
-                        }
-                        
-                        // Update poll votes
-                        if (!post.pollVotes) {
-                            post.pollVotes = Array(post.pollOptions.length).fill(0);
-                        }
-                        
-                        post.pollVotes[optionIndex] = (post.pollVotes[optionIndex] || 0) + 1;
-                        
-                        if (!post.pollVoters) {
-                            post.pollVoters = [];
-                        }
-                        
-                        post.pollVoters.push(currentUser.$id);
-                        
-                        posts[postIndex] = post;
-                        localStorage.setItem('mycrush_posts', JSON.stringify(posts));
-                    }
+                // Get the post
+                const post = await databases.getDocument(
+                    DATABASE_ID,
+                    POSTS_COLLECTION_ID,
+                    postId
+                );
+                
+                // Check if user already voted
+                if (post.pollVoters && post.pollVoters.includes(currentUser.$id)) {
+                    alert('You have already voted in this poll');
+                    return;
                 }
+                
+                // Update poll votes
+                const updatedPollVotes = [...post.pollVotes];
+                updatedPollVotes[optionIndex] = (updatedPollVotes[optionIndex] || 0) + 1;
+                
+                const updatedPollVoters = [...(post.pollVoters || []), currentUser.$id];
+                
+                await databases.updateDocument(
+                    DATABASE_ID,
+                    POSTS_COLLECTION_ID,
+                    postId,
+                    {
+                        pollVotes: updatedPollVotes,
+                        pollVoters: updatedPollVoters
+                    }
+                );
                 
                 // Update UI
                 if (currentPage === 'homePage') {
@@ -3101,6 +3085,7 @@
                 }
             } catch (error) {
                 console.error('Error voting in poll:', error);
+                showToast('Error voting in poll', 'error');
             }
         }
 
@@ -3118,64 +3103,42 @@
                 let avatarFileId = currentUser.avatarFileId;
                 let coverFileId = currentUser.coverFileId;
                 
-                if (appwriteConnected) {
-                    // Upload new avatar if provided
-                    if (avatarFile) {
-                        const file = await storage.createFile(
-                            AVATARS_BUCKET_ID,
-                            'unique()',
-                            avatarFile
-                        );
-                        avatarFileId = file.$id;
-                    }
-                    
-                    // Upload new cover if provided
-                    if (coverFile) {
-                        const file = await storage.createFile(
-                            COVERS_BUCKET_ID,
-                            'unique()',
-                            coverFile
-                        );
-                        coverFileId = file.$id;
-                    }
-                    
-                    // Update user profile in database
-                    await databases.updateDocument(
-                        DATABASE_ID,
-                        USERS_COLLECTION_ID,
-                        currentUser.$id,
-                        {
-                            displayName: displayName,
-                            username: username,
-                            bio: bio,
-                            avatarFileId: avatarFileId,
-                            coverFileId: coverFileId
-                        }
+                // Upload new avatar if provided
+                if (avatarFile) {
+                    const file = await storage.createFile(
+                        AVATARS_BUCKET_ID,
+                        'unique()',
+                        avatarFile
                     );
-                    
-                    // Update account name
-                    await account.updateName(displayName);
-                } else {
-                    // Fallback to localStorage
-                    const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
-                    const userIndex = users.findIndex(u => u.$id === currentUser.$id);
-                    
-                    if (userIndex !== -1) {
-                        users[userIndex].name = displayName;
-                        users[userIndex].username = username;
-                        users[userIndex].bio = bio;
-                        
-                        if (avatarFile) {
-                            users[userIndex].avatar = URL.createObjectURL(avatarFile);
-                        }
-                        
-                        if (coverFile) {
-                            users[userIndex].cover = URL.createObjectURL(coverFile);
-                        }
-                        
-                        localStorage.setItem('mycrush_users', JSON.stringify(users));
-                    }
+                    avatarFileId = file.$id;
                 }
+                
+                // Upload new cover if provided
+                if (coverFile) {
+                    const file = await storage.createFile(
+                        COVERS_BUCKET_ID,
+                        'unique()',
+                        coverFile
+                    );
+                    coverFileId = file.$id;
+                }
+                
+                // Update user profile in database
+                await databases.updateDocument(
+                    DATABASE_ID,
+                    USERS_COLLECTION_ID,
+                    currentUser.$id,
+                    {
+                        displayName: displayName,
+                        username: username,
+                        bio: bio,
+                        avatarFileId: avatarFileId,
+                        coverFileId: coverFileId
+                    }
+                );
+                
+                // Update account name
+                await account.updateName(displayName);
                 
                 // Update current user
                 currentUser.name = displayName;
@@ -3191,9 +3154,6 @@
                     currentUser.cover = URL.createObjectURL(coverFile);
                 }
                 
-                // Save to localStorage
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                
                 // Update UI
                 document.getElementById('profileName').textContent = displayName;
                 document.getElementById('profileBio').textContent = bio;
@@ -3201,10 +3161,11 @@
                 
                 if (avatarFile) {
                     document.getElementById('profileAvatar').src = URL.createObjectURL(avatarFile);
+                    document.getElementById('currentUserAvatar').src = URL.createObjectURL(avatarFile);
                 }
                 
                 if (coverFile) {
-                    const coverEl = document.querySelector('.profile-cover');
+                    const coverEl = document.getElementById('profileCover');
                     coverEl.style.backgroundImage = `url(${URL.createObjectURL(coverFile)})`;
                 }
                 
@@ -3212,10 +3173,10 @@
                 document.getElementById('editProfileModal').style.display = 'none';
                 
                 // Show success message
-                alert('Profile updated successfully!');
+                showToast('Profile updated successfully!');
             } catch (error) {
                 console.error('Error updating profile:', error);
-                alert('Error updating profile. Please try again.');
+                showToast('Error updating profile. Please try again.', 'error');
             }
         }
 
@@ -3230,52 +3191,34 @@
             notificationsContainer.innerHTML = '<div class="spinner"></div>';
             
             try {
-                let notifications = [];
-                
-                if (appwriteConnected) {
-                    const result = await databases.listDocuments(
-                        DATABASE_ID,
-                        NOTIFICATIONS_COLLECTION_ID,
-                        [Appwrite.Query.equal('userId', currentUser.$id)]
-                    );
-                    notifications = result.documents;
-                } else {
-                    // Fallback to localStorage
-                    notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
-                    notifications = notifications.filter(n => n.userId === currentUser.$id);
-                }
+                const notifications = await databases.listDocuments(
+                    DATABASE_ID,
+                    NOTIFICATIONS_COLLECTION_ID,
+                    [Appwrite.Query.equal('userId', currentUser.$id)]
+                );
                 
                 // Sort notifications by date
-                notifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                notifications.documents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 notificationsContainer.innerHTML = '';
                 
-                if (notifications.length === 0) {
+                if (notifications.documents.length === 0) {
                     notificationsContainer.innerHTML = '<p class="text-center">No notifications yet</p>';
                     return;
                 }
                 
-                for (const notif of notifications) {
+                for (const notif of notifications.documents) {
                     let user;
                     
-                    if (appwriteConnected) {
-                        try {
-                            user = await databases.getDocument(
-                                DATABASE_ID,
-                                USERS_COLLECTION_ID,
-                                notif.sourceUserId
-                            );
-                        } catch (error) {
-                            console.error('Error fetching user:', error);
-                            user = {
-                                name: 'Unknown User',
-                                avatar: 'https://randomuser.me/api/portraits/men/0.jpg'
-                            };
-                        }
-                    } else {
-                        // Fallback to localStorage
-                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
-                        user = users.find(u => u.$id === notif.sourceUserId) || {
+                    try {
+                        user = await databases.getDocument(
+                            DATABASE_ID,
+                            USERS_COLLECTION_ID,
+                            notif.sourceUserId
+                        );
+                    } catch (error) {
+                        console.error('Error fetching user:', error);
+                        user = {
                             name: 'Unknown User',
                             avatar: 'https://randomuser.me/api/portraits/men/0.jpg'
                         };
@@ -3297,23 +3240,12 @@
                     // Mark as read when clicked
                     if (!notif.read) {
                         notifEl.addEventListener('click', async () => {
-                            if (appwriteConnected) {
-                                await databases.updateDocument(
-                                    DATABASE_ID,
-                                    NOTIFICATIONS_COLLECTION_ID,
-                                    notif.$id,
-                                    { read: true }
-                                );
-                            } else {
-                                // Fallback to localStorage
-                                const allNotifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
-                                const notifIndex = allNotifications.findIndex(n => n.$id === notif.$id);
-                                
-                                if (notifIndex !== -1) {
-                                    allNotifications[notifIndex].read = true;
-                                    localStorage.setItem('mycrush_notifications', JSON.stringify(allNotifications));
-                                }
-                            }
+                            await databases.updateDocument(
+                                DATABASE_ID,
+                                NOTIFICATIONS_COLLECTION_ID,
+                                notif.$id,
+                                { read: true }
+                            );
                             
                             updateUnreadCount();
                             loadNotifications();
@@ -3331,27 +3263,18 @@
             if (!currentUser) return;
             
             try {
-                let unreadCount = 0;
-                
-                if (appwriteConnected) {
-                    const notifications = await databases.listDocuments(
-                        DATABASE_ID,
-                        NOTIFICATIONS_COLLECTION_ID,
-                        [
-                            Appwrite.Query.equal('userId', currentUser.$id),
-                            Appwrite.Query.equal('read', false)
-                        ]
-                    );
-                    unreadCount = notifications.total;
-                } else {
-                    // Fallback to localStorage
-                    const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
-                    unreadCount = notifications.filter(n => n.userId === currentUser.$id && !n.read).length;
-                }
+                const notifications = await databases.listDocuments(
+                    DATABASE_ID,
+                    NOTIFICATIONS_COLLECTION_ID,
+                    [
+                        Appwrite.Query.equal('userId', currentUser.$id),
+                        Appwrite.Query.equal('read', false)
+                    ]
+                );
                 
                 const badge = document.getElementById('notificationBadge');
-                if (unreadCount > 0) {
-                    badge.textContent = unreadCount;
+                if (notifications.total > 0) {
+                    badge.textContent = notifications.total;
                     badge.style.display = 'flex';
                 } else {
                     badge.style.display = 'none';

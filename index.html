@@ -3,37 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Crush - Social Media App</title>
+    <title>SocialConnect - Multi-Platform App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@10.0.0"></script>
     <style>
         :root {
-            --primary-color: #1da1f2; /* Twitter blue */
-            --primary-light: #8ecdf7;
-            --primary-dark: #1a91da;
-            --instagram-color: #e1306c;
-            --whatsapp-color: #25d366;
-            --facebook-color: #3b5998;
-            --telegram-color: #0088cc;
-            --secondary-color: #17bf63; /* Twitter green */
-            --text-color: #14171a;
+            --twitter-blue: #1da1f2;
+            --instagram-purple: #833ab4;
+            --facebook-blue: #1877f2;
+            --whatsapp-green: #25d366;
+            --telegram-blue: #0088cc;
+            --text-color: #333;
             --bg-color: #f5f8fa;
             --card-bg: #ffffff;
             --border-color: #e6ecf0;
             --success-color: #17bf63;
             --error-color: #e0245e;
             --warning-color: #ffad1f;
-            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
             --transition: all 0.3s ease;
-            --story-border: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
         }
 
         [data-theme="dark"] {
             --text-color: #f5f5f5;
-            --bg-color: #15202b;
-            --card-bg: #192734;
-            --border-color: #38444d;
-            --shadow: 0 2px 10px rgba(0,0,0,0.4);
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --border-color: #333;
+            --shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
 
         * {
@@ -53,7 +48,7 @@
 
         a {
             text-decoration: none;
-            color: var(--primary-color);
+            color: var(--twitter-blue);
         }
 
         button {
@@ -80,24 +75,14 @@
             align-items: center;
             box-shadow: var(--shadow);
             z-index: 100;
-            backdrop-filter: blur(10px);
         }
 
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-        }
-
-        .logo i {
-            margin-right: 8px;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
+            background: linear-gradient(45deg, var(--twitter-blue), var(--instagram-purple), var(--whatsapp-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .theme-toggle {
@@ -106,32 +91,6 @@
             cursor: pointer;
             font-size: 1.2rem;
             color: var(--text-color);
-            margin-left: 15px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-
-        .theme-toggle:hover {
-            background-color: rgba(29, 161, 242, 0.1);
-        }
-
-        .tweet-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 50px;
-            padding: 8px 16px;
-            font-weight: bold;
-            margin-left: 15px;
-            transition: var(--transition);
-        }
-
-        .tweet-btn:hover {
-            background-color: var(--primary-dark);
         }
 
         /* Navigation */
@@ -144,9 +103,8 @@
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
             z-index: 100;
-            backdrop-filter: blur(10px);
         }
 
         .nav-item {
@@ -156,14 +114,10 @@
             font-size: 0.8rem;
             color: var(--text-color);
             position: relative;
-            padding: 5px 10px;
-            border-radius: 15px;
-            transition: var(--transition);
         }
 
         .nav-item.active {
-            color: var(--primary-color);
-            background-color: rgba(29, 161, 242, 0.1);
+            color: var(--twitter-blue);
         }
 
         .nav-icon {
@@ -172,7 +126,7 @@
         }
 
         .badge {
-            background-color: var(--primary-color);
+            background-color: var(--error-color);
             color: white;
             border-radius: 50%;
             width: 18px;
@@ -194,11 +148,6 @@
             margin-bottom: 15px;
             overflow: hidden;
             border: 1px solid var(--border-color);
-            transition: var(--transition);
-        }
-
-        .card:hover {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
         .post-card {
@@ -315,17 +264,10 @@
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 4px;
             background-color: var(--card-bg);
             color: var(--text-color);
             font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
         }
 
         .form-textarea {
@@ -344,7 +286,7 @@
         }
 
         .btn-primary {
-            background-color: var(--primary-color);
+            background-color: var(--twitter-blue);
             color: white;
         }
 
@@ -357,34 +299,14 @@
             color: white;
         }
 
-        .btn-instagram {
-            background-color: var(--instagram-color);
-            color: white;
-        }
-
-        .btn-whatsapp {
-            background-color: var(--whatsapp-color);
-            color: white;
-        }
-
-        .btn-facebook {
-            background-color: var(--facebook-color);
-            color: white;
-        }
-
-        .btn-telegram {
-            background-color: var(--telegram-color);
-            color: white;
-        }
-
         .btn-block {
             width: 100%;
         }
 
         .btn-outline {
             background-color: transparent;
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
+            border: 1px solid var(--twitter-blue);
+            color: var(--twitter-blue);
         }
 
         .btn-outline:hover {
@@ -420,12 +342,11 @@
             border-bottom: 2px solid transparent;
             cursor: pointer;
             font-weight: bold;
-            transition: var(--transition);
         }
 
         .auth-tab.active {
-            border-bottom-color: var(--primary-color);
-            color: var(--primary-color);
+            border-bottom-color: var(--twitter-blue);
+            color: var(--twitter-blue);
         }
 
         /* Messages */
@@ -433,7 +354,6 @@
             height: calc(100vh - 180px);
             overflow-y: auto;
             padding: 10px;
-            background-color: var(--bg-color);
         }
 
         .message {
@@ -443,16 +363,11 @@
             max-width: 80%;
             word-wrap: break-word;
             position: relative;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .message.sent {
-            background-color: var(--primary-light);
+            background-color: var(--twitter-blue);
+            color: white;
             margin-left: auto;
             border-bottom-right-radius: 4px;
         }
@@ -498,11 +413,6 @@
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            transition: var(--transition);
-        }
-
-        .notification-item:hover {
-            background-color: rgba(29, 161, 242, 0.05);
         }
 
         .notification-item.unread {
@@ -518,7 +428,7 @@
             align-items: center;
             justify-content: center;
             margin-right: 15px;
-            color: var(--primary-color);
+            color: var(--twitter-blue);
         }
 
         /* Profile */
@@ -533,9 +443,7 @@
             background-color: var(--primary-light);
             border-radius: 16px 16px 0 0;
             margin: -20px -20px 20px -20px;
-            background-image: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            background-size: cover;
-            background-position: center;
+            background: linear-gradient(45deg, var(--twitter-blue), var(--instagram-purple));
         }
 
         .profile-avatar {
@@ -561,13 +469,6 @@
         .stat {
             text-align: center;
             cursor: pointer;
-            transition: var(--transition);
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        .stat:hover {
-            background-color: rgba(29, 161, 242, 0.1);
         }
 
         .stat-value {
@@ -599,13 +500,6 @@
             color: var(--text-color);
             font-size: 1rem;
             padding-left: 45px;
-            transition: var(--transition);
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
         }
 
         .search-icon {
@@ -625,11 +519,6 @@
             align-items: center;
             padding: 10px 15px;
             border-bottom: 1px solid var(--border-color);
-            transition: var(--transition);
-        }
-
-        .user-item:hover {
-            background-color: rgba(29, 161, 242, 0.05);
         }
 
         /* Trending section */
@@ -681,11 +570,6 @@
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            transition: var(--transition);
-        }
-
-        .follow-item:hover {
-            background-color: rgba(29, 161, 242, 0.05);
         }
 
         .follow-info {
@@ -695,12 +579,12 @@
 
         /* Twitter-specific features */
         .hashtag {
-            color: var(--primary-color);
+            color: var(--twitter-blue);
             cursor: pointer;
         }
 
         .mention {
-            color: var(--primary-color);
+            color: var(--twitter-blue);
             cursor: pointer;
         }
 
@@ -744,13 +628,13 @@
         }
 
         .poll-option.selected {
-            border-color: var(--primary-color);
+            border-color: var(--twitter-blue);
             background-color: rgba(29, 161, 242, 0.1);
         }
 
         .poll-percentage {
             height: 4px;
-            background-color: var(--primary-color);
+            background-color: var(--twitter-blue);
             border-radius: 2px;
             margin-top: 5px;
         }
@@ -761,17 +645,17 @@
             overflow-x: auto;
             padding: 10px 0;
             margin-bottom: 15px;
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none;
         }
 
         .stories-container::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Edge */
+            display: none;
         }
 
         .story {
             flex: 0 0 auto;
             width: 80px;
-            margin: 0 10px;
+            margin-right: 10px;
             text-align: center;
             cursor: pointer;
         }
@@ -780,107 +664,18 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            padding: 2px;
-            background: var(--story-border);
-            margin: 0 auto;
-        }
-
-        .story-avatar img {
-            width: 100%;
-            height: 100%;
             object-fit: cover;
-            border-radius: 50%;
-            border: 2px solid var(--card-bg);
+            border: 3px solid var(--instagram-purple);
+            padding: 2px;
+            background-color: var(--card-bg);
         }
 
         .story-username {
             font-size: 0.7rem;
             margin-top: 5px;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        /* Instagram-style post */
-        .instagram-post {
-            border-radius: 0;
-            margin-bottom: 20px;
-        }
-
-        .instagram-post .post-header {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .instagram-post .post-image {
-            border-radius: 0;
-            max-height: none;
-        }
-
-        .instagram-post .post-actions {
-            padding: 10px 15px;
-        }
-
-        /* WhatsApp-style chat */
-        .whatsapp-chat {
-            background-color: #e5ddd5;
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23aaaaaa' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
-        }
-
-        .whatsapp-message.sent {
-            background-color: #d9fdd3;
-            border-top-right-radius: 0;
-        }
-
-        .whatsapp-message.received {
-            background-color: white;
-            border-top-left-radius: 0;
-        }
-
-        /* Telegram-style chat */
-        .telegram-chat {
-            background-color: #e6ebf5;
-        }
-
-        .telegram-message.sent {
-            background-color: #e3ffc7;
-            border-top-right-radius: 0;
-        }
-
-        .telegram-message.received {
-            background-color: white;
-            border-top-left-radius: 0;
-        }
-
-        /* Facebook-style post */
-        .facebook-post {
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .facebook-post .post-header {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-        }
-
-        .facebook-post .post-image {
-            border-radius: 0;
-            max-height: none;
-        }
-
-        .facebook-post .post-actions {
-            padding: 10px 15px;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .facebook-post .action-btn {
-            flex: 1;
-            justify-content: center;
         }
 
         /* Utilities */
@@ -945,7 +740,7 @@
         /* Loading spinner */
         .spinner {
             border: 3px solid var(--border-color);
-            border-top: 3px solid var(--primary-color);
+            border-top: 3px solid var(--twitter-blue);
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -970,7 +765,6 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            animation: fadeIn 0.3s ease;
         }
 
         .modal {
@@ -981,12 +775,6 @@
             padding: 20px;
             max-height: 90vh;
             overflow-y: auto;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .modal-header {
@@ -1010,12 +798,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: var(--transition);
         }
 
         .close-btn:hover {
             background-color: rgba(29, 161, 242, 0.1);
-            color: var(--primary-color);
+            color: var(--twitter-blue);
         }
 
         /* Comment section */
@@ -1083,7 +870,7 @@
             text-align: center;
         }
 
-        /* Appwrite connection status */
+        /* Connection status */
         .connection-status {
             position: fixed;
             top: 70px;
@@ -1112,7 +899,7 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background-color: var(--primary-color);
+            background-color: var(--twitter-blue);
             color: white;
             display: flex;
             align-items: center;
@@ -1120,11 +907,6 @@
             font-size: 1.5rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             z-index: 99;
-            transition: var(--transition);
-        }
-
-        .fab:hover {
-            transform: scale(1.1);
         }
 
         /* Character counter */
@@ -1142,429 +924,256 @@
         .char-counter.over-limit {
             color: #e0245e;
         }
-
-        /* Toast notifications */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
+        
+        /* Platform indicators */
+        .platform-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-left: 5px;
+            text-align: center;
+            line-height: 20px;
+            font-size: 0.7rem;
+        }
+        
+        .platform-twitter {
+            background-color: var(--twitter-blue);
             color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            z-index: 1000;
-            animation: slideUp 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-
-        .toast.success {
-            background-color: var(--success-color);
+        
+        .platform-instagram {
+            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+            color: white;
         }
-
-        .toast.error {
-            background-color: var(--error-color);
+        
+        .platform-facebook {
+            background-color: var(--facebook-blue);
+            color: white;
         }
-
-        /* Online status indicator */
-        .online-status {
+        
+        .platform-whatsapp {
+            background-color: var(--whatsapp-green);
+            color: white;
+        }
+        
+        .platform-telegram {
+            background-color: var(--telegram-blue);
+            color: white;
+        }
+        
+        /* Status indicators */
+        .status-online {
             width: 12px;
             height: 12px;
-            background-color: var(--success-color);
+            background-color: var(--whatsapp-green);
             border-radius: 50%;
-            border: 2px solid var(--card-bg);
             position: absolute;
             bottom: 0;
             right: 0;
+            border: 2px solid var(--card-bg);
         }
-
-        /* Reaction emojis */
-        .reactions {
-            display: flex;
-            margin-top: 5px;
-        }
-
-        .reaction {
-            margin-right: 5px;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-
-        /* Typing indicator */
-        .typing-indicator {
-            display: flex;
-            padding: 10px;
-            background-color: var(--card-bg);
-            border-radius: 18px;
-            width: fit-content;
-            margin-bottom: 10px;
-        }
-
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #657786;
+        
+        .status-offline {
+            width: 12px;
+            height: 12px;
+            background-color: #ccc;
             border-radius: 50%;
-            margin: 0 2px;
-            animation: typingAnimation 1.4s infinite ease-in-out;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            border: 2px solid var(--card-bg);
         }
-
-        .typing-dot:nth-child(1) {
-            animation-delay: 0s;
+        
+        /* Video call button */
+        .video-call-btn {
+            background-color: var(--facebook-blue);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
         }
-
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes typingAnimation {
-            0%, 60%, 100% {
-                transform: translateY(0);
-            }
-            30% {
-                transform: translateY(-5px);
-            }
+        
+        /* Voice message button */
+        .voice-message-btn {
+            background-color: var(--telegram-blue);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- Appwrite Connection Status -->
-    <div id="connectionStatus" class="connection-status" style="display: none;">Connecting to Appwrite...</div>
+    <!-- Connection Status -->
+    <div id="connectionStatus" class="connection-status" style="display: none;">Connecting...</div>
 
     <!-- Header -->
     <header class="header">
-        <div class="logo">
-            <i class="fab fa-twitter"></i> My Crush
-        </div>
-        <div class="header-actions">
-            <button class="tweet-btn" id="headerTweetBtn">
-                <i class="fas fa-feather-alt"></i> Tweet
-            </button>
-            <button class="theme-toggle" id="themeToggle">
-                <i class="fas fa-moon"></i>
-            </button>
-        </div>
+        <div class="logo">SocialConnect</div>
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </button>
     </header>
 
     <!-- Main Content -->
     <main class="container">
-        <!-- Left Sidebar -->
-        <aside class="left-sidebar">
-            <div class="card">
-                <div class="search-container">
+        <!-- Home/Feed Page -->
+        <section id="homePage" class="page active">
+            <div class="stories-container">
+                <div class="story">
                     <div style="position: relative;">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="search-input" id="globalSearch" placeholder="Search Twitter">
+                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="User" class="story-avatar">
                     </div>
+                    <div class="story-username">jessica</div>
+                </div>
+                <div class="story">
+                    <div style="position: relative;">
+                        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="User" class="story-avatar">
+                    </div>
+                    <div class="story-username">mike</div>
+                </div>
+                <div class="story">
+                    <div style="position: relative;">
+                        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="User" class="story-avatar">
+                    </div>
+                    <div class="story-username">sarah</div>
+                </div>
+                <div class="story">
+                    <div style="position: relative;">
+                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="User" class="story-avatar">
+                    </div>
+                    <div class="story-username">david</div>
+                </div>
+                <div class="story">
+                    <div style="position: relative;">
+                        <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="User" class="story-avatar">
+                    </div>
+                    <div class="story-username">emma</div>
                 </div>
             </div>
 
-            <div class="card trending-section">
-                <div class="trending-header">
-                    Trends for you
+            <div class="card">
+                <div class="user-info" style="padding: 15px 15px 0;">
+                    <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" class="avatar">
+                    <div style="flex: 1;">
+                        <input type="text" class="form-input" placeholder="What's happening?" id="quickPostInput">
+                    </div>
                 </div>
-                <div id="trendingContainer">
-                    <div class="spinner"></div>
+                <div style="padding: 10px 15px 15px; text-align: right;">
+                    <span class="char-counter" id="charCounter">0/280</span>
+                    <button class="btn btn-primary" id="quickPostBtn">Post</button>
                 </div>
             </div>
 
-            <div class="card who-to-follow">
-                <div class="trending-header">
-                    Who to follow
-                </div>
-                <div id="suggestedUsers">
-                    <div class="spinner"></div>
+            <div id="feedContainer">
+                <!-- Posts will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Messages Page -->
+        <section id="messagesPage" class="page">
+            <h2 class="text-center">Messages</h2>
+            <div class="search-container">
+                <div style="position: relative;">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="messageSearch" placeholder="Search messages...">
                 </div>
             </div>
-        </aside>
+            <div id="conversationsContainer">
+                <!-- Conversations will be loaded here -->
+            </div>
+        </section>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Home/Feed Page -->
-            <section id="homePage" class="page active">
-                <!-- Stories Section -->
-                <div class="card">
-                    <div class="stories-container" id="storiesContainer">
-                        <div class="spinner"></div>
+        <!-- Chat Page -->
+        <section id="chatPage" class="page">
+            <div class="card" style="margin-bottom: 0; border-radius: 0; border-left: none; border-right: none;">
+                <div class="user-info" style="padding: 10px 15px;">
+                    <button id="backToMessages" class="back-btn" style="margin-right: 10px;"><i class="fas fa-arrow-left"></i></button>
+                    <div style="position: relative;">
+                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="User" class="avatar">
+                        <div class="status-online"></div>
+                    </div>
+                    <div>
+                        <div class="username" id="chatUserName">Jessica Parker</div>
+                        <div class="user-handle">Online</div>
+                    </div>
+                    <div style="margin-left: auto; display: flex;">
+                        <button class="video-call-btn">
+                            <i class="fas fa-video"></i>
+                        </button>
+                        <button class="voice-message-btn">
+                            <i class="fas fa-phone"></i>
+                        </button>
                     </div>
                 </div>
+            </div>
+            <div class="message-thread" id="messageThread">
+                <!-- Messages will be loaded here -->
+            </div>
+            <div class="message-input">
+                <button class="btn" style="font-size: 1.2rem;">
+                    <i class="fas fa-paperclip"></i>
+                </button>
+                <input type="text" id="messageInput" placeholder="Type a message...">
+                <button id="sendMessageBtn" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </section>
 
-                <div class="card">
-                    <div class="user-info" style="padding: 15px 15px 0;">
-                        <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" class="avatar" id="currentUserAvatar">
-                        <div style="flex: 1;">
-                            <input type="text" class="form-input" placeholder="What's happening?" id="quickTweetInput">
-                        </div>
-                    </div>
-                    <div style="padding: 10px 15px 15px; text-align: right;">
-                        <span class="char-counter" id="charCounter">0/280</span>
-                        <button class="btn btn-primary" id="quickTweetBtn">Tweet</button>
-                    </div>
-                </div>
+        <!-- Notifications Page -->
+        <section id="notificationsPage" class="page">
+            <h2 class="text-center">Notifications</h2>
+            <div id="notificationsContainer">
+                <!-- Notifications will be loaded here -->
+            </div>
+        </section>
 
-                <div id="feedContainer">
-                    <div class="spinner"></div>
-                </div>
-            </section>
-
-            <!-- Messages Page -->
-            <section id="messagesPage" class="page">
-                <h2 class="text-center">Messages</h2>
-                <div id="conversationsContainer">
-                    <div class="spinner"></div>
-                </div>
-            </section>
-
-            <!-- Chat Page -->
-            <section id="chatPage" class="page">
-                <div class="chat-header">
-                    <button id="backToMessages" class="back-btn"><i class="fas fa-arrow-left"></i></button>
-                    <h3 id="chatUserName">User Name</h3>
-                </div>
-                <div class="message-thread" id="messageThread">
-                    <div class="spinner"></div>
-                </div>
-                <div class="message-input">
-                    <input type="text" id="messageInput" placeholder="Type a message...">
-                    <button id="sendMessageBtn" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
-                </div>
-            </section>
-
-            <!-- New Post Page -->
-            <section id="newPostPage" class="page">
-                <div class="card">
-                    <div class="modal-header">
-                        <h3>Create Tweet</h3>
-                        <button class="close-btn">&times;</button>
-                    </div>
-                    <form id="newPostForm">
-                        <div class="form-group">
-                            <textarea class="form-input form-textarea" id="postContent" placeholder="What's happening? (280 characters max)" maxlength="280" required></textarea>
-                            <div class="char-counter" id="postCharCounter">0/280</div>
-                        </div>
-                        <div class="form-group">
-                            <input type="file" id="postImage" accept="image/*" class="form-input" style="display: none;">
-                            <button type="button" class="btn btn-outline" id="addImageBtn">
-                                <i class="fas fa-image"></i> Add Image
-                            </button>
-                            <button type="button" class="btn btn-outline" id="addPollBtn">
-                                <i class="fas fa-chart-pie"></i> Add Poll
-                            </button>
-                        </div>
-                        <div id="pollContainer" class="poll-container" style="display: none;">
-                            <div class="form-group">
-                                <input type="text" class="form-input" placeholder="Option 1" id="pollOption1">
-                            </div>
-                            <div class="form-group">
-                                <input type="text" class="form-input" placeholder="Option 2" id="pollOption2">
-                            </div>
-                            <div class="form-group">
-                                <input type="text" class="form-input" placeholder="Option 3 (optional)" id="pollOption3">
-                            </div>
-                            <div class="form-group">
-                                <input type="text" class="form-input" placeholder="Option 4 (optional)" id="pollOption4">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block">Tweet</button>
-                    </form>
-                </div>
-            </section>
-
-            <!-- Notifications Page -->
-            <section id="notificationsPage" class="page">
-                <h2 class="text-center">Notifications</h2>
-                <div id="notificationsContainer">
-                    <div class="spinner"></div>
-                </div>
-            </section>
-
-            <!-- Profile Page -->
-            <section id="profilePage" class="page">
-                <div class="card">
-                    <div class="profile-cover" id="profileCover"></div>
-                    <div class="profile-header">
+        <!-- Profile Page -->
+        <section id="profilePage" class="page">
+            <div class="card">
+                <div class="profile-cover"></div>
+                <div class="profile-header">
+                    <div style="position: relative;">
                         <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile" class="profile-avatar" id="profileAvatar">
-                        <h2 id="profileName">User Name</h2>
-                        <p id="profileBio">Bio goes here</p>
-                        <p id="profileHandle">@username</p>
-                        <div style="margin-top: 15px;">
-                            <button class="btn btn-primary" id="editProfileBtn">Edit Profile</button>
-                            <button class="btn btn-outline" id="logoutBtn">Logout</button>
-                        </div>
+                        <div class="status-online"></div>
                     </div>
-                    <div class="profile-stats">
-                        <div class="stat" id="postsStat">
-                            <div class="stat-value" id="postsCount">0</div>
-                            <div class="stat-label">Posts</div>
-                        </div>
-                        <div class="stat" id="followingStat">
-                            <div class="stat-value" id="followingCount">0</div>
-                            <div class="stat-label">Following</div>
-                        </div>
-                        <div class="stat" id="followersStat">
-                            <div class="stat-value" id="followersCount">0</div>
-                            <div class="stat-label">Followers</div>
-                        </div>
+                    <h2 id="profileName">John Doe</h2>
+                    <p id="profileBio">Digital creator | Photography enthusiast | Travel lover</p>
+                    <p id="profileHandle">@johndoe</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary" id="editProfileBtn">Edit Profile</button>
+                        <button class="btn btn-outline" id="logoutBtn">Logout</button>
                     </div>
                 </div>
-                <div id="userPostsContainer">
-                    <div class="spinner"></div>
-                </div>
-            </section>
-
-            <!-- Search Page -->
-            <section id="searchPage" class="page">
-                <h2 class="text-center">Search</h2>
-                <div class="search-container">
-                    <div style="position: relative;">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="search-input" id="searchInput" placeholder="Search users...">
+                <div class="profile-stats">
+                    <div class="stat" id="postsStat">
+                        <div class="stat-value" id="postsCount">42</div>
+                        <div class="stat-label">Posts</div>
                     </div>
-                </div>
-                <div id="searchResults">
-                    <p class="text-center">Start typing to search for users</p>
-                </div>
-            </section>
-
-            <!-- Explore Page -->
-            <section id="explorePage" class="page">
-                <h2 class="text-center">Explore</h2>
-                <div class="search-container">
-                    <div style="position: relative;">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="search-input" id="exploreSearch" placeholder="Search Twitter">
+                    <div class="stat" id="followingStat">
+                        <div class="stat-value" id="followingCount">256</div>
+                        <div class="stat-label">Following</div>
                     </div>
-                </div>
-                <div id="exploreContent">
-                    <div class="card trending-section">
-                        <div class="trending-header">
-                            Trends for you
-                        </div>
-                        <div class="trending-item">
-                            <div class="trending-category">Trending in Technology</div>
-                            <div class="trending-name">#JavaScript</div>
-                            <div class="trending-count">50.5K Tweets</div>
-                        </div>
-                        <div class="trending-item">
-                            <div class="trending-category">Trending Worldwide</div>
-                            <div class="trending-name">#MondayMotivation</div>
-                            <div class="trending-count">120K Tweets</div>
-                        </div>
-                        <div class="trending-item">
-                            <div class="trending-category">Sports · Trending</div>
-                            <div class="trending-name">#ChampionsLeague</div>
-                            <div class="trending-count">35.2K Tweets</div>
-                        </div>
+                    <div class="stat" id="followersStat">
+                        <div class="stat-value" id="followersCount">1.2K</div>
+                        <div class="stat-label">Followers</div>
                     </div>
-                </div>
-            </section>
-
-            <!-- Auth Pages -->
-            <section id="authPage" class="page">
-                <div class="auth-container">
-                    <div class="auth-tabs">
-                        <div class="auth-tab active" data-tab="login">Login</div>
-                        <div class="auth-tab" data-tab="register">Register</div>
-                    </div>
-                    
-                    <form id="loginForm" class="auth-form">
-                        <div id="loginError" class="error-message" style="display: none;"></div>
-                        <div class="form-group">
-                            <input type="email" class="form-input" id="loginEmail" placeholder="Email" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-input" id="loginPassword" placeholder="Password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block">Login</button>
-                        <div class="text-center mt-2">
-                            <button type="button" class="btn btn-secondary" id="googleLogin">Login with Google</button>
-                        </div>
-                    </form>
-
-                    <form id="registerForm" class="auth-form" style="display: none;">
-                        <div id="registerError" class="error-message" style="display: none;"></div>
-                        <div class="form-group">
-                            <input type="text" class="form-input" id="registerName" placeholder="Full Name" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-input" id="registerUsername" placeholder="Username" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" class="form-input" id="registerEmail" placeholder="Email" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-input" id="registerPassword" placeholder="Password" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-input" id="registerConfirmPassword" placeholder="Confirm Password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block">Register</button>
-                    </form>
-                </div>
-            </section>
-        </div>
-
-        <!-- Right Sidebar -->
-        <aside class="right-sidebar">
-            <div class="card">
-                <div class="trending-header">
-                    What's happening
-                </div>
-                <div class="trending-item">
-                    <div class="trending-category">Technology · Trending</div>
-                    <div class="trending-name">#AI</div>
-                    <div class="trending-count">325K Tweets</div>
-                </div>
-                <div class="trending-item">
-                    <div class="trending-category">Sports · Trending</div>
-                    <div class="trending-name">#WorldCup2026</div>
-                    <div class="trending-count">150K Tweets</div>
-                </div>
-                <div class="trending-item">
-                    <div class="trending-category">Entertainment · Trending</div>
-                    <div class="trending-name">New Movie Release</div>
-                    <div class="trending-count">98.7K Tweets</div>
                 </div>
             </div>
-
-            <div class="card who-to-follow">
-                <div class="trending-header">
-                    Who to follow
-                </div>
-                <div class="follow-item">
-                    <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="User" class="avatar">
-                    <div class="follow-info">
-                        <div class="username">Sarah Wilson</div>
-                        <div class="user-handle">@sarahw</div>
-                    </div>
-                    <button class="btn btn-outline">Follow</button>
-                </div>
-                <div class="follow-item">
-                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="User" class="avatar">
-                    <div class="follow-info">
-                        <div class="username">David Brown</div>
-                        <div class="user-handle">@davidb</div>
-                    </div>
-                    <button class="btn btn-outline">Follow</button>
-                </div>
+            <div id="userPostsContainer">
+                <!-- User posts will be loaded here -->
             </div>
-
-            <div class="card">
-                <div style="padding: 15px;">
-                    <h3>Twitter Tips</h3>
-                    <ul style="padding-left: 20px; margin-top: 10px;">
-                        <li>Use hashtags to join conversations</li>
-                        <li>Tag people with @ mentions</li>
-                        <li>Retweet content you find interesting</li>
-                        <li>Keep tweets under 280 characters</li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
+        </section>
     </main>
 
     <!-- Bottom Navigation -->
@@ -1573,104 +1182,32 @@
             <div class="nav-icon"><i class="fas fa-home"></i></div>
             <span>Home</span>
         </div>
-        <div class="nav-item" data-page="explorePage">
-            <div class="nav-icon"><i class="fas fa-search"></i></div>
-            <span>Explore</span>
+        <div class="nav-item" data-page="messagesPage">
+            <div class="nav-icon"><i class="fas fa-comments"></i></div>
+            <span>Messages</span>
+        </div>
+        <div class="nav-item" data-page="newPostPage">
+            <div class="nav-icon"><i class="fas fa-plus-square"></i></div>
+            <span>New Post</span>
         </div>
         <div class="nav-item" data-page="notificationsPage">
             <div class="nav-icon"><i class="fas fa-bell"></i>
-                <span class="badge" id="notificationBadge" style="display: none;">0</span>
+                <span class="badge" id="notificationBadge" style="display: none;">3</span>
             </div>
             <span>Notifications</span>
         </div>
-        <div class="nav-item" data-page="messagesPage">
-            <div class="nav-icon"><i class="fas fa-envelope"></i></div>
-            <span>Messages</span>
+        <div class="nav-item" data-page="profilePage">
+            <div class="nav-icon"><i class="fas fa-user"></i></div>
+            <span>Profile</span>
         </div>
     </nav>
 
     <!-- Floating Action Button -->
-    <button class="fab" id="floatingTweetBtn">
-        <i class="fas fa-feather-alt"></i>
+    <button class="fab" id="floatingActionBtn">
+        <i class="fas fa-edit"></i>
     </button>
 
-    <!-- Edit Profile Modal -->
-    <div class="modal-backdrop" id="editProfileModal" style="display: none;">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Edit Profile</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <form id="editProfileForm">
-                <div class="form-group">
-                    <input type="text" class="form-input" id="editDisplayName" placeholder="Display Name" required>
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-input" id="editUsername" placeholder="Username" required>
-                </div>
-                <div class="form-group">
-                    <textarea class="form-input form-textarea" id="editBio" placeholder="Bio"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Profile Picture</label>
-                    <input type="file" id="editAvatar" accept="image/*" class="form-input">
-                </div>
-                <div class="form-group">
-                    <label>Cover Photo</label>
-                    <input type="file" id="editCover" accept="image/*" class="form-input">
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Comment Modal -->
-    <div class="modal-backdrop" id="commentModal" style="display: none;">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Comments</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div id="commentsContainer">
-                <div class="spinner"></div>
-            </div>
-            <div class="comment-input">
-                <input type="text" id="commentInput" placeholder="Write a comment...">
-                <button id="postCommentBtn" class="btn btn-primary">Post</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Appwrite Configuration
-        // IMPORTANT: Replace these with your actual Appwrite project details
-        const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
-        const APPWRITE_PROJECT_ID = 'YOUR_PROJECT_ID'; // Replace with your Appwrite project ID
-        
-        // Database IDs (replace with your actual database and collection IDs)
-        const DATABASE_ID = 'YOUR_DATABASE_ID';
-        const USERS_COLLECTION_ID = 'users';
-        const POSTS_COLLECTION_ID = 'posts';
-        const COMMENTS_COLLECTION_ID = 'comments';
-        const FOLLOWS_COLLECTION_ID = 'follows';
-        const MESSAGES_COLLECTION_ID = 'messages';
-        const NOTIFICATIONS_COLLECTION_ID = 'notifications';
-        
-        // Storage Bucket IDs (replace with your actual bucket IDs)
-        const AVATARS_BUCKET_ID = 'avatars';
-        const POST_IMAGES_BUCKET_ID = 'postImages';
-        const COVERS_BUCKET_ID = 'covers';
-
-        // Initialize Appwrite
-        const client = new Appwrite.Client()
-            .setEndpoint(APPWRITE_ENDPOINT)
-            .setProject(APPWRITE_PROJECT_ID);
-
-        const account = new Appwrite.Account(client);
-        const databases = new Appwrite.Databases(client);
-        const storage = new Appwrite.Storage(client);
-        const realtime = new Appwrite.Realtime(client);
-
         // State Management
         let currentUser = null;
         let currentTheme = localStorage.getItem('theme') || 'light';
@@ -1685,29 +1222,35 @@
         const connectionStatus = document.getElementById('connectionStatus');
 
         // Initialize the app
-        async function initApp() {
-            try {
-                // Set the theme
-                setTheme(currentTheme);
-                
-                // Check if user is logged in
-                await checkAuthStatus();
-                
-                // Set up event listeners
-                setupEventListeners();
-                
-                // Load initial data if logged in
-                if (currentUser) {
-                    loadFeed();
-                    updateUnreadCount();
-                    loadStories();
-                    loadTrending();
-                    loadSuggestedUsers();
-                }
-            } catch (error) {
-                console.error('App initialization error:', error);
-                showToast('Error initializing app', 'error');
-            }
+        function initApp() {
+            // Set the theme
+            setTheme(currentTheme);
+            
+            // Check if user is logged in (simulated)
+            checkAuthStatus();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Load initial data
+            loadFeed();
+            loadNotifications();
+            loadConversations();
+            
+            // Show connection status
+            updateConnectionStatus('connected', 'Connected');
+        }
+
+        // Update connection status UI
+        function updateConnectionStatus(status, message) {
+            connectionStatus.textContent = message;
+            connectionStatus.className = `connection-status ${status}`;
+            connectionStatus.style.display = 'block';
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                connectionStatus.style.display = 'none';
+            }, 3000);
         }
 
         // Set theme function
@@ -1718,68 +1261,22 @@
         }
 
         // Check authentication status
-        async function checkAuthStatus() {
-            try {
-                const user = await account.get();
-                currentUser = {
-                    $id: user.$id,
-                    name: user.name,
-                    email: user.email,
-                };
-                
-                // Get user profile from database
-                try {
-                    const userProfile = await databases.getDocument(
-                        DATABASE_ID,
-                        USERS_COLLECTION_ID,
-                        user.$id
-                    );
-                    
-                    currentUser = {
-                        ...currentUser,
-                        ...userProfile
-                    };
-                } catch (error) {
-                    console.log('User profile not found in database, creating one...');
-                    // Create user profile in database
-                    await createUserProfile(user);
-                }
-                
-                showPage('homePage');
-            } catch (error) {
-                console.log('No active session:', error);
-                showPage('authPage');
-            }
-        }
-
-        // Create user profile in database
-        async function createUserProfile(user) {
-            try {
-                const userProfile = {
-                    userId: user.$id,
-                    displayName: user.name,
-                    username: user.name.toLowerCase().replace(/\s+/g, ''),
-                    bio: '',
-                    avatarFileId: null,
-                    coverFileId: null,
-                    createdAt: new Date().toISOString()
-                };
-                
-                await databases.createDocument(
-                    DATABASE_ID,
-                    USERS_COLLECTION_ID,
-                    user.$id, // Using user ID as document ID
-                    userProfile
-                );
-                
-                currentUser = {
-                    ...currentUser,
-                    ...userProfile
-                };
-            } catch (error) {
-                console.error('Error creating user profile:', error);
-                throw error;
-            }
+        function checkAuthStatus() {
+            // Simulate a logged-in user
+            currentUser = {
+                id: 'user1',
+                name: 'John Doe',
+                username: 'johndoe',
+                email: 'john@example.com',
+                bio: 'Digital creator | Photography enthusiast | Travel lover',
+                avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+                cover: 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
+                postsCount: 42,
+                followingCount: 256,
+                followersCount: 1200
+            };
+            
+            showPage('homePage');
         }
 
         // Show specific page
@@ -1797,14 +1294,6 @@
                     item.classList.add('active');
                 }
             });
-            
-            // Load content for the page if needed
-            if (pageId === 'homePage') loadFeed();
-            if (pageId === 'profilePage') loadProfile();
-            if (pageId === 'notificationsPage') loadNotifications();
-            if (pageId === 'messagesPage') loadConversations();
-            if (pageId === 'searchPage') initSearch();
-            if (pageId === 'explorePage') loadExploreContent();
         }
 
         // Set up event listeners
@@ -1824,18 +1313,8 @@
                 currentTheme = newTheme;
             });
             
-            // Header tweet button
-            document.getElementById('headerTweetBtn').addEventListener('click', () => {
-                showPage('newPostPage');
-            });
-            
-            // Floating tweet button
-            document.getElementById('floatingTweetBtn').addEventListener('click', () => {
-                showPage('newPostPage');
-            });
-            
-            // Quick tweet functionality
-            document.getElementById('quickTweetInput').addEventListener('input', (e) => {
+            // Quick post functionality
+            document.getElementById('quickPostInput').addEventListener('input', (e) => {
                 const count = e.target.value.length;
                 const counter = document.getElementById('charCounter');
                 counter.textContent = `${count}/280`;
@@ -1847,143 +1326,19 @@
                 else counter.classList.remove('over-limit');
             });
             
-            document.getElementById('quickTweetBtn').addEventListener('click', () => {
-                const content = document.getElementById('quickTweetInput').value.trim();
+            document.getElementById('quickPostBtn').addEventListener('click', () => {
+                const content = document.getElementById('quickPostInput').value.trim();
                 if (content && content.length <= 280) {
                     createPost(content, null);
-                    document.getElementById('quickTweetInput').value = '';
+                    document.getElementById('quickPostInput').value = '';
                     document.getElementById('charCounter').textContent = '0/280';
                     document.getElementById('charCounter').classList.remove('near-limit', 'over-limit');
                 }
             });
             
-            // Post character counter
-            document.getElementById('postContent').addEventListener('input', (e) => {
-                const count = e.target.value.length;
-                const counter = document.getElementById('postCharCounter');
-                counter.textContent = `${count}/280`;
-                
-                if (count > 260) counter.classList.add('near-limit');
-                else counter.classList.remove('near-limit');
-                
-                if (count > 280) counter.classList.add('over-limit');
-                else counter.classList.remove('over-limit');
-            });
-            
-            // Add image button
-            document.getElementById('addImageBtn').addEventListener('click', () => {
-                document.getElementById('postImage').click();
-            });
-            
-            // Add poll button
-            document.getElementById('addPollBtn').addEventListener('click', () => {
-                const pollContainer = document.getElementById('pollContainer');
-                pollContainer.style.display = pollContainer.style.display === 'none' ? 'block' : 'none';
-            });
-            
-            // Auth tabs
-            const authTabs = document.querySelectorAll('.auth-tab');
-            authTabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabName = tab.getAttribute('data-tab');
-                    authTabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    
-                    if (tabName === 'login') {
-                        document.getElementById('loginForm').style.display = 'block';
-                        document.getElementById('registerForm').style.display = 'none';
-                    } else {
-                        document.getElementById('loginForm').style.display = 'none';
-                        document.getElementById('registerForm').style.display = 'block';
-                    }
-                });
-            });
-            
-            // Login form
-            document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
-                await loginUser(email, password);
-            });
-            
-            // Register form
-            document.getElementById('registerForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const name = document.getElementById('registerName').value;
-                const username = document.getElementById('registerUsername').value;
-                const email = document.getElementById('registerEmail').value;
-                const password = document.getElementById('registerPassword').value;
-                const confirmPassword = document.getElementById('registerConfirmPassword').value;
-                
-                if (password !== confirmPassword) {
-                    showError('registerError', 'Passwords do not match');
-                    return;
-                }
-                
-                await registerUser(name, username, email, password);
-            });
-            
-            // Google login
-            document.getElementById('googleLogin').addEventListener('click', () => {
-                loginWithGoogle();
-            });
-            
-            // New post form
-            document.getElementById('newPostForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const content = document.getElementById('postContent').value;
-                const imageFile = document.getElementById('postImage').files[0];
-                
-                // Check if it's a poll
-                const pollContainer = document.getElementById('pollContainer');
-                if (pollContainer.style.display !== 'none') {
-                    const option1 = document.getElementById('pollOption1').value;
-                    const option2 = document.getElementById('pollOption2').value;
-                    
-                    if (option1 && option2) {
-                        const options = [option1, option2];
-                        const option3 = document.getElementById('pollOption3').value;
-                        const option4 = document.getElementById('pollOption4').value;
-                        
-                        if (option3) options.push(option3);
-                        if (option4) options.push(option4);
-                        
-                        await createPostWithPoll(content, options, imageFile);
-                        return;
-                    }
-                }
-                
-                await createPost(content, imageFile);
-            });
-            
-            // Edit profile button
-            document.getElementById('editProfileBtn').addEventListener('click', () => {
-                showEditProfileModal();
-            });
-            
-            // Logout button
-            document.getElementById('logoutBtn').addEventListener('click', async () => {
-                await logoutUser();
-            });
-            
-            // Close modal buttons
-            document.querySelectorAll('.close-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.getElementById('editProfileModal').style.display = 'none';
-                    document.getElementById('commentModal').style.display = 'none';
-                });
-            });
-            
-            // Edit profile form
-            document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const displayName = document.getElementById('editDisplayName').value;
-                const username = document.getElementById('editUsername').value;
-                const bio = document.getElementById('editBio').value;
-                const avatarFile = document.getElementById('editAvatar').files[0];
-                const coverFile = document.getElementById('editCover').files[0];
-                await updateProfile(displayName, username, bio, avatarFile, coverFile);
+            // Floating action button
+            document.getElementById('floatingActionBtn').addEventListener('click', () => {
+                alert('Create new post feature would open here');
             });
             
             // Back to messages button
@@ -2001,1408 +1356,394 @@
                 }
             });
             
-            // Post comment button
-            document.getElementById('postCommentBtn').addEventListener('click', postComment);
-            
-            // Comment input enter key
-            document.getElementById('commentInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    postComment();
-                }
+            // Edit profile button
+            document.getElementById('editProfileBtn').addEventListener('click', () => {
+                alert('Edit profile feature would open here');
             });
             
-            // Search input
-            document.getElementById('searchInput').addEventListener('input', handleSearch);
-            document.getElementById('globalSearch').addEventListener('input', handleGlobalSearch);
-            document.getElementById('exploreSearch').addEventListener('input', handleExploreSearch);
-            
-            // Profile stats clicks
-            document.getElementById('postsStat').addEventListener('click', () => {
-                document.getElementById('userPostsContainer').scrollIntoView({ behavior: 'smooth' });
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                alert('Logout feature would be implemented here');
             });
-            
-            document.getElementById('followingStat').addEventListener('click', () => {
-                alert('Following list would be shown here');
-            });
-            
-            document.getElementById('followersStat').addEventListener('click', () => {
-                alert('Followers list would be shown here');
-            });
-            
-            // Hashtag clicks
-            document.addEventListener('click', (e) => {
-                if (e.target.classList.contains('hashtag')) {
-                    const hashtag = e.target.textContent;
-                    showHashtagPage(hashtag);
-                }
-            });
-        }
-
-        // Show error message
-        function showError(elementId, message) {
-            const errorElement = document.getElementById(elementId);
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-            
-            setTimeout(() => {
-                errorElement.style.display = 'none';
-            }, 5000);
-        }
-
-        // Show toast notification
-        function showToast(message, type = 'default') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-
-        // Login user
-        async function loginUser(email, password) {
-            try {
-                await account.createEmailSession(email, password);
-                await checkAuthStatus();
-                showToast('Login successful!', 'success');
-            } catch (error) {
-                console.error('Login error:', error);
-                showError('loginError', 'Invalid email or password');
-            }
-        }
-
-        // Register user
-        async function registerUser(name, username, email, password) {
-            try {
-                // Create account in Appwrite
-                await account.create('unique()', email, password, name);
-                
-                // Login the user
-                await account.createEmailSession(email, password);
-                
-                // Create user profile in database
-                const user = await account.get();
-                await createUserProfile(user);
-                
-                await checkAuthStatus();
-                showToast('Registration successful!', 'success');
-            } catch (error) {
-                console.error('Registration error:', error);
-                showError('registerError', 'Registration failed. Please try again.');
-            }
-        }
-
-        // Login with Google
-        async function loginWithGoogle() {
-            try {
-                // Redirect to Google OAuth
-                account.createOAuth2Session('google', `${window.location.origin}/success.html`, `${window.location.origin}/failure.html`);
-            } catch (error) {
-                console.error('Google login error:', error);
-                showError('loginError', 'Google login failed');
-            }
-        }
-
-        // Logout user
-        async function logoutUser() {
-            try {
-                await account.deleteSession('current');
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-            
-            currentUser = null;
-            showPage('authPage');
-            showToast('Logged out successfully');
         }
 
         // Load feed posts
-        async function loadFeed() {
+        function loadFeed() {
             const feedContainer = document.getElementById('feedContainer');
             
-            if (!currentUser) {
-                feedContainer.innerHTML = `
-                    <div class="card login-prompt">
-                        <i class="fas fa-rss"></i>
-                        <h3>Login to see your feed</h3>
-                        <p>Sign in to view posts from users you follow</p>
-                        <button class="btn btn-primary mt-1" onclick="showPage('authPage')">Login</button>
+            // Sample posts data
+            const posts = [
+                {
+                    id: 'post1',
+                    userId: 'user2',
+                    user: {
+                        name: 'Jessica Parker',
+                        username: 'jessica',
+                        avatar: 'https://randomuser.me/api/portraits/women/32.jpg'
+                    },
+                    text: 'Just finished my morning hike! The view was absolutely breathtaking. 🏞️ #nature #hiking',
+                    image: 'https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80',
+                    likes: 42,
+                    comments: 5,
+                    retweets: 3,
+                    timestamp: '2 hours ago',
+                    platform: 'twitter'
+                },
+                {
+                    id: 'post2',
+                    userId: 'user3',
+                    user: {
+                        name: 'Mike Johnson',
+                        username: 'mike',
+                        avatar: 'https://randomuser.me/api/portraits/men/22.jpg'
+                    },
+                    text: 'Check out my new photography project! So excited to share this with you all.',
+                    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80',
+                    likes: 128,
+                    comments: 12,
+                    retweets: 7,
+                    timestamp: '5 hours ago',
+                    platform: 'instagram'
+                },
+                {
+                    id: 'post3',
+                    userId: 'user4',
+                    user: {
+                        name: 'Sarah Williams',
+                        username: 'sarah',
+                        avatar: 'https://randomuser.me/api/portraits/women/65.jpg'
+                    },
+                    text: 'Just launched my new website! Check it out and let me know what you think.',
+                    image: null,
+                    likes: 56,
+                    comments: 8,
+                    retweets: 2,
+                    timestamp: '1 day ago',
+                    platform: 'facebook'
+                }
+            ];
+            
+            feedContainer.innerHTML = '';
+            
+            posts.forEach(post => {
+                // Process hashtags and mentions
+                let processedContent = post.text;
+                processedContent = processedContent.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
+                processedContent = processedContent.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
+                
+                // Platform indicator
+                let platformIcon = '';
+                if (post.platform === 'twitter') {
+                    platformIcon = '<span class="platform-indicator platform-twitter"><i class="fab fa-twitter"></i></span>';
+                } else if (post.platform === 'instagram') {
+                    platformIcon = '<span class="platform-indicator platform-instagram"><i class="fab fa-instagram"></i></span>';
+                } else if (post.platform === 'facebook') {
+                    platformIcon = '<span class="platform-indicator platform-facebook"><i class="fab fa-facebook-f"></i></span>';
+                }
+                
+                const postEl = document.createElement('div');
+                postEl.className = 'card post-card';
+                postEl.innerHTML = `
+                    <div class="user-info">
+                        <img src="${post.user.avatar}" alt="${post.user.name}" class="avatar">
+                        <div>
+                            <div class="username">${post.user.name} ${platformIcon}</div>
+                            <div class="timestamp">${post.timestamp}</div>
+                        </div>
+                        <button class="btn btn-outline" style="margin-left: auto;">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                    <div class="post-content">
+                        <p>${processedContent}</p>
+                        ${post.image ? `<img src="${post.image}" alt="Post image" class="post-image">` : ''}
+                    </div>
+                    <div class="post-actions">
+                        <button class="action-btn">
+                            <i class="fas fa-heart"></i> <span>${post.likes}</span>
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-comment"></i> <span>${post.comments}</span>
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-retweet"></i> <span>${post.retweets}</span>
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-share"></i>
+                        </button>
                     </div>
                 `;
-                return;
-            }
-            
-            feedContainer.innerHTML = '<div class="spinner"></div>';
-            
-            try {
-                // Get posts from followed users
-                const follows = await databases.listDocuments(
-                    DATABASE_ID,
-                    FOLLOWS_COLLECTION_ID,
-                    [Appwrite.Query.equal('followerId', currentUser.$id)]
-                );
                 
-                const followedUserIds = follows.documents.map(f => f.followingId);
-                followedUserIds.push(currentUser.$id); // Include current user's posts
-                
-                // Get posts from followed users
-                const posts = await databases.listDocuments(
-                    DATABASE_ID,
-                    POSTS_COLLECTION_ID,
-                    [Appwrite.Query.equal('userId', followedUserIds)]
-                );
-                
-                // Sort posts by date
-                posts.documents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                
-                feedContainer.innerHTML = '';
-                
-                if (posts.documents.length === 0) {
-                    feedContainer.innerHTML = `
-                        <div class="card text-center">
-                            <div style="padding: 40px 20px;">
-                                <i class="fas fa-rss" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
-                                <h3>Your feed is empty</h3>
-                                <p>Follow some users to see their posts here</p>
-                                <button class="btn btn-primary mt-1" onclick="showPage('searchPage')">Discover Users</button>
-                            </div>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                for (const post of posts.documents) {
-                    let user;
-                    
-                    try {
-                        user = await databases.getDocument(
-                            DATABASE_ID,
-                            USERS_COLLECTION_ID,
-                            post.userId
-                        );
-                    } catch (error) {
-                        console.error('Error fetching user:', error);
-                        user = {
-                            name: 'Unknown User',
-                            username: 'unknown',
-                            avatar: 'https://randomuser.me/api/portraits/men/0.jpg'
-                        };
-                    }
-                    
-                    const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
-                    const isRetweeted = post.retweetedBy && post.retweetedBy.includes(currentUser.$id);
-                    
-                    // Process hashtags and mentions
-                    let processedContent = post.text;
-                    
-                    // Highlight hashtags
-                    processedContent = processedContent.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
-                    
-                    // Highlight mentions
-                    processedContent = processedContent.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
-                    
-                    const postEl = document.createElement('div');
-                    postEl.className = 'card post-card';
-                    postEl.innerHTML = `
-                        ${post.isRetweet ? `
-                        <div class="retweet-header">
-                            <i class="fas fa-retweet"></i> ${post.retweetedBy === currentUser.$id ? 'You' : user.name} retweeted
-                        </div>
-                        ` : ''}
-                        <div class="user-info">
-                            <img src="${user.avatar || 'https://randomuser.me/api/portraits/men/0.jpg'}" alt="${user.name}" class="avatar">
-                            <div>
-                                <div class="username">${user.name} <span class="user-handle">@${user.username}</span></div>
-                                <div class="timestamp">${formatDate(post.createdAt)}</div>
-                            </div>
-                            <button class="btn btn-outline" style="margin-left: auto;">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </div>
-                        <div class="post-content">
-                            <p>${processedContent}</p>
-                            ${post.imageFileId ? `<img src="${post.imageUrl || 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80'}" alt="Post image" class="post-image">` : ''}
-                        </div>
-                        <div class="post-actions">
-                            <button class="action-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.$id}">
-                                <i class="fas fa-heart"></i> <span>${post.likeCount || 0}</span>
-                            </button>
-                            <button class="action-btn" data-post-id="${post.$id}">
-                                <i class="fas fa-comment"></i> <span>${post.commentCount || 0}</span>
-                            </button>
-                            <button class="action-btn ${isRetweeted ? 'retweeted' : ''}" data-post-id="${post.$id}">
-                                <i class="fas fa-retweet"></i> <span>${post.retweetCount || 0}</span>
-                            </button>
-                            <button class="action-btn">
-                                <i class="fas fa-share"></i>
-                            </button>
-                        </div>
-                    `;
-                    
-                    // Add like functionality
-                    const likeBtn = postEl.querySelector('.action-btn:first-child');
-                    likeBtn.addEventListener('click', () => {
-                        toggleLike(post.$id);
-                    });
-                    
-                    // Add comment functionality
-                    const commentBtn = postEl.querySelectorAll('.action-btn')[1];
-                    commentBtn.addEventListener('click', () => {
-                        showComments(post.$id);
-                    });
-                    
-                    // Add retweet functionality
-                    const retweetBtn = postEl.querySelectorAll('.action-btn')[2];
-                    retweetBtn.addEventListener('click', () => {
-                        retweetPost(post.$id);
-                    });
-                    
-                    feedContainer.appendChild(postEl);
-                }
-            } catch (error) {
-                console.error('Error loading feed:', error);
-                feedContainer.innerHTML = `
-                    <div class="card text-center">
-                        <div style="padding: 40px 20px;">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
-                            <h3>Error loading feed</h3>
-                            <p>Please try again later</p>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        // Load stories
-        async function loadStories() {
-            const storiesContainer = document.getElementById('storiesContainer');
-            storiesContainer.innerHTML = '<div class="spinner"></div>';
-            
-            try {
-                // Get users that the current user follows
-                const follows = await databases.listDocuments(
-                    DATABASE_ID,
-                    FOLLOWS_COLLECTION_ID,
-                    [Appwrite.Query.equal('followerId', currentUser.$id)]
-                );
-                
-                const followedUserIds = follows.documents.map(f => f.followingId);
-                
-                // Get users with stories
-                const users = await databases.listDocuments(
-                    DATABASE_ID,
-                    USERS_COLLECTION_ID,
-                    [Appwrite.Query.equal('userId', followedUserIds)]
-                );
-                
-                storiesContainer.innerHTML = '';
-                
-                // Add current user's story first
-                const currentUserStory = document.createElement('div');
-                currentUserStory.className = 'story';
-                currentUserStory.innerHTML = `
-                    <div class="story-avatar">
-                        <img src="${currentUser.avatar || 'https://randomuser.me/api/portraits/men/0.jpg'}" alt="${currentUser.name}">
-                    </div>
-                    <div class="story-username">Your Story</div>
-                `;
-                storiesContainer.appendChild(currentUserStory);
-                
-                // Add other users' stories
-                for (const user of users.documents) {
-                    const story = document.createElement('div');
-                    story.className = 'story';
-                    story.innerHTML = `
-                        <div class="story-avatar">
-                            <img src="${user.avatar || 'https://randomuser.me/api/portraits/men/0.jpg'}" alt="${user.name}">
-                        </div>
-                        <div class="story-username">${user.name}</div>
-                    `;
-                    storiesContainer.appendChild(story);
-                }
-            } catch (error) {
-                console.error('Error loading stories:', error);
-                storiesContainer.innerHTML = '<p class="text-center">Error loading stories</p>';
-            }
-        }
-
-        // Load trending topics
-        async function loadTrending() {
-            const trendingContainer = document.getElementById('trendingContainer');
-            
-            try {
-                // In a real app, you would fetch trending topics from your backend
-                // For now, we'll use static data
-                
-                trendingContainer.innerHTML = `
-                    <div class="trending-item">
-                        <div class="trending-category">Trending in Technology</div>
-                        <div class="trending-name">#WebDevelopment</div>
-                        <div class="trending-count">50.5K Tweets</div>
-                    </div>
-                    <div class="trending-item">
-                        <div class="trending-category">Trending Worldwide</div>
-                        <div class="trending-name">#MondayMotivation</div>
-                        <div class="trending-count">120K Tweets</div>
-                    </div>
-                    <div class="trending-item">
-                        <div class="trending-category">Sports · Trending</div>
-                        <div class="trending-name">#ChampionsLeague</div>
-                        <div class="trending-count">35.2K Tweets</div>
-                    </div>
-                    <div class="trending-item">
-                        <div class="trending-category">Politics · Trending</div>
-                        <div class="trending-name">#ClimateAction</div>
-                        <div class="trending-count">18.7K Tweets</div>
-                    </div>
-                `;
-            } catch (error) {
-                console.error('Error loading trending:', error);
-                trendingContainer.innerHTML = '<p class="text-center">Error loading trends</p>';
-            }
-        }
-
-        // Load suggested users
-        async function loadSuggestedUsers() {
-            const suggestedUsersContainer = document.getElementById('suggestedUsers');
-            
-            try {
-                // Get random users (not followed by current user)
-                const users = await databases.listDocuments(
-                    DATABASE_ID,
-                    USERS_COLLECTION_ID,
-                    [Appwrite.Query.notEqual('userId', currentUser.$id)]
-                );
-                
-                // Get users that current user follows
-                const follows = await databases.listDocuments(
-                    DATABASE_ID,
-                    FOLLOWS_COLLECTION_ID,
-                    [Appwrite.Query.equal('followerId', currentUser.$id)]
-                );
-                
-                const followedUserIds = follows.documents.map(f => f.followingId);
-                
-                // Filter out users that current user already follows
-                const suggestedUsers = users.documents.filter(user => !followedUserIds.includes(user.userId));
-                
-                suggestedUsersContainer.innerHTML = '';
-                
-                // Show up to 3 suggested users
-                for (let i = 0; i < Math.min(3, suggestedUsers.length); i++) {
-                    const user = suggestedUsers[i];
-                    
-                    const userItem = document.createElement('div');
-                    userItem.className = 'follow-item';
-                    userItem.innerHTML = `
-                        <img src="${user.avatar || 'https://randomuser.me/api/portraits/men/0.jpg'}" alt="User" class="avatar">
-                        <div class="follow-info">
-                            <div class="username">${user.name}</div>
-                            <div class="user-handle">@${user.username}</div>
-                        </div>
-                        <button class="btn btn-outline" data-user-id="${user.userId}">Follow</button>
-                    `;
-                    
-                    // Add follow functionality
-                    const followBtn = userItem.querySelector('.btn-outline');
-                    followBtn.addEventListener('click', () => {
-                        followUser(user.userId);
-                    });
-                    
-                    suggestedUsersContainer.appendChild(userItem);
-                }
-            } catch (error) {
-                console.error('Error loading suggested users:', error);
-                suggestedUsersContainer.innerHTML = '<p class="text-center">Error loading suggestions</p>';
-            }
-        }
-
-        // Follow user
-        async function followUser(userId) {
-            if (!currentUser) {
-                showPage('authPage');
-                return;
-            }
-            
-            try {
-                await databases.createDocument(
-                    DATABASE_ID,
-                    FOLLOWS_COLLECTION_ID,
-                    'unique()',
-                    {
-                        followerId: currentUser.$id,
-                        followingId: userId,
-                        createdAt: new Date().toISOString()
-                    }
-                );
-                
-                showToast('User followed successfully');
-                loadSuggestedUsers();
-            } catch (error) {
-                console.error('Error following user:', error);
-                showToast('Error following user', 'error');
-            }
-        }
-
-        // Toggle like on a post
-        async function toggleLike(postId) {
-            if (!currentUser) {
-                showPage('authPage');
-                return;
-            }
-            
-            try {
-                // Get the post
-                const post = await databases.getDocument(
-                    DATABASE_ID,
-                    POSTS_COLLECTION_ID,
-                    postId
-                );
-                
-                const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
-                
-                if (isLiked) {
-                    // Unlike the post
-                    const updatedLikedBy = post.likedBy.filter(id => id !== currentUser.$id);
-                    await databases.updateDocument(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
-                        postId,
-                        {
-                            likedBy: updatedLikedBy,
-                            likeCount: post.likeCount - 1
-                        }
-                    );
-                } else {
-                    // Like the post
-                    const updatedLikedBy = [...(post.likedBy || []), currentUser.$id];
-                    await databases.updateDocument(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
-                        postId,
-                        {
-                            likedBy: updatedLikedBy,
-                            likeCount: post.likeCount + 1
-                        }
-                    );
-                    
-                    // Create notification if not the post owner
-                    if (post.userId !== currentUser.$id) {
-                        await databases.createDocument(
-                            DATABASE_ID,
-                            NOTIFICATIONS_COLLECTION_ID,
-                            'unique()',
-                            {
-                                userId: post.userId,
-                                type: 'like',
-                                sourceUserId: currentUser.$id,
-                                postId: postId,
-                                read: false,
-                                createdAt: new Date().toISOString()
-                            }
-                        );
-                        
-                        updateUnreadCount();
-                    }
-                }
-                
-                // Update UI
-                if (currentPage === 'homePage') {
-                    loadFeed();
-                } else if (currentPage === 'profilePage') {
-                    loadProfile();
-                }
-            } catch (error) {
-                console.error('Error toggling like:', error);
-                showToast('Error toggling like', 'error');
-            }
-        }
-
-        // Retweet a post
-        async function retweetPost(postId) {
-            if (!currentUser) {
-                showPage('authPage');
-                return;
-            }
-            
-            try {
-                // Get the post
-                const post = await databases.getDocument(
-                    DATABASE_ID,
-                    POSTS_COLLECTION_ID,
-                    postId
-                );
-                
-                const isRetweeted = post.retweetedBy && post.retweetedBy.includes(currentUser.$id);
-                
-                if (isRetweeted) {
-                    // Unretweet the post
-                    const updatedRetweetedBy = post.retweetedBy.filter(id => id !== currentUser.$id);
-                    await databases.updateDocument(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
-                        postId,
-                        {
-                            retweetedBy: updatedRetweetedBy,
-                            retweetCount: post.retweetCount - 1
-                        }
-                    );
-                } else {
-                    // Retweet the post
-                    const updatedRetweetedBy = [...(post.retweetedBy || []), currentUser.$id];
-                    await databases.updateDocument(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
-                        postId,
-                        {
-                            retweetedBy: updatedRetweetedBy,
-                            retweetCount: post.retweetCount + 1
-                        }
-                    );
-                    
-                    // Create a retweet post
-                    await databases.createDocument(
-                        DATABASE_ID,
-                        POSTS_COLLECTION_ID,
-                        'unique()',
-                        {
-                            userId: currentUser.$id,
-                            text: post.text,
-                            imageFileId: post.imageFileId,
-                            isRetweet: true,
-                            originalPostId: postId,
-                            likeCount: 0,
-                            commentCount: 0,
-                            retweetCount: 0,
-                            likedBy: [],
-                            retweetedBy: [],
-                            createdAt: new Date().toISOString()
-                        }
-                    );
-                    
-                    // Create notification if not the post owner
-                    if (post.userId !== currentUser.$id) {
-                        await databases.createDocument(
-                            DATABASE_ID,
-                            NOTIFICATIONS_COLLECTION_ID,
-                            'unique()',
-                            {
-                                userId: post.userId,
-                                type: 'retweet',
-                                sourceUserId: currentUser.$id,
-                                postId: postId,
-                                read: false,
-                                createdAt: new Date().toISOString()
-                            }
-                        );
-                        
-                        updateUnreadCount();
-                    }
-                }
-                
-                // Update UI
-                if (currentPage === 'homePage') {
-                    loadFeed();
-                } else if (currentPage === 'profilePage') {
-                    loadProfile();
-                }
-            } catch (error) {
-                console.error('Error retweeting post:', error);
-                showToast('Error retweeting post', 'error');
-            }
-        }
-
-        // Show comments for a post
-        async function showComments(postId) {
-            if (!currentUser) {
-                alert('Please login to view comments');
-                showPage('authPage');
-                return;
-            }
-            
-            currentPostId = postId;
-            document.getElementById('commentModal').style.display = 'flex';
-            await loadComments();
-        }
-
-        // Load comments for a post
-        async function loadComments() {
-            const commentsContainer = document.getElementById('commentsContainer');
-            commentsContainer.innerHTML = '<div class="spinner"></div>';
-            
-            try {
-                const comments = await databases.listDocuments(
-                    DATABASE_ID,
-                    COMMENTS_COLLECTION_ID,
-                    [Appwrite.Query.equal('postId', currentPostId)]
-                );
-                
-                // Sort comments by date
-                comments.documents.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-                
-                commentsContainer.innerHTML = '';
-                
-                if (comments.documents.length === 0) {
-                    commentsContainer.innerHTML = '<p class="text-center">No comments yet</p>';
-                } else {
-                    for (const comment of comments.documents) {
-                        let user;
-                        
-                        try {
-                            user = await databases.getDocument(
-                                DATABASE_ID,
-                                USERS_COLLECTION_ID,
-                                comment.userId
-                            );
-                        } catch (error) {
-                            console.error('Error fetching user:', error);
-                            user = {
-                                name: 'Unknown User',
-                                username: 'unknown',
-                                avatar: 'https://randomuser.me/api/portraits/men/0.jpg'
-                            };
-                        }
-                        
-                        const commentEl = document.createElement('div');
-                        commentEl.className = 'comment';
-                        commentEl.innerHTML = `
-                            <img src="${user.avatar || 'https://randomuser.me/api/portraits/men/0.jpg'}" alt="${user.name}" class="comment-avatar">
-                            <div class="comment-content">
-                                <div class="username">${user.name} <span class="user-handle">@${user.username}</span></div>
-                                <p>${comment.text}</p>
-                                <div class="timestamp">${formatDate(comment.createdAt)}</div>
-                            </div>
-                        `;
-                        commentsContainer.appendChild(commentEl);
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading comments:', error);
-                commentsContainer.innerHTML = '<p class="text-center">Error loading comments</p>';
-            }
-        }
-
-        // Post a comment
-        async function postComment() {
-            if (!currentUser) {
-                showPage('authPage');
-                return;
-            }
-            
-            const commentInput = document.getElementById('commentInput');
-            const content = commentInput.value.trim();
-            
-            if (!content) return;
-            
-            try {
-                // Create comment
-                await databases.createDocument(
-                    DATABASE_ID,
-                    COMMENTS_COLLECTION_ID,
-                    'unique()',
-                    {
-                        postId: currentPostId,
-                        userId: currentUser.$id,
-                        text: content,
-                        createdAt: new Date().toISOString()
-                    }
-                );
-                
-                // Update post comment count
-                const post = await databases.getDocument(
-                    DATABASE_ID,
-                    POSTS_COLLECTION_ID,
-                    currentPostId
-                );
-                
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    POSTS_COLLECTION_ID,
-                    currentPostId,
-                    {
-                        commentCount: (post.commentCount || 0) + 1
-                    }
-                );
-                
-                // Create notification if not the post owner
-                if (post.userId !== currentUser.$id) {
-                    await databases.createDocument(
-                        DATABASE_ID,
-                        NOTIFICATIONS_COLLECTION_ID,
-                        'unique()',
-                        {
-                            userId: post.userId,
-                            type: 'comment',
-                            sourceUserId: currentUser.$id,
-                            postId: currentPostId,
-                            read: false,
-                            createdAt: new Date().toISOString()
-                        }
-                    );
-                    
-                    updateUnreadCount();
-                }
-                
-                // Clear input and reload comments
-                commentInput.value = '';
-                await loadComments();
-                
-                // Update post in feed
-                if (currentPage === 'homePage') {
-                    await loadFeed();
-                } else if (currentPage === 'profilePage') {
-                    await loadProfile();
-                }
-            } catch (error) {
-                console.error('Error posting comment:', error);
-                showToast('Error posting comment', 'error');
-            }
-        }
-
-        // Create a new post
-        async function createPost(content, imageFile) {
-            if (!currentUser) {
-                alert('Please login to create a post');
-                showPage('authPage');
-                return;
-            }
-            
-            try {
-                let imageFileId = null;
-                
-                // Upload image if provided
-                if (imageFile) {
-                    const file = await storage.createFile(
-                        POST_IMAGES_BUCKET_ID,
-                        'unique()',
-                        imageFile
-                    );
-                    imageFileId = file.$id;
-                }
-                
-                // Create post
-                await databases.createDocument(
-                    DATABASE_ID,
-                    POSTS_COLLECTION_ID,
-                    'unique()',
-                    {
-                        userId: currentUser.$id,
-                        text: content,
-                        imageFileId: imageFileId,
-                        likeCount: 0,
-                        commentCount: 0,
-                        retweetCount: 0,
-                        likedBy: [],
-                        retweetedBy: [],
-                        createdAt: new Date().toISOString()
-                    }
-                );
-                
-                // Reset form and go back to feed
-                document.getElementById('newPostForm').reset();
-                document.getElementById('pollContainer').style.display = 'none';
-                showPage('homePage');
-                await loadFeed();
-                
-                // Show success message
-                showToast('Post created successfully!');
-            } catch (error) {
-                console.error('Error creating post:', error);
-                showToast('Error creating post. Please try again.', 'error');
-            }
-        }
-
-        // Create a post with a poll
-        async function createPostWithPoll(content, options, imageFile) {
-            if (!currentUser) {
-                alert('Please login to create a post');
-                showPage('authPage');
-                return;
-            }
-            
-            try {
-                let imageFileId = null;
-                
-                // Upload image if provided
-                if (imageFile) {
-                    const file = await storage.createFile(
-                        POST_IMAGES_BUCKET_ID,
-                        'unique()',
-                        imageFile
-                    );
-                    imageFileId = file.$id;
-                }
-                
-                // Create post with poll
-                await databases.createDocument(
-                    DATABASE_ID,
-                    POSTS_COLLECTION_ID,
-                    'unique()',
-                    {
-                        userId: currentUser.$id,
-                        text: content,
-                        imageFileId: imageFileId,
-                        pollOptions: options,
-                        pollVotes: Array(options.length).fill(0),
-                        likeCount: 0,
-                        commentCount: 0,
-                        retweetCount: 0,
-                        likedBy: [],
-                        retweetedBy: [],
-                        createdAt: new Date().toISOString()
-                    }
-                );
-                
-                // Reset form and go back to feed
-                document.getElementById('newPostForm').reset();
-                document.getElementById('pollContainer').style.display = 'none';
-                showPage('homePage');
-                await loadFeed();
-                
-                // Show success message
-                showToast('Post with poll created successfully!');
-            } catch (error) {
-                console.error('Error creating post with poll:', error);
-                showToast('Error creating post. Please try again.', 'error');
-            }
-        }
-
-        // Load user profile
-        async function loadProfile() {
-            if (!currentUser) {
-                showPage('authPage');
-                return;
-            }
-            
-            // Update profile info
-            document.getElementById('profileName').textContent = currentUser.name;
-            document.getElementById('profileBio').textContent = currentUser.bio || '';
-            document.getElementById('profileHandle').textContent = '@' + (currentUser.username || 'user');
-            document.getElementById('profileAvatar').src = currentUser.avatar || 'https://randomuser.me/api/portraits/men/1.jpg';
-            
-            // Set cover background
-            const coverEl = document.getElementById('profileCover');
-            if (currentUser.cover) {
-                coverEl.style.backgroundImage = `url(${currentUser.cover})`;
-            }
-            
-            try {
-                // Get user's posts
-                const posts = await databases.listDocuments(
-                    DATABASE_ID,
-                    POSTS_COLLECTION_ID,
-                    [Appwrite.Query.equal('userId', currentUser.$id)]
-                );
-                
-                // Get following count
-                const following = await databases.listDocuments(
-                    DATABASE_ID,
-                    FOLLOWS_COLLECTION_ID,
-                    [Appwrite.Query.equal('followerId', currentUser.$id)]
-                );
-                
-                // Get followers count
-                const followers = await databases.listDocuments(
-                    DATABASE_ID,
-                    FOLLOWS_COLLECTION_ID,
-                    [Appwrite.Query.equal('followingId', currentUser.$id)]
-                );
-                
-                // Update stats
-                document.getElementById('postsCount').textContent = posts.total;
-                document.getElementById('followingCount').textContent = following.total;
-                document.getElementById('followersCount').textContent = followers.total;
-                
-                // Load user's posts
-                const postsContainer = document.getElementById('userPostsContainer');
-                postsContainer.innerHTML = '<div class="spinner"></div>';
-                
-                // Sort posts by date
-                posts.documents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                
-                postsContainer.innerHTML = '';
-                
-                if (posts.documents.length === 0) {
-                    postsContainer.innerHTML = `
-                        <div class="card text-center">
-                            <div style="padding: 40px 20px;">
-                                <i class="fas fa-camera" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
-                                <h3>No posts yet</h3>
-                                <p>Share your first post with the world</p>
-                                <button class="btn btn-primary mt-1" onclick="showPage('newPostPage')">Create Post</button>
-                            </div>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                for (const post of posts.documents) {
-                    const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
-                    const isRetweeted = post.retweetedBy && post.retweetedBy.includes(currentUser.$id);
-                    
-                    // Process hashtags and mentions
-                    let processedContent = post.text;
-                    processedContent = processedContent.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
-                    processedContent = processedContent.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
-                    
-                    const postEl = document.createElement('div');
-                    postEl.className = 'card post-card';
-                    postEl.innerHTML = `
-                        ${post.isRetweet ? `
-                        <div class="retweet-header">
-                            <i class="fas fa-retweet"></i> You retweeted
-                        </div>
-                        ` : ''}
-                        <div class="user-info">
-                            <img src="${currentUser.avatar || 'https://randomuser.me/api/portraits/men/1.jpg'}" alt="${currentUser.name}" class="avatar">
-                            <div>
-                                <div class="username">${currentUser.name} <span class="user-handle">@${currentUser.username}</span></div>
-                                <div class="timestamp">${formatDate(post.createdAt)}</div>
-                            </div>
-                            <button class="btn btn-outline" style="margin-left: auto;">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </div>
-                        <div class="post-content">
-                            <p>${processedContent}</p>
-                            ${post.imageFileId ? `<img src="${post.imageUrl || 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80'}" alt="Post image" class="post-image">` : ''}
-                            
-                            ${post.pollOptions ? `
-                            <div class="poll-container">
-                                ${post.pollOptions.map((option, index) => `
-                                    <div class="poll-option" data-option-index="${index}">
-                                        <div>${option}</div>
-                                        <div class="poll-percentage" style="width: ${post.pollVotes && post.pollVotes[index] ? (post.pollVotes[index] / Math.max(...post.pollVotes) * 100) : 0}%"></div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                            ` : ''}
-                        </div>
-                        <div class="post-actions">
-                            <button class="action-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.$id}">
-                                <i class="fas fa-heart"></i> <span>${post.likeCount || 0}</span>
-                            </button>
-                            <button class="action-btn" data-post-id="${post.$id}">
-                                <i class="fas fa-comment"></i> <span>${post.commentCount || 0}</span>
-                            </button>
-                            <button class="action-btn ${isRetweeted ? 'retweeted' : ''}" data-post-id="${post.$id}">
-                                <i class="fas fa-retweet"></i> <span>${post.retweetCount || 0}</span>
-                            </button>
-                            <button class="action-btn">
-                                <i class="fas fa-share"></i>
-                            </button>
-                        </div>
-                    `;
-                    
-                    // Add like functionality
-                    const likeBtn = postEl.querySelector('.action-btn:first-child');
-                    likeBtn.addEventListener('click', () => {
-                        toggleLike(post.$id);
-                    });
-                    
-                    // Add comment functionality
-                    const commentBtn = postEl.querySelectorAll('.action-btn')[1];
-                    commentBtn.addEventListener('click', () => {
-                        showComments(post.$id);
-                    });
-                    
-                    // Add retweet functionality
-                    const retweetBtn = postEl.querySelectorAll('.action-btn')[2];
-                    retweetBtn.addEventListener('click', () => {
-                        retweetPost(post.$id);
-                    });
-                    
-                    // Add poll functionality if it's a poll
-                    if (post.pollOptions) {
-                        const pollOptions = postEl.querySelectorAll('.poll-option');
-                        pollOptions.forEach((option, index) => {
-                            option.addEventListener('click', () => {
-                                voteInPoll(post.$id, index);
-                            });
-                        });
-                    }
-                    
-                    postsContainer.appendChild(postEl);
-                }
-            } catch (error) {
-                console.error('Error loading profile:', error);
-                document.getElementById('userPostsContainer').innerHTML = `
-                    <div class="card text-center">
-                        <div style="padding: 40px 20px;">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
-                            <h3>Error loading profile</h3>
-                            <p>Please try again later</p>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        // Vote in a poll
-        async function voteInPoll(postId, optionIndex) {
-            if (!currentUser) {
-                showPage('authPage');
-                return;
-            }
-            
-            try {
-                // Get the post
-                const post = await databases.getDocument(
-                    DATABASE_ID,
-                    POSTS_COLLECTION_ID,
-                    postId
-                );
-                
-                // Check if user already voted
-                if (post.pollVoters && post.pollVoters.includes(currentUser.$id)) {
-                    alert('You have already voted in this poll');
-                    return;
-                }
-                
-                // Update poll votes
-                const updatedPollVotes = [...post.pollVotes];
-                updatedPollVotes[optionIndex] = (updatedPollVotes[optionIndex] || 0) + 1;
-                
-                const updatedPollVoters = [...(post.pollVoters || []), currentUser.$id];
-                
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    POSTS_COLLECTION_ID,
-                    postId,
-                    {
-                        pollVotes: updatedPollVotes,
-                        pollVoters: updatedPollVoters
-                    }
-                );
-                
-                // Update UI
-                if (currentPage === 'homePage') {
-                    loadFeed();
-                } else if (currentPage === 'profilePage') {
-                    loadProfile();
-                }
-            } catch (error) {
-                console.error('Error voting in poll:', error);
-                showToast('Error voting in poll', 'error');
-            }
-        }
-
-        // Show edit profile modal
-        function showEditProfileModal() {
-            document.getElementById('editDisplayName').value = currentUser.name;
-            document.getElementById('editUsername').value = currentUser.username || '';
-            document.getElementById('editBio').value = currentUser.bio || '';
-            document.getElementById('editProfileModal').style.display = 'flex';
-        }
-
-        // Update user profile
-        async function updateProfile(displayName, username, bio, avatarFile, coverFile) {
-            try {
-                let avatarFileId = currentUser.avatarFileId;
-                let coverFileId = currentUser.coverFileId;
-                
-                // Upload new avatar if provided
-                if (avatarFile) {
-                    const file = await storage.createFile(
-                        AVATARS_BUCKET_ID,
-                        'unique()',
-                        avatarFile
-                    );
-                    avatarFileId = file.$id;
-                }
-                
-                // Upload new cover if provided
-                if (coverFile) {
-                    const file = await storage.createFile(
-                        COVERS_BUCKET_ID,
-                        'unique()',
-                        coverFile
-                    );
-                    coverFileId = file.$id;
-                }
-                
-                // Update user profile in database
-                await databases.updateDocument(
-                    DATABASE_ID,
-                    USERS_COLLECTION_ID,
-                    currentUser.$id,
-                    {
-                        displayName: displayName,
-                        username: username,
-                        bio: bio,
-                        avatarFileId: avatarFileId,
-                        coverFileId: coverFileId
-                    }
-                );
-                
-                // Update account name
-                await account.updateName(displayName);
-                
-                // Update current user
-                currentUser.name = displayName;
-                currentUser.username = username;
-                currentUser.bio = bio;
-                
-                if (avatarFile) {
-                    // In a real app, this would be the URL from Appwrite Storage
-                    currentUser.avatar = URL.createObjectURL(avatarFile);
-                }
-                
-                if (coverFile) {
-                    currentUser.cover = URL.createObjectURL(coverFile);
-                }
-                
-                // Update UI
-                document.getElementById('profileName').textContent = displayName;
-                document.getElementById('profileBio').textContent = bio;
-                document.getElementById('profileHandle').textContent = '@' + username;
-                
-                if (avatarFile) {
-                    document.getElementById('profileAvatar').src = URL.createObjectURL(avatarFile);
-                    document.getElementById('currentUserAvatar').src = URL.createObjectURL(avatarFile);
-                }
-                
-                if (coverFile) {
-                    const coverEl = document.getElementById('profileCover');
-                    coverEl.style.backgroundImage = `url(${URL.createObjectURL(coverFile)})`;
-                }
-                
-                // Close modal
-                document.getElementById('editProfileModal').style.display = 'none';
-                
-                // Show success message
-                showToast('Profile updated successfully!');
-            } catch (error) {
-                console.error('Error updating profile:', error);
-                showToast('Error updating profile. Please try again.', 'error');
-            }
+                feedContainer.appendChild(postEl);
+            });
         }
 
         // Load notifications
-        async function loadNotifications() {
-            if (!currentUser) {
-                showPage('authPage');
-                return;
-            }
-            
+        function loadNotifications() {
             const notificationsContainer = document.getElementById('notificationsContainer');
-            notificationsContainer.innerHTML = '<div class="spinner"></div>';
             
-            try {
-                const notifications = await databases.listDocuments(
-                    DATABASE_ID,
-                    NOTIFICATIONS_COLLECTION_ID,
-                    [Appwrite.Query.equal('userId', currentUser.$id)]
-                );
-                
-                // Sort notifications by date
-                notifications.documents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                
-                notificationsContainer.innerHTML = '';
-                
-                if (notifications.documents.length === 0) {
-                    notificationsContainer.innerHTML = '<p class="text-center">No notifications yet</p>';
-                    return;
+            // Sample notifications data
+            const notifications = [
+                {
+                    id: 'notif1',
+                    type: 'like',
+                    user: {
+                        name: 'Jessica Parker',
+                        avatar: 'https://randomuser.me/api/portraits/women/32.jpg'
+                    },
+                    text: 'liked your post',
+                    timestamp: '10 minutes ago',
+                    read: false
+                },
+                {
+                    id: 'notif2',
+                    type: 'comment',
+                    user: {
+                        name: 'Mike Johnson',
+                        avatar: 'https://randomuser.me/api/portraits/men/22.jpg'
+                    },
+                    text: 'commented on your post: "Great content!"',
+                    timestamp: '2 hours ago',
+                    read: false
+                },
+                {
+                    id: 'notif3',
+                    type: 'follow',
+                    user: {
+                        name: 'Sarah Williams',
+                        avatar: 'https://randomuser.me/api/portraits/women/65.jpg'
+                    },
+                    text: 'started following you',
+                    timestamp: '1 day ago',
+                    read: true
                 }
-                
-                for (const notif of notifications.documents) {
-                    let user;
-                    
-                    try {
-                        user = await databases.getDocument(
-                            DATABASE_ID,
-                            USERS_COLLECTION_ID,
-                            notif.sourceUserId
-                        );
-                    } catch (error) {
-                        console.error('Error fetching user:', error);
-                        user = {
-                            name: 'Unknown User',
-                            avatar: 'https://randomuser.me/api/portraits/men/0.jpg'
-                        };
-                    }
-                    
-                    const notifEl = document.createElement('div');
-                    notifEl.className = `card notification-item ${notif.read ? '' : 'unread'}`;
-                    notifEl.innerHTML = `
-                        <div class="notification-icon">
-                            <i class="fas fa-${notif.type === 'like' ? 'heart' : notif.type === 'comment' ? 'comment' : notif.type === 'retweet' ? 'retweet' : 'user-plus'}"></i>
-                        </div>
-                        <div>
-                            <p><strong>${user.name}</strong> ${notif.type === 'like' ? 'liked' : notif.type === 'comment' ? 'commented on' : notif.type === 'retweet' ? 'retweeted' : 'started following'} your ${notif.type === 'follow' ? '' : 'post'}</p>
-                            <div class="timestamp">${formatDate(notif.createdAt)}</div>
-                        </div>
-                    `;
-                    notificationsContainer.appendChild(notifEl);
-                    
-                    // Mark as read when clicked
-                    if (!notif.read) {
-                        notifEl.addEventListener('click', async () => {
-                            await databases.updateDocument(
-                                DATABASE_ID,
-                                NOTIFICATIONS_COLLECTION_ID,
-                                notif.$id,
-                                { read: true }
-                            );
-                            
-                            updateUnreadCount();
-                            loadNotifications();
-                        });
-                    }
+            ];
+            
+            notificationsContainer.innerHTML = '';
+            
+            notifications.forEach(notif => {
+                const notifEl = document.createElement('div');
+                notifEl.className = `card notification-item ${notif.read ? '' : 'unread'}`;
+                notifEl.innerHTML = `
+                    <div class="notification-icon">
+                        <i class="fas fa-${notif.type === 'like' ? 'heart' : notif.type === 'comment' ? 'comment' : 'user-plus'}"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <p><strong>${notif.user.name}</strong> ${notif.text}</p>
+                        <div class="timestamp">${notif.timestamp}</div>
+                    </div>
+                `;
+                notificationsContainer.appendChild(notifEl);
+            });
+        }
+
+        // Load conversations
+        function loadConversations() {
+            const conversationsContainer = document.getElementById('conversationsContainer');
+            
+            // Sample conversations data
+            const conversations = [
+                {
+                    id: 'conv1',
+                    user: {
+                        name: 'Jessica Parker',
+                        avatar: 'https://randomuser.me/api/portraits/women/32.jpg',
+                        status: 'online'
+                    },
+                    lastMessage: 'Hey there! How are you doing?',
+                    timestamp: '10:30 AM',
+                    unread: 3
+                },
+                {
+                    id: 'conv2',
+                    user: {
+                        name: 'Mike Johnson',
+                        avatar: 'https://randomuser.me/api/portraits/men/22.jpg',
+                        status: 'offline'
+                    },
+                    lastMessage: 'Check out this new photo I took!',
+                    timestamp: 'Yesterday',
+                    unread: 0
+                },
+                {
+                    id: 'conv3',
+                    user: {
+                        name: 'Sarah Williams',
+                        avatar: 'https://randomuser.me/api/portraits/women/65.jpg',
+                        status: 'online'
+                    },
+                    lastMessage: 'Are we still meeting tomorrow?',
+                    timestamp: '2 days ago',
+                    unread: 1
                 }
-            } catch (error) {
-                console.error('Error loading notifications:', error);
-                notificationsContainer.innerHTML = '<p class="text-center">Error loading notifications</p>';
-            }
+            ];
+            
+            conversationsContainer.innerHTML = '';
+            
+            conversations.forEach(conv => {
+                const statusClass = conv.user.status === 'online' ? 'status-online' : 'status-offline';
+                
+                const convEl = document.createElement('div');
+                convEl.className = 'card';
+                convEl.style.padding = '15px';
+                convEl.style.marginBottom = '10px';
+                convEl.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <div style="position: relative;">
+                            <img src="${conv.user.avatar}" alt="${conv.user.name}" class="avatar">
+                            <div class="${statusClass}"></div>
+                        </div>
+                        <div style="flex: 1; margin-left: 10px; cursor: pointer;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div class="username">${conv.user.name}</div>
+                                <div class="timestamp">${conv.timestamp}</div>
+                            </div>
+                            <p>${conv.lastMessage}</p>
+                        </div>
+                        ${conv.unread > 0 ? `<span class="badge">${conv.unread}</span>` : ''}
+                    </div>
+                `;
+                
+                // Add click event to open chat
+                convEl.addEventListener('click', () => {
+                    currentChatUser = conv.user;
+                    document.getElementById('chatUserName').textContent = conv.user.name;
+                    showPage('chatPage');
+                    loadChat(conv.user);
+                });
+                
+                conversationsContainer.appendChild(convEl);
+            });
         }
 
-        // Update unread notification count
-        async function updateUnreadCount() {
-            if (!currentUser) return;
+        // Load chat with a user
+        function loadChat(user) {
+            const messageThread = document.getElementById('messageThread');
             
-            try {
-                const notifications = await databases.listDocuments(
-                    DATABASE_ID,
-                    NOTIFICATIONS_COLLECTION_ID,
-                    [
-                        Appwrite.Query.equal('userId', currentUser.$id),
-                        Appwrite.Query.equal('read', false)
-                    ]
-                );
-                
-                const badge = document.getElementById('notificationBadge');
-                if (notifications.total > 0) {
-                    badge.textContent = notifications.total;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
+            // Sample messages data
+            const messages = [
+                {
+                    id: 'msg1',
+                    sender: user,
+                    text: 'Hey there! How are you doing?',
+                    timestamp: '10:25 AM',
+                    type: 'received'
+                },
+                {
+                    id: 'msg2',
+                    sender: currentUser,
+                    text: "I'm doing great! Just finished working on a new project.",
+                    timestamp: '10:28 AM',
+                    type: 'sent'
+                },
+                {
+                    id: 'msg3',
+                    sender: user,
+                    text: 'That sounds exciting! What kind of project?',
+                    timestamp: '10:30 AM',
+                    type: 'received'
                 }
-            } catch (error) {
-                console.error('Error updating unread count:', error);
-            }
+            ];
+            
+            messageThread.innerHTML = '';
+            
+            messages.forEach(msg => {
+                const messageEl = document.createElement('div');
+                messageEl.className = `message ${msg.type}`;
+                messageEl.innerHTML = `
+                    <div>${msg.text}</div>
+                    <div class="message-time">${msg.timestamp}</div>
+                `;
+                messageThread.appendChild(messageEl);
+            });
+            
+            // Scroll to bottom
+            messageThread.scrollTop = messageThread.scrollHeight;
         }
 
-        // Load explore content
-        async function loadExploreContent() {
-            const exploreContent = document.getElementById('exploreContent');
-            exploreContent.innerHTML = '<div class="spinner"></div>';
+        // Send a message
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const content = messageInput.value.trim();
             
-            try {
-                // In a real app, you would fetch trending content from your backend
-                // For now, we'll use static content
+            if (!content) return;
+            
+            const messageThread = document.getElementById('messageThread');
+            
+            // Create new message element
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message sent';
+            messageEl.innerHTML = `
+                <div>${content}</div>
+                <div class="message-time">Just now</div>
+            `;
+            
+            messageThread.appendChild(messageEl);
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Scroll to bottom
+            messageThread.scrollTop = messageThread.scrollHeight;
+            
+            // Simulate reply after a short delay
+            setTimeout(() => {
+                const replyEl = document.createElement('div');
+                replyEl.className = 'message received';
+                replyEl.innerHTML = `
+                    <div>Thanks for your message! I'll get back to you soon.</div>
+                    <div class="message-time">Just now</div>
+                `;
                 
-                setTimeout(() => {
-                    exploreContent.innerHTML = `
-                        <div class="card trending-section">
-                            <div class="trending-header">
-                                Trends for you
-                            </div>
-                            <div class="trending-item">
-                                <div class="trending-category">Technology · Trending</div>
-                                <div class="trending-name">#JavaScript</div>
-                                <div class="trending-count">50.5K Tweets</div>
-                            </div>
-                            <div class="trending-item">
-                                <div class="trending-category">Entertainment · Trending</div>
-                                <div class="trending-name">New Movie Release</div>
-                                <div class="trending-count">45.2K Tweets</div>
-                            </div>
-                            <div class="trending-item">
-                                <div class="trending-category">Sports · Trending</div>
-                                <div class="trending-name">#WorldCup2026</div>
-                                <div class="trending-count">150K Tweets</div>
-                            </div>
-                        </div>
-                        
-                        <div class="card">
-                            <div class="trending-header">
-                                Popular posts
-                            </div>
-                            <div class="post-card">
-                                <div class="user-info">
-                                    <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="User" class="avatar">
-                                    <div>
-                                        <div class="username">John Doe <span class="user-handle">@johndoe</span></div>
-                                        <div class="timestamp">2h ago</div>
-                                    </div>
-                                </div>
-                                <div class="post-content">
-                                    <p>Just launched my new website! Check it out at example.com #webdev #launch</p>
-                                </div>
-                                <div class="post-actions">
-                                    <button class="action-btn"><i class="fas fa-heart"></i> 245</button>
-                                    <button class="action-btn"><i class="fas fa-comment"></i> 32</button>
-                                    <button class="action-btn"><i class="fas fa-retweet"></i> 45</button>
-                                </div>
-                            </div>
-                            <div class="post-card">
-                                <div class="user-info">
-                                    <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="User" class="avatar">
-                                    <div>
-                                        <div class="username">Jane Smith <span class="user-handle">@janesmith</span></div>
-                                        <div class="timestamp">5h ago</div>
-                                    </div>
-                                </div>
-                                <div class="post-content">
-                                    <p>Beautiful sunset at the beach today! 🌅 #sunset #beach #vacation</p>
-                                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80" alt="Sunset" class="post-image">
-                                </div>
-                                <div class="post-actions">
-                                    <button class="action-btn"><i class="fas fa-heart"></i> 512</button>
-                                    <button class="action-btn"><i class="fas fa-comment"></i> 47</button>
-                                    <button class="action-btn"><i class="fas fa-retweet"></i> 89</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }, 1000);
-            } catch (error) {
-                console.error('Error loading explore content:', error);
-                exploreContent.innerHTML = '<p class="text-center">Error loading explore content</p>';
-            }
+                messageThread.appendChild(replyEl);
+                
+                // Scroll to bottom
+                messageThread.scrollTop = messageThread.scrollHeight;
+            }, 1000);
         }
 
-        // Handle global search
-        function handleGlobalSearch() {
-            const query = document.getElementById('globalSearch').value.toLowerCase();
-            if (query.length > 2) {
-                showPage('searchPage');
-                document.getElementById('searchInput').value = query;
-                handleSearch();
-            }
-        }
-
-        // Handle explore search
-        function handleExploreSearch() {
-            const query = document.getElementById('exploreSearch').value.toLowerCase();
-            if (query.length > 2) {
-                // In a real app, you would search through posts, users, and hashtags
-                alert(`Searching for: ${query}`);
-            }
-        }
-
-        // Show hashtag page
-        function showHashtagPage(hashtag) {
-            alert(`Showing posts for ${hashtag}`);
-            // In a real app, you would filter posts by the hashtag
-        }
-
-        // Format date
-        function formatDate(date) {
-            const now = new Date();
-            const diff = now - new Date(date);
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(diff / 3600000);
-            const days = Math.floor(diff / 86400000);
+        // Create a new post
+        function createPost(content, imageFile) {
+            const feedContainer = document.getElementById('feedContainer');
             
-            if (minutes < 1) return 'Just now';
-            if (minutes < 60) return `${minutes}m ago`;
-            if (hours < 24) return `${hours}h ago`;
-            if (days < 7) return `${days}d ago`;
+            // Create new post element
+            const postEl = document.createElement('div');
+            postEl.className = 'card post-card';
+            postEl.innerHTML = `
+                <div class="user-info">
+                    <img src="${currentUser.avatar}" alt="${currentUser.name}" class="avatar">
+                    <div>
+                        <div class="username">${currentUser.name} <span class="platform-indicator platform-twitter"><i class="fab fa-twitter"></i></span></div>
+                        <div class="timestamp">Just now</div>
+                    </div>
+                    <button class="btn btn-outline" style="margin-left: auto;">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+                <div class="post-content">
+                    <p>${content}</p>
+                </div>
+                <div class="post-actions">
+                    <button class="action-btn">
+                        <i class="fas fa-heart"></i> <span>0</span>
+                    </button>
+                    <button class="action-btn">
+                        <i class="fas fa-comment"></i> <span>0</span>
+                    </button>
+                    <button class="action-btn">
+                        <i class="fas fa-retweet"></i> <span>0</span>
+                    </button>
+                    <button class="action-btn">
+                        <i class="fas fa-share"></i>
+                    </button>
+                </div>
+            `;
             
-            return new Date(date).toLocaleDateString();
+            // Add to the top of the feed
+            feedContainer.insertBefore(postEl, feedContainer.firstChild);
+            
+            // Show success message
+            alert('Post created successfully!');
         }
 
         // Initialize the app when the DOM is loaded

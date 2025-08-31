@@ -3,24 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect - Social Media App</title>
+    <title>My Crush - Social Media App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@10.0.0"></script>
     <style>
         :root {
-            --twitter-blue: #1da1f2;
-            --instagram-purple: #833ab4;
-            --facebook-blue: #1877f2;
-            --whatsapp-green: #25d366;
-            --telegram-blue: #0088cc;
+            --primary-color: #e91e63;
+            --primary-light: #f8bbd0;
+            --primary-dark: #ad1457;
+            --secondary-color: #03a9f4;
             --text-color: #333;
-            --bg-color: #f0f2f5;
+            --bg-color: #f5f5f5;
             --card-bg: #ffffff;
             --border-color: #e0e0e0;
-            --success-color: #17bf63;
-            --error-color: #e0245e;
-            --warning-color: #ffad1f;
-            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --success-color: #4caf50;
+            --error-color: #f44336;
+            --warning-color: #ff9800;
+            --shadow: 0 2px 10px rgba(0,0,0,0.08);
             --transition: all 0.3s ease;
+            --gradient: linear-gradient(135deg, #e91e63 0%, #03a9f4 100%);
         }
 
         [data-theme="dark"] {
@@ -28,7 +29,7 @@
             --bg-color: #121212;
             --card-bg: #1e1e1e;
             --border-color: #333;
-            --shadow: 0 2px 4px rgba(0,0,0,0.4);
+            --shadow: 0 2px 10px rgba(0,0,0,0.4);
         }
 
         * {
@@ -44,6 +45,18 @@
             line-height: 1.6;
             transition: var(--transition);
             padding-bottom: 60px;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-family: inherit;
         }
 
         .container {
@@ -68,12 +81,27 @@
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
-            background: linear-gradient(45deg, var(--twitter-blue), var(--instagram-purple), var(--whatsapp-green));
+            background: var(--gradient);
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .search-toggle {
             background: none;
             border: none;
             cursor: pointer;
@@ -91,7 +119,7 @@
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
-            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             z-index: 100;
         }
 
@@ -102,19 +130,21 @@
             font-size: 0.8rem;
             color: var(--text-color);
             position: relative;
+            transition: var(--transition);
         }
 
         .nav-item.active {
-            color: var(--twitter-blue);
+            color: var(--primary-color);
         }
 
         .nav-icon {
             font-size: 1.2rem;
             margin-bottom: 4px;
+            transition: var(--transition);
         }
 
         .badge {
-            background-color: var(--error-color);
+            background-color: var(--primary-color);
             color: white;
             border-radius: 50%;
             width: 18px;
@@ -131,20 +161,20 @@
         /* Cards */
         .card {
             background-color: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: var(--shadow);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             overflow: hidden;
-            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .post-card {
             padding: 15px;
-            transition: var(--transition);
-        }
-
-        .post-card:hover {
-            background-color: rgba(29, 161, 242, 0.03);
         }
 
         .user-info {
@@ -159,80 +189,68 @@
             border-radius: 50%;
             object-fit: cover;
             margin-right: 10px;
+            border: 2px solid var(--primary-light);
         }
 
         .username {
             font-weight: bold;
         }
 
-        .user-handle {
-            color: #657786;
-            font-size: 0.9rem;
-            margin-left: 5px;
-        }
-
         .timestamp {
             font-size: 0.8rem;
-            color: #657786;
-            margin-left: auto;
+            color: #888;
         }
 
         .post-content {
             margin-bottom: 15px;
-            font-size: 1.1rem;
-            line-height: 1.4;
         }
 
         .post-image {
             width: 100%;
-            border-radius: 16px;
+            border-radius: 8px;
             margin-top: 10px;
-            max-height: 300px;
+            max-height: 400px;
             object-fit: cover;
-            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .post-image:hover {
+            transform: scale(1.02);
         }
 
         .post-actions {
             display: flex;
             justify-content: space-around;
-            padding-top: 10px;
-            margin-top: 10px;
             border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+            margin-top: 10px;
         }
 
         .action-btn {
             display: flex;
             align-items: center;
-            color: #657786;
+            color: var(--text-color);
             font-size: 0.9rem;
             position: relative;
-            padding: 5px 10px;
+            padding: 8px 15px;
             border-radius: 20px;
             transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background-color: rgba(233, 30, 99, 0.1);
         }
 
         .action-btn i {
             margin-right: 5px;
         }
 
-        .action-btn:hover {
-            background-color: rgba(29, 161, 242, 0.1);
-        }
-
         .action-btn.liked {
-            color: #e0245e;
+            color: var(--primary-color);
         }
 
-        .action-btn.liked:hover {
-            background-color: rgba(224, 36, 94, 0.1);
-        }
-
-        .action-btn.retweeted {
-            color: #17bf63;
-        }
-
-        .action-btn.retweeted:hover {
-            background-color: rgba(23, 191, 99, 0.1);
+        .action-btn.bookmarked {
+            color: var(--secondary-color);
         }
 
         /* Forms */
@@ -242,36 +260,69 @@
 
         .form-input {
             width: 100%;
-            padding: 12px;
+            padding: 12px 15px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 8px;
             background-color: var(--card-bg);
             color: var(--text-color);
             font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
         }
 
         .form-textarea {
             min-height: 120px;
             resize: vertical;
-            font-family: inherit;
-            line-height: 1.4;
         }
 
         .btn {
-            padding: 13px 20px;
-            border-radius: 50px;
+            padding: 12px 20px;
+            border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
             transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-right: 8px;
         }
 
         .btn-primary {
-            background-color: var(--twitter-blue);
+            background-color: var(--primary-color);
             color: white;
         }
 
         .btn-primary:hover {
-            background-color: #1a91da;
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #0288d1;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(0,0,0,0.05);
         }
 
         .btn-block {
@@ -282,49 +333,40 @@
         .page {
             display: none;
             padding: 15px;
+            animation: fadeIn 0.3s ease;
         }
 
         .page.active {
             display: block;
         }
 
-        /* Stories */
-        .stories-container {
+        /* Auth pages */
+        .auth-container {
+            max-width: 400px;
+            margin: 30px auto;
+        }
+
+        .auth-tabs {
             display: flex;
-            overflow-x: auto;
-            padding: 10px 0;
-            margin-bottom: 15px;
-            scrollbar-width: none;
-        }
-
-        .stories-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        .story {
-            flex: 0 0 auto;
-            width: 80px;
-            margin-right: 10px;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .story-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--instagram-purple);
-            padding: 2px;
-            background-color: var(--card-bg);
-        }
-
-        .story-username {
-            font-size: 0.7rem;
-            margin-top: 5px;
-            white-space: nowrap;
+            margin-bottom: 20px;
+            border-radius: 8px;
             overflow: hidden;
-            text-overflow: ellipsis;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow);
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .auth-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
         }
 
         /* Messages */
@@ -341,11 +383,11 @@
             max-width: 80%;
             word-wrap: break-word;
             position: relative;
+            animation: slideIn 0.3s ease;
         }
 
         .message.sent {
-            background-color: var(--twitter-blue);
-            color: white;
+            background-color: var(--primary-light);
             margin-left: auto;
             border-bottom-right-radius: 4px;
         }
@@ -354,12 +396,11 @@
             background-color: var(--card-bg);
             margin-right: auto;
             border-bottom-left-radius: 4px;
-            border: 1px solid var(--border-color);
         }
 
         .message-time {
             font-size: 0.7rem;
-            color: #657786;
+            color: #888;
             margin-top: 5px;
             text-align: right;
         }
@@ -377,7 +418,7 @@
 
         .message-input input {
             flex: 1;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border: 1px solid var(--border-color);
             border-radius: 20px;
             margin-right: 10px;
@@ -391,22 +432,27 @@
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
+            transition: var(--transition);
+        }
+
+        .notification-item:hover {
+            background-color: rgba(0,0,0,0.03);
         }
 
         .notification-item.unread {
-            background-color: rgba(29, 161, 242, 0.05);
+            background-color: var(--primary-light);
         }
 
         .notification-icon {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: #e6f7ff;
+            background-color: var(--primary-light);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 15px;
-            color: var(--twitter-blue);
+            color: var(--primary-color);
         }
 
         /* Profile */
@@ -416,22 +462,14 @@
             position: relative;
         }
 
-        .profile-cover {
-            height: 150px;
-            border-radius: 16px 16px 0 0;
-            margin: -20px -20px 20px -20px;
-            background: linear-gradient(45deg, var(--twitter-blue), var(--instagram-purple));
-        }
-
         .profile-avatar {
             width: 100px;
             height: 100px;
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 15px;
-            border: 4px solid var(--card-bg);
-            margin-top: -50px;
-            background-color: var(--card-bg);
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         .profile-stats {
@@ -446,6 +484,13 @@
         .stat {
             text-align: center;
             cursor: pointer;
+            transition: var(--transition);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .stat:hover {
+            background-color: rgba(0,0,0,0.05);
         }
 
         .stat-value {
@@ -455,7 +500,47 @@
 
         .stat-label {
             font-size: 0.8rem;
-            color: #657786;
+            color: #888;
+        }
+
+        /* Search */
+        .search-container {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        .user-list {
+            margin-top: 15px;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .user-item:hover {
+            background-color: rgba(0,0,0,0.03);
         }
 
         /* Utilities */
@@ -468,10 +553,30 @@
         .mb-1 { margin-bottom: 10px; }
         .mb-2 { margin-bottom: 20px; }
 
+        /* Responsive */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .bottom-nav {
+                display: none;
+            }
+
+            .desktop-nav {
+                display: flex;
+            }
+
+            body {
+                padding-bottom: 0;
+            }
+        }
+
         /* Loading spinner */
         .spinner {
             border: 3px solid var(--border-color);
-            border-top: 3px solid var(--twitter-blue);
+            border-top: 3px solid var(--primary-color);
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -484,217 +589,533 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Floating action button */
-        .fab {
+        /* Modal */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        /* Comment section */
+        .comments-container {
+            margin-top: 15px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .comment {
+            display: flex;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .comment-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        .comment-content {
+            flex: 1;
+            background-color: var(--bg-color);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .comment-input {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .comment-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            margin-right: 10px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        /* Login prompt */
+        .login-prompt {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .login-prompt i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        /* Error message */
+        .error-message {
+            background-color: var(--error-color);
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Success message */
+        .success-message {
+            background-color: var(--success-color);
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Appwrite connection status */
+        .connection-status {
+            position: fixed;
+            top: 70px;
+            right: 15px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            z-index: 1000;
+        }
+
+        .connection-status.connected {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .connection-status.disconnected {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        /* Story section */
+        .stories-container {
+            display: flex;
+            overflow-x: auto;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .story {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .story-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+            padding: 2px;
+            margin-bottom: 5px;
+        }
+
+        .story-username {
+            font-size: 0.7rem;
+            max-width: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        .skeleton-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .skeleton-text {
+            height: 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+        }
+
+        .skeleton-text.short {
+            width: 60%;
+        }
+
+        .skeleton-image {
+            height: 200px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-10px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* New post floating button */
+        .floating-btn {
             position: fixed;
             bottom: 80px;
             right: 20px;
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background-color: var(--twitter-blue);
+            background: var(--gradient);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             z-index: 99;
+            transition: var(--transition);
         }
 
-        /* Character counter */
-        .char-counter {
-            text-align: right;
-            font-size: 0.8rem;
-            color: #657786;
-            margin-top: 5px;
+        .floating-btn:hover {
+            transform: translateY(-3px) rotate(90deg);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
 
-        .char-counter.near-limit {
-            color: #ffad1f;
+        /* Enhanced post options */
+        .post-options {
+            position: absolute;
+            top: 15px;
+            right: 15px;
         }
 
-        .char-counter.over-limit {
-            color: #e0245e;
-        }
-
-        /* Platform indicators */
-        .platform-indicator {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
+        .options-btn {
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
-            margin-left: 5px;
-            text-align: center;
-            line-height: 20px;
-            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
         }
-        
-        .platform-twitter {
-            background-color: var(--twitter-blue);
-            color: white;
+
+        .options-btn:hover {
+            background-color: rgba(0,0,0,0.1);
         }
-        
-        .platform-instagram {
-            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-            color: white;
+
+        .options-menu {
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            width: 150px;
+            z-index: 10;
+            overflow: hidden;
+            display: none;
         }
-        
-        .platform-facebook {
-            background-color: var(--facebook-blue);
-            color: white;
+
+        .options-menu.show {
+            display: block;
+            animation: slideUp 0.2s ease;
         }
-        
-        .platform-whatsapp {
-            background-color: var(--whatsapp-green);
-            color: white;
+
+        .option-item {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
         }
-        
-        .platform-telegram {
-            background-color: var(--telegram-blue);
-            color: white;
+
+        .option-item:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .option-item i {
+            margin-right: 10px;
+        }
+
+        /* Dark mode improvements */
+        [data-theme="dark"] .skeleton {
+            background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+            background-size: 200% 100%;
+        }
+
+        [data-theme="dark"] .action-btn:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        [data-theme="dark"] .stat:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        [data-theme="dark"] .user-item:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        [data-theme="dark"] .notification-item:hover {
+            background-color: rgba(255,255,255,0.05);
         }
     </style>
 </head>
 <body>
+    <!-- Appwrite Connection Status -->
+    <div id="connectionStatus" class="connection-status" style="display: none;">Connecting to Appwrite...</div>
+
     <!-- Header -->
     <header class="header">
-        <div class="logo">Connect</div>
-        <button class="theme-toggle" id="themeToggle">
-            <i class="fas fa-moon"></i>
-        </button>
+        <div class="logo">My Crush</div>
+        <div class="header-actions">
+            <button class="search-toggle" id="searchToggle">
+                <i class="fas fa-search"></i>
+            </button>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
     </header>
+
+    <!-- Search Bar -->
+    <div class="search-container" id="searchBar" style="display: none;">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="search-input" id="globalSearch" placeholder="Search users, posts, or tags...">
+    </div>
 
     <!-- Main Content -->
     <main class="container">
         <!-- Home/Feed Page -->
         <section id="homePage" class="page active">
-            <div class="stories-container">
-                <div class="story">
-                    <div style="position: relative;">
-                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="User" class="story-avatar">
-                    </div>
-                    <div class="story-username">Your Story</div>
-                </div>
-                <div class="story">
-                    <div style="position: relative;">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="User" class="story-avatar">
-                    </div>
-                    <div class="story-username">Alex</div>
-                </div>
-                <div class="story">
-                    <div style="position: relative;">
-                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="User" class="story-avatar">
-                    </div>
-                    <div class="story-username">Taylor</div>
-                </div>
-                <div class="story">
-                    <div style="position: relative;">
-                        <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="User" class="story-avatar">
-                    </div>
-                    <div class="story-username">Jordan</div>
-                </div>
+            <h2 class="text-center">Your Feed</h2>
+            
+            <!-- Stories Section -->
+            <div class="stories-container" id="storiesContainer">
+                <div class="spinner"></div>
             </div>
-
-            <div class="card">
-                <div class="user-info" style="padding: 15px 15px 0;">
-                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="User" class="avatar">
-                    <div style="flex: 1;">
-                        <input type="text" class="form-input" placeholder="What's happening?" id="quickPostInput">
-                    </div>
-                </div>
-                <div style="padding: 10px 15px 15px; text-align: right;">
-                    <span class="char-counter" id="charCounter">0/280</span>
-                    <button class="btn btn-primary" id="quickPostBtn">Post</button>
-                </div>
-            </div>
-
+            
             <div id="feedContainer">
-                <!-- Posts will be loaded here -->
+                <div class="spinner"></div>
             </div>
         </section>
 
         <!-- Messages Page -->
         <section id="messagesPage" class="page">
             <h2 class="text-center">Messages</h2>
-            <div class="search-container">
-                <div style="position: relative;">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="search-input" id="messageSearch" placeholder="Search messages...">
-                </div>
-            </div>
             <div id="conversationsContainer">
-                <!-- Conversations will be loaded here -->
+                <div class="spinner"></div>
             </div>
         </section>
 
         <!-- Chat Page -->
         <section id="chatPage" class="page">
-            <div class="card" style="margin-bottom: 0; border-radius: 0; border-left: none; border-right: none;">
-                <div class="user-info" style="padding: 10px 15px;">
-                    <button id="backToMessages" class="back-btn" style="margin-right: 10px;"><i class="fas fa-arrow-left"></i></button>
-                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="User" class="avatar">
-                    <div>
-                        <div class="username" id="chatUserName">Alex Johnson</div>
-                        <div class="user-handle">Online</div>
-                    </div>
-                </div>
+            <div class="chat-header" style="display: flex; align-items: center; padding: 15px; border-bottom: 1px solid var(--border-color);">
+                <button id="backToMessages" class="back-btn" style="margin-right: 15px;"><i class="fas fa-arrow-left"></i></button>
+                <img src="" alt="" class="avatar" id="chatUserAvatar" style="width: 40px; height: 40px;">
+                <h3 id="chatUserName" style="margin-left: 10px;">User Name</h3>
             </div>
             <div class="message-thread" id="messageThread">
-                <!-- Messages will be loaded here -->
+                <div class="spinner"></div>
             </div>
             <div class="message-input">
-                <button class="btn" style="font-size: 1.2rem;">
-                    <i class="fas fa-paperclip"></i>
-                </button>
                 <input type="text" id="messageInput" placeholder="Type a message...">
-                <button id="sendMessageBtn" class="btn btn-primary">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+                <button id="sendMessageBtn" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
             </div>
+        </section>
+
+        <!-- New Post Page -->
+        <section id="newPostPage" class="page">
+            <h2 class="text-center">Create Post</h2>
+            <form id="newPostForm">
+                <div class="form-group">
+                    <textarea class="form-input form-textarea" id="postContent" placeholder="What's on your mind? (280 characters max)" maxlength="280" required></textarea>
+                    <div style="text-align: right; font-size: 0.8rem; margin-top: 5px;">
+                        <span id="charCount">0</span>/280
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="postImage" class="btn btn-outline" style="display: inline-block;">
+                        <i class="fas fa-image"></i> Add Image
+                    </label>
+                    <input type="file" id="postImage" accept="image/*" style="display: none;">
+                    <div id="imagePreview" style="margin-top: 10px; display: none;">
+                        <img src="" alt="Preview" style="max-width: 100%; border-radius: 8px;">
+                        <button type="button" id="removeImage" class="btn btn-outline" style="margin-top: 10px;">
+                            <i class="fas fa-times"></i> Remove Image
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-paper-plane"></i> Post
+                </button>
+            </form>
         </section>
 
         <!-- Notifications Page -->
         <section id="notificationsPage" class="page">
             <h2 class="text-center">Notifications</h2>
             <div id="notificationsContainer">
-                <!-- Notifications will be loaded here -->
+                <div class="spinner"></div>
             </div>
         </section>
 
         <!-- Profile Page -->
         <section id="profilePage" class="page">
-            <div class="card">
-                <div class="profile-cover"></div>
-                <div class="profile-header">
-                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Profile" class="profile-avatar" id="profileAvatar">
-                    <h2 id="profileName">Your Name</h2>
-                    <p id="profileBio">Welcome to your profile! Start sharing your moments.</p>
-                    <p id="profileHandle">@yourusername</p>
-                    <div style="margin-top: 15px;">
-                        <button class="btn btn-primary" id="editProfileBtn">Edit Profile</button>
-                    </div>
+            <div class="profile-header">
+                <img src="" alt="Profile" class="profile-avatar" id="profileAvatar">
+                <h2 id="profileName">User Name</h2>
+                <p id="profileBio">Bio goes here</p>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                    <button class="btn btn-primary" id="editProfileBtn">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                    <button class="btn btn-secondary" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
                 </div>
-                <div class="profile-stats">
-                    <div class="stat" id="postsStat">
-                        <div class="stat-value" id="postsCount">0</div>
-                        <div class="stat-label">Posts</div>
-                    </div>
-                    <div class="stat" id="followingStat">
-                        <div class="stat-value" id="followingCount">0</div>
-                        <div class="stat-label">Following</div>
-                    </div>
-                    <div class="stat" id="followersStat">
-                        <div class="stat-value" id="followersCount">0</div>
-                        <div class="stat-label">Followers</div>
-                    </div>
+            </div>
+            <div class="profile-stats">
+                <div class="stat" id="postsStat">
+                    <div class="stat-value" id="postsCount">0</div>
+                    <div class="stat-label">Posts</div>
+                </div>
+                <div class="stat" id="followingStat">
+                    <div class="stat-value" id="followingCount">0</div>
+                    <div class="stat-label">Following</div>
+                </div>
+                <div class="stat" id="followersStat">
+                    <div class="stat-value" id="followersCount">0</div>
+                    <div class="stat-label">Followers</div>
                 </div>
             </div>
             <div id="userPostsContainer">
-                <!-- User posts will be loaded here -->
+                <div class="spinner"></div>
+            </div>
+        </section>
+
+        <!-- Search Page -->
+        <section id="searchPage" class="page">
+            <h2 class="text-center">Search</h2>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search users...">
+            </div>
+            <div id="searchResults">
+                <p class="text-center">Start typing to search for users</p>
+            </div>
+        </section>
+
+        <!-- Auth Pages -->
+        <section id="authPage" class="page">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" data-tab="login">Login</div>
+                    <div class="auth-tab" data-tab="register">Register</div>
+                </div>
+                
+                <form id="loginForm" class="auth-form">
+                    <div id="loginError" class="error-message" style="display: none;"></div>
+                    <div class="form-group">
+                        <input type="email" class="form-input" id="loginEmail" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="loginPassword" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <div class="text-center mt-2">
+                        <button type="button" class="btn btn-secondary" id="googleLogin">
+                            <i class="fab fa-google"></i> Login with Google
+                        </button>
+                    </div>
+                    <div class="text-center mt-2">
+                        <button type="button" id="continueAsGuest" class="btn btn-outline">
+                            Continue as Guest
+                        </button>
+                    </div>
+                </form>
+
+                <form id="registerForm" class="auth-form" style="display: none;">
+                    <div id="registerError" class="error-message" style="display: none;"></div>
+                    <div class="form-group">
+                        <input type="text" class="form-input" id="registerName" placeholder="Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-input" id="registerEmail" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="registerPassword" placeholder="Password" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="registerConfirmPassword" placeholder="Confirm Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-user-plus"></i> Register
+                    </button>
+                </form>
             </div>
         </section>
     </main>
+
+    <!-- Floating Action Button -->
+    <button class="floating-btn" id="newPostFloatBtn">
+        <i class="fas fa-plus"></i>
+    </button>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
@@ -705,6 +1126,10 @@
         <div class="nav-item" data-page="messagesPage">
             <div class="nav-icon"><i class="fas fa-comments"></i></div>
             <span>Messages</span>
+        </div>
+        <div class="nav-item" data-page="newPostPage">
+            <div class="nav-icon"><i class="fas fa-plus-square"></i></div>
+            <span>New Post</span>
         </div>
         <div class="nav-item" data-page="notificationsPage">
             <div class="nav-icon"><i class="fas fa-bell"></i>
@@ -718,33 +1143,216 @@
         </div>
     </nav>
 
-    <!-- Floating Action Button -->
-    <button class="fab" id="floatingActionBtn">
-        <i class="fas fa-edit"></i>
-    </button>
+    <!-- Edit Profile Modal -->
+    <div class="modal-backdrop" id="editProfileModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Profile</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <input type="text" class="form-input" id="editDisplayName" placeholder="Display Name" required>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-input form-textarea" id="editBio" placeholder="Bio"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editAvatar" class="btn btn-outline" style="display: inline-block;">
+                        <i class="fas fa-camera"></i> Change Avatar
+                    </label>
+                    <input type="file" id="editAvatar" accept="image/*" style="display: none;">
+                    <div id="avatarPreview" style="margin-top: 10px; display: none;">
+                        <img src="" alt="Preview" style="max-width: 100px; border-radius: 8px;">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Comment Modal -->
+    <div class="modal-backdrop" id="commentModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Comments</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div id="commentsContainer">
+                <div class="spinner"></div>
+            </div>
+            <div class="comment-input">
+                <input type="text" id="commentInput" placeholder="Write a comment...">
+                <button id="postCommentBtn" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Options Modal -->
+    <div class="modal-backdrop" id="postOptionsModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Post Options</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="options-list">
+                <div class="option-item" data-action="save">
+                    <i class="fas fa-bookmark"></i> Save Post
+                </div>
+                <div class="option-item" data-action="share">
+                    <i class="fas fa-share"></i> Share Post
+                </div>
+                <div class="option-item" data-action="report">
+                    <i class="fas fa-flag"></i> Report Post
+                </div>
+                <div class="option-item" data-action="delete" style="color: var(--error-color);">
+                    <i class="fas fa-trash"></i> Delete Post
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
+        // Appwrite Configuration
+        const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
+        const APPWRITE_PROJECT_ID = 'your-project-id'; // Replace with your Appwrite project ID
+        const APPWRITE_PLATFORM_WEB_ID = 'your-platform-web-id'; // Replace with your platform web ID
+
+        // Database IDs
+        const DATABASE_ID = 'mycrush_db';
+        const USERS_COLLECTION_ID = 'users';
+        const POSTS_COLLECTION_ID = 'posts';
+        const COMMENTS_COLLECTION_ID = 'comments';
+        const FOLLOWS_COLLECTION_ID = 'follows';
+        const MESSAGES_COLLECTION_ID = 'messages';
+        const NOTIFICATIONS_COLLECTION_ID = 'notifications';
+        const STORIES_COLLECTION_ID = 'stories';
+
+        // Storage Bucket IDs
+        const AVATARS_BUCKET_ID = 'avatars_bucket';
+        const POST_IMAGES_BUCKET_ID = 'post_images_bucket';
+        const STORY_IMAGES_BUCKET_ID = 'story_images_bucket';
+
+        // Initialize Appwrite
+        const client = new Appwrite.Client()
+            .setEndpoint(APPWRITE_ENDPOINT)
+            .setProject(APPWRITE_PROJECT_ID);
+
+        const account = new Appwrite.Account(client);
+        const databases = new Appwrite.Databases(client);
+        const storage = new Appwrite.Storage(client);
+        const realtime = new Appwrite.Realtime(client);
+
         // State Management
+        let currentUser = null;
         let currentTheme = localStorage.getItem('theme') || 'light';
         let currentPage = 'homePage';
+        let currentPostId = null;
+        let currentChatUser = null;
+        let appwriteConnected = false;
+        let realtimeSubscriptions = [];
 
         // DOM Elements
         const pages = document.querySelectorAll('.page');
         const navItems = document.querySelectorAll('.nav-item');
         const themeToggle = document.getElementById('themeToggle');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const searchToggle = document.getElementById('searchToggle');
+        const searchBar = document.getElementById('searchBar');
+        const newPostFloatBtn = document.getElementById('newPostFloatBtn');
 
         // Initialize the app
-        function initApp() {
-            // Set the theme
-            setTheme(currentTheme);
+        async function initApp() {
+            try {
+                // Test Appwrite connection
+                await client.get();
+                appwriteConnected = true;
+                updateConnectionStatus('connected', 'Connected to Appwrite');
+                
+                // Set the theme
+                setTheme(currentTheme);
+                
+                // Check if user is logged in
+                await checkAuthStatus();
+                
+                // Set up event listeners
+                setupEventListeners();
+                
+                // Load initial data if logged in
+                if (currentUser) {
+                    loadStories();
+                    loadFeed();
+                    updateUnreadCount();
+                    setupRealtimeSubscriptions();
+                }
+            } catch (error) {
+                console.error('Appwrite connection failed:', error);
+                appwriteConnected = false;
+                updateConnectionStatus('disconnected', 'Appwrite connection failed');
+                
+                // Fall back to localStorage if Appwrite is not available
+                if (!localStorage.getItem('mycrush_users')) {
+                    initializeLocalStorage();
+                }
+                
+                setTheme(currentTheme);
+                checkAuthStatus();
+                setupEventListeners();
+            }
+        }
+
+        // Update connection status UI
+        function updateConnectionStatus(status, message) {
+            connectionStatus.textContent = message;
+            connectionStatus.className = `connection-status ${status}`;
+            connectionStatus.style.display = 'block';
             
-            // Set up event listeners
-            setupEventListeners();
-            
-            // Load initial data
-            loadFeed();
-            loadNotifications();
-            loadConversations();
+            // Hide after 3 seconds
+            setTimeout(() => {
+                connectionStatus.style.display = 'none';
+            }, 3000);
+        }
+
+        // Initialize localStorage as fallback
+        function initializeLocalStorage() {
+            if (!localStorage.getItem('mycrush_users')) {
+                const demoUsers = [
+                    {
+                        $id: 'user1',
+                        name: 'Demo User',
+                        email: 'demo@example.com',
+                        password: 'password',
+                        bio: 'This is my bio',
+                        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('mycrush_users', JSON.stringify(demoUsers));
+            }
+
+            // Initialize other collections if needed
+            if (!localStorage.getItem('mycrush_posts')) {
+                localStorage.setItem('mycrush_posts', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_comments')) {
+                localStorage.setItem('mycrush_comments', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_follows')) {
+                localStorage.setItem('mycrush_follows', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_messages')) {
+                localStorage.setItem('mycrush_messages', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_notifications')) {
+                localStorage.setItem('mycrush_notifications', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_stories')) {
+                localStorage.setItem('mycrush_stories', JSON.stringify([]));
+            }
         }
 
         // Set theme function
@@ -752,6 +1360,137 @@
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
             themeToggle.innerHTML = theme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        }
+
+        // Setup realtime subscriptions
+        function setupRealtimeSubscriptions() {
+            if (!appwriteConnected) return;
+            
+            // Subscribe to notifications
+            const notificationsSubscription = realtime.subscribe(
+                `databases.${DATABASE_ID}.collections.${NOTIFICATIONS_COLLECTION_ID}.documents`,
+                response => {
+                    if (response.payload.userId === currentUser.$id) {
+                        updateUnreadCount();
+                        if (currentPage === 'notificationsPage') {
+                            loadNotifications();
+                        }
+                    }
+                }
+            );
+            
+            // Subscribe to messages
+            const messagesSubscription = realtime.subscribe(
+                `databases.${DATABASE_ID}.collections.${MESSAGES_COLLECTION_ID}.documents`,
+                response => {
+                    if (response.payload.receiverId === currentUser.$id || 
+                        response.payload.senderId === currentUser.$id) {
+                        if (currentPage === 'messagesPage') {
+                            loadConversations();
+                        }
+                        if (currentPage === 'chatPage' && currentChatUser && 
+                            (response.payload.senderId === currentChatUser.$id || 
+                             response.payload.receiverId === currentChatUser.$id)) {
+                            loadChat(currentChatUser);
+                        }
+                    }
+                }
+            );
+            
+            // Store subscriptions for cleanup
+            realtimeSubscriptions.push(notificationsSubscription, messagesSubscription);
+        }
+
+        // Cleanup realtime subscriptions
+        function cleanupRealtimeSubscriptions() {
+            realtimeSubscriptions.forEach(subscription => {
+                if (subscription) subscription();
+            });
+            realtimeSubscriptions = [];
+        }
+
+        // Check authentication status
+        async function checkAuthStatus() {
+            if (appwriteConnected) {
+                try {
+                    const user = await account.get();
+                    currentUser = {
+                        $id: user.$id,
+                        name: user.name,
+                        email: user.email,
+                        // Additional user data will be fetched from the database
+                    };
+                    
+                    // Get user profile from database
+                    try {
+                        const userProfile = await databases.getDocument(
+                            DATABASE_ID,
+                            USERS_COLLECTION_ID,
+                            user.$id
+                        );
+                        
+                        currentUser = {
+                            ...currentUser,
+                            ...userProfile
+                        };
+                    } catch (error) {
+                        console.log('User profile not found in database, creating one...');
+                        // Create user profile in database
+                        await createUserProfile(user);
+                    }
+                    
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showPage('homePage');
+                    loadStories();
+                    loadFeed();
+                    updateUnreadCount();
+                    setupRealtimeSubscriptions();
+                } catch (error) {
+                    console.log('No active session:', error);
+                    showPage('authPage');
+                }
+            } else {
+                // Fallback to localStorage
+                const userData = localStorage.getItem('currentUser');
+                if (userData) {
+                    currentUser = JSON.parse(userData);
+                    showPage('homePage');
+                    loadStories();
+                    loadFeed();
+                    updateUnreadCount();
+                } else {
+                    showPage('authPage');
+                }
+            }
+        }
+
+        // Create user profile in database
+        async function createUserProfile(user) {
+            if (!appwriteConnected) return;
+            
+            try {
+                const userProfile = {
+                    userId: user.$id,
+                    displayName: user.name,
+                    bio: '',
+                    avatarFileId: null,
+                    createdAt: new Date().toISOString()
+                };
+                
+                await databases.createDocument(
+                    DATABASE_ID,
+                    USERS_COLLECTION_ID,
+                    user.$id, // Using user ID as document ID
+                    userProfile
+                );
+                
+                currentUser = {
+                    ...currentUser,
+                    ...userProfile
+                };
+            } catch (error) {
+                console.error('Error creating user profile:', error);
+            }
         }
 
         // Show specific page
@@ -769,6 +1508,16 @@
                     item.classList.add('active');
                 }
             });
+            
+            // Load content for the page if needed
+            if (pageId === 'homePage') {
+                loadStories();
+                loadFeed();
+            }
+            if (pageId === 'profilePage') loadProfile();
+            if (pageId === 'notificationsPage') loadNotifications();
+            if (pageId === 'messagesPage') loadConversations();
+            if (pageId === 'searchPage') initSearch();
         }
 
         // Set up event listeners
@@ -788,32 +1537,137 @@
                 currentTheme = newTheme;
             });
             
-            // Quick post functionality
-            document.getElementById('quickPostInput').addEventListener('input', (e) => {
-                const count = e.target.value.length;
-                const counter = document.getElementById('charCounter');
-                counter.textContent = `${count}/280`;
-                
-                if (count > 260) counter.classList.add('near-limit');
-                else counter.classList.remove('near-limit');
-                
-                if (count > 280) counter.classList.add('over-limit');
-                else counter.classList.remove('over-limit');
-            });
-            
-            document.getElementById('quickPostBtn').addEventListener('click', () => {
-                const content = document.getElementById('quickPostInput').value.trim();
-                if (content && content.length <= 280) {
-                    createPost(content, null);
-                    document.getElementById('quickPostInput').value = '';
-                    document.getElementById('charCounter').textContent = '0/280';
-                    document.getElementById('charCounter').classList.remove('near-limit', 'over-limit');
-                }
+            // Search toggle
+            searchToggle.addEventListener('click', () => {
+                searchBar.style.display = searchBar.style.display === 'none' ? 'block' : 'none';
             });
             
             // Floating action button
-            document.getElementById('floatingActionBtn').addEventListener('click', () => {
-                document.getElementById('quickPostInput').focus();
+            newPostFloatBtn.addEventListener('click', () => {
+                showPage('newPostPage');
+            });
+            
+            // Auth tabs
+            const authTabs = document.querySelectorAll('.auth-tab');
+            authTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.getAttribute('data-tab');
+                    authTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    if (tabName === 'login') {
+                        document.getElementById('loginForm').style.display = 'block';
+                        document.getElementById('registerForm').style.display = 'none';
+                    } else {
+                        document.getElementById('loginForm').style.display = 'none';
+                        document.getElementById('registerForm').style.display = 'block';
+                    }
+                });
+            });
+            
+            // Login form
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                await loginUser(email, password);
+            });
+            
+            // Register form
+            document.getElementById('registerForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('registerName').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+                
+                if (password !== confirmPassword) {
+                    showError('registerError', 'Passwords do not match');
+                    return;
+                }
+                
+                await registerUser(name, email, password);
+            });
+            
+            // Google login
+            document.getElementById('googleLogin').addEventListener('click', () => {
+                loginWithGoogle();
+            });
+            
+            // Continue as guest
+            document.getElementById('continueAsGuest').addEventListener('click', () => {
+                continueAsGuest();
+            });
+            
+            // New post form
+            document.getElementById('newPostForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const content = document.getElementById('postContent').value;
+                const imageFile = document.getElementById('postImage').files[0];
+                await createPost(content, imageFile);
+            });
+            
+            // Character count for post content
+            document.getElementById('postContent').addEventListener('input', (e) => {
+                document.getElementById('charCount').textContent = e.target.value.length;
+            });
+            
+            // Image preview for new post
+            document.getElementById('postImage').addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('imagePreview').style.display = 'block';
+                        document.getElementById('imagePreview').querySelector('img').src = event.target.result;
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+            
+            // Remove image button
+            document.getElementById('removeImage').addEventListener('click', () => {
+                document.getElementById('postImage').value = '';
+                document.getElementById('imagePreview').style.display = 'none';
+            });
+            
+            // Edit profile button
+            document.getElementById('editProfileBtn').addEventListener('click', () => {
+                showEditProfileModal();
+            });
+            
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                await logoutUser();
+            });
+            
+            // Close modal buttons
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('editProfileModal').style.display = 'none';
+                    document.getElementById('commentModal').style.display = 'none';
+                    document.getElementById('postOptionsModal').style.display = 'none';
+                });
+            });
+            
+            // Edit profile form
+            document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const displayName = document.getElementById('editDisplayName').value;
+                const bio = document.getElementById('editBio').value;
+                const avatarFile = document.getElementById('editAvatar').files[0];
+                await updateProfile(displayName, bio, avatarFile);
+            });
+            
+            // Avatar preview for edit profile
+            document.getElementById('editAvatar').addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('avatarPreview').style.display = 'block';
+                        document.getElementById('avatarPreview').querySelector('img').src = event.target.result;
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
             });
             
             // Back to messages button
@@ -831,397 +1685,2113 @@
                 }
             });
             
-            // Edit profile button
-            document.getElementById('editProfileBtn').addEventListener('click', () => {
-                const newName = prompt('Enter your name:', document.getElementById('profileName').textContent);
-                if (newName) {
-                    document.getElementById('profileName').textContent = newName;
-                }
-                
-                const newBio = prompt('Enter your bio:', document.getElementById('profileBio').textContent);
-                if (newBio) {
-                    document.getElementById('profileBio').textContent = newBio;
-                }
-                
-                const newHandle = prompt('Enter your username:', document.getElementById('profileHandle').textContent);
-                if (newHandle) {
-                    document.getElementById('profileHandle').textContent = newHandle;
+            // Post comment button
+            document.getElementById('postCommentBtn').addEventListener('click', postComment);
+            
+            // Comment input enter key
+            document.getElementById('commentInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    postComment();
                 }
             });
+            
+            // Search input
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('globalSearch').addEventListener('input', handleGlobalSearch);
+            
+            // Profile stats clicks
+            document.getElementById('postsStat').addEventListener('click', () => {
+                document.getElementById('userPostsContainer').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            document.getElementById('followingStat').addEventListener('click', () => {
+                alert('Following list would be shown here');
+            });
+            
+            document.getElementById('followersStat').addEventListener('click', () => {
+                alert('Followers list would be shown here');
+            });
+            
+            // Post options
+            document.querySelectorAll('.option-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const action = item.getAttribute('data-action');
+                    handlePostOption(action);
+                });
+            });
+        }
+
+        // Show error message
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            // Create a temporary success message element
+            const successElement = document.createElement('div');
+            successElement.className = 'success-message';
+            successElement.textContent = message;
+            successElement.style.position = 'fixed';
+            successElement.style.top = '70px';
+            successElement.style.left = '50%';
+            successElement.style.transform = 'translateX(-50%)';
+            successElement.style.zIndex = '1000';
+            successElement.style.maxWidth = '90%';
+            
+            document.body.appendChild(successElement);
+            
+            setTimeout(() => {
+                successElement.remove();
+            }, 3000);
+        }
+
+        // Load stories
+        async function loadStories() {
+            const storiesContainer = document.getElementById('storiesContainer');
+            
+            if (!currentUser) {
+                return;
+            }
+            
+            storiesContainer.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                let stories = [];
+                
+                if (appwriteConnected) {
+                    // Get stories from followed users
+                    const follows = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followerId', currentUser.$id)]
+                    );
+                    
+                    const followedUserIds = follows.documents.map(f => f.followingId);
+                    
+                    if (followedUserIds.length > 0) {
+                        // Get stories from followed users
+                        stories = await databases.listDocuments(
+                            DATABASE_ID,
+                            STORIES_COLLECTION_ID,
+                            [
+                                Appwrite.Query.equal('userId', followedUserIds),
+                                Appwrite.Query.greaterThan('expiresAt', new Date().toISOString())
+                            ]
+                        );
+                        
+                        stories = stories.documents;
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    const followedUserIds = follows
+                        .filter(f => f.followerId === currentUser.$id)
+                        .map(f => f.followingId);
+                    
+                    const allStories = JSON.parse(localStorage.getItem('mycrush_stories') || '[]');
+                    stories = allStories.filter(story => 
+                        followedUserIds.includes(story.userId) && 
+                        new Date(story.expiresAt) > new Date()
+                    );
+                }
+                
+                storiesContainer.innerHTML = '';
+                
+                // Add current user's story first with create option
+                const addStoryEl = document.createElement('div');
+                addStoryEl.className = 'story';
+                addStoryEl.innerHTML = `
+                    <div style="position: relative;">
+                        <img src="${currentUser.avatar}" alt="Your story" class="story-avatar">
+                        <div style="position: absolute; bottom: 0; right: 0; background: var(--primary-color); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
+                        </div>
+                    </div>
+                    <div class="story-username">Your story</div>
+                `;
+                
+                addStoryEl.addEventListener('click', () => {
+                    alert('Create story functionality would go here');
+                });
+                
+                storiesContainer.appendChild(addStoryEl);
+                
+                if (stories.length === 0) {
+                    return;
+                }
+                
+                // Group stories by user
+                const storiesByUser = {};
+                stories.forEach(story => {
+                    if (!storiesByUser[story.userId]) {
+                        storiesByUser[story.userId] = [];
+                    }
+                    storiesByUser[story.userId].push(story);
+                });
+                
+                // Display one story per user (the latest)
+                for (const userId in storiesByUser) {
+                    const userStories = storiesByUser[userId];
+                    userStories.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    const latestStory = userStories[0];
+                    
+                    let user;
+                    
+                    if (appwriteConnected) {
+                        try {
+                            user = await databases.getDocument(
+                                DATABASE_ID,
+                                USERS_COLLECTION_ID,
+                                latestStory.userId
+                            );
+                        } catch (error) {
+                            console.error('Error fetching user:', error);
+                            user = {
+                                displayName: 'Unknown User',
+                                avatarFileId: null
+                            };
+                        }
+                    } else {
+                        // Fallback to localStorage
+                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                        user = users.find(u => u.$id === latestStory.userId) || {
+                            displayName: 'Unknown User',
+                            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                        };
+                    }
+                    
+                    const storyEl = document.createElement('div');
+                    storyEl.className = 'story';
+                    storyEl.innerHTML = `
+                        <img src="${appwriteConnected ? (user.avatarFileId ? await getFilePreview(user.avatarFileId) : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80') : user.avatar}" 
+                             alt="${user.displayName}" class="story-avatar">
+                        <div class="story-username">${user.displayName}</div>
+                    `;
+                    
+                    storyEl.addEventListener('click', () => {
+                        alert('View story functionality would go here');
+                    });
+                    
+                    storiesContainer.appendChild(storyEl);
+                }
+            } catch (error) {
+                console.error('Error loading stories:', error);
+                storiesContainer.innerHTML = '';
+            }
+        }
+
+        // Login user
+        async function loginUser(email, password) {
+            if (appwriteConnected) {
+                try {
+                    await account.createEmailSession(email, password);
+                    await checkAuthStatus();
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showError('loginError', 'Invalid email or password');
+                }
+            } else {
+                // Fallback to localStorage
+                const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                const user = users.find(u => u.email === email && u.password === password);
+                
+                if (user) {
+                    currentUser = { ...user };
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showPage('homePage');
+                    loadStories();
+                    loadFeed();
+                    updateUnreadCount();
+                } else {
+                    showError('loginError', 'Invalid email or password');
+                }
+            }
+        }
+
+        // Register user
+        async function registerUser(name, email, password) {
+            if (appwriteConnected) {
+                try {
+                    // Create account in Appwrite
+                    await account.create('unique()', email, password, name);
+                    
+                    // Login the user
+                    await account.createEmailSession(email, password);
+                    
+                    // Create user profile in database
+                    const user = await account.get();
+                    await createUserProfile(user);
+                    
+                    await checkAuthStatus();
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    showError('registerError', 'Registration failed. Please try again.');
+                }
+            } else {
+                // Fallback to localStorage
+                const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                
+                // Check if user already exists
+                const existingUser = users.find(u => u.email === email);
+                
+                if (existingUser) {
+                    showError('registerError', 'User with this email already exists');
+                    return;
+                }
+                
+                // Create new user
+                const newUser = {
+                    $id: 'user' + (users.length + 1),
+                    name,
+                    email,
+                    password,
+                    bio: '',
+                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
+                    createdAt: new Date().toISOString()
+                };
+                
+                users.push(newUser);
+                localStorage.setItem('mycrush_users', JSON.stringify(users));
+                
+                currentUser = { ...newUser };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showPage('homePage');
+                loadStories();
+                loadFeed();
+            }
+        }
+
+        // Login with Google
+        async function loginWithGoogle() {
+            if (appwriteConnected) {
+                try {
+                    // Redirect to Google OAuth
+                    account.createOAuth2Session('google', `${window.location.origin}/success.html`, `${window.location.origin}/failure.html`);
+                } catch (error) {
+                    console.error('Google login error:', error);
+                    showError('loginError', 'Google login failed');
+                }
+            } else {
+                alert('Google login requires Appwrite backend connection');
+            }
+        }
+
+        // Continue as guest
+        function continueAsGuest() {
+            currentUser = null;
+            showPage('homePage');
+            loadStories();
+            loadFeed();
+        }
+
+        // Logout user
+        async function logoutUser() {
+            if (appwriteConnected) {
+                try {
+                    await account.deleteSession('current');
+                    cleanupRealtimeSubscriptions();
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+            }
+            
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showPage('authPage');
         }
 
         // Load feed posts
-        function loadFeed() {
+        async function loadFeed() {
             const feedContainer = document.getElementById('feedContainer');
             
-            // Sample posts data
-            const posts = [
-                {
-                    id: 'post1',
-                    user: {
-                        name: 'Alex Johnson',
-                        username: 'alexj',
-                        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
-                    },
-                    text: 'Just finished my morning hike! The view was absolutely breathtaking. 🏞️ #nature #hiking',
-                    image: 'https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80',
-                    likes: 42,
-                    comments: 5,
-                    retweets: 3,
-                    timestamp: '2 hours ago',
-                    platform: 'twitter'
-                },
-                {
-                    id: 'post2',
-                    user: {
-                        name: 'Taylor Swift',
-                        username: 'tswift',
-                        avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
-                    },
-                    text: 'Check out my new photography project! So excited to share this with you all.',
-                    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80',
-                    likes: 128,
-                    comments: 12,
-                    retweets: 7,
-                    timestamp: '5 hours ago',
-                    platform: 'instagram'
-                },
-                {
-                    id: 'post3',
-                    user: {
-                        name: 'Jordan Peterson',
-                        username: 'jordanp',
-                        avatar: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
-                    },
-                    text: 'Just launched my new website! Check it out and let me know what you think.',
-                    image: null,
-                    likes: 56,
-                    comments: 8,
-                    retweets: 2,
-                    timestamp: '1 day ago',
-                    platform: 'facebook'
-                }
-            ];
+            if (!currentUser) {
+                feedContainer.innerHTML = `
+                    <div class="card login-prompt">
+                        <i class="fas fa-rss"></i>
+                        <h3>Login to see your feed</h3>
+                        <p>Sign in to view posts from users you follow</p>
+                        <button class="btn btn-primary mt-1" onclick="showPage('authPage')">Login</button>
+                    </div>
+                `;
+                return;
+            }
             
-            feedContainer.innerHTML = '';
-            
-            posts.forEach(post => {
-                // Process hashtags and mentions
-                let processedContent = post.text;
-                processedContent = processedContent.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
-                processedContent = processedContent.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
-                
-                // Platform indicator
-                let platformIcon = '';
-                if (post.platform === 'twitter') {
-                    platformIcon = '<span class="platform-indicator platform-twitter"><i class="fab fa-twitter"></i></span>';
-                } else if (post.platform === 'instagram') {
-                    platformIcon = '<span class="platform-indicator platform-instagram"><i class="fab fa-instagram"></i></span>';
-                } else if (post.platform === 'facebook') {
-                    platformIcon = '<span class="platform-indicator platform-facebook"><i class="fab fa-facebook-f"></i></span>';
-                }
-                
-                const postEl = document.createElement('div');
-                postEl.className = 'card post-card';
-                postEl.innerHTML = `
+            // Show skeleton loading
+            feedContainer.innerHTML = `
+                <div class="card post-card">
                     <div class="user-info">
-                        <img src="${post.user.avatar}" alt="${post.user.name}" class="avatar">
-                        <div>
-                            <div class="username">${post.user.name} ${platformIcon}</div>
-                            <div class="timestamp">${post.timestamp}</div>
+                        <div class="skeleton skeleton-avatar"></div>
+                        <div style="flex: 1;">
+                            <div class="skeleton skeleton-text short"></div>
+                            <div class="skeleton skeleton-text" style="width: 40%;"></div>
                         </div>
-                        <button class="btn btn-outline" style="margin-left: auto;">
-                            <i class="fas fa-ellipsis-h"></i>
-                        </button>
                     </div>
                     <div class="post-content">
-                        <p>${processedContent}</p>
-                        ${post.image ? `<img src="${post.image}" alt="Post image" class="post-image">` : ''}
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                        <div class="skeleton skeleton-image"></div>
                     </div>
-                    <div class="post-actions">
-                        <button class="action-btn">
-                            <i class="fas fa-heart"></i> <span>${post.likes}</span>
-                        </button>
-                        <button class="action-btn">
-                            <i class="fas fa-comment"></i> <span>${post.comments}</span>
-                        </button>
-                        <button class="action-btn">
-                            <i class="fas fa-retweet"></i> <span>${post.retweets}</span>
-                        </button>
-                        <button class="action-btn">
-                            <i class="fas fa-share"></i>
-                        </button>
-                    </div>
-                `;
-                
-                feedContainer.appendChild(postEl);
-            });
-        }
-
-        // Load notifications
-        function loadNotifications() {
-            const notificationsContainer = document.getElementById('notificationsContainer');
-            
-            // Sample notifications data
-            const notifications = [
-                {
-                    id: 'notif1',
-                    type: 'like',
-                    user: {
-                        name: 'Alex Johnson',
-                        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
-                    },
-                    text: 'liked your post',
-                    timestamp: '10 minutes ago',
-                    read: false
-                },
-                {
-                    id: 'notif2',
-                    type: 'comment',
-                    user: {
-                        name: 'Taylor Swift',
-                        avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
-                    },
-                    text: 'commented on your post: "Great content!"',
-                    timestamp: '2 hours ago',
-                    read: false
-                },
-                {
-                    id: 'notif3',
-                    type: 'follow',
-                    user: {
-                        name: 'Jordan Peterson',
-                        avatar: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
-                    },
-                    text: 'started following you',
-                    timestamp: '1 day ago',
-                    read: true
-                }
-            ];
-            
-            notificationsContainer.innerHTML = '';
-            
-            notifications.forEach(notif => {
-                const notifEl = document.createElement('div');
-                notifEl.className = `card notification-item ${notif.read ? '' : 'unread'}`;
-                notifEl.innerHTML = `
-                    <div class="notification-icon">
-                        <i class="fas fa-${notif.type === 'like' ? 'heart' : notif.type === 'comment' ? 'comment' : 'user-plus'}"></i>
-                    </div>
-                    <div style="flex: 1;">
-                        <p><strong>${notif.user.name}</strong> ${notif.text}</p>
-                        <div class="timestamp">${notif.timestamp}</div>
-                    </div>
-                `;
-                notificationsContainer.appendChild(notifEl);
-            });
-        }
-
-        // Load conversations
-        function loadConversations() {
-            const conversationsContainer = document.getElementById('conversationsContainer');
-            
-            // Sample conversations data
-            const conversations = [
-                {
-                    id: 'conv1',
-                    user: {
-                        name: 'Alex Johnson',
-                        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80',
-                        status: 'online'
-                    },
-                    lastMessage: 'Hey there! How are you doing?',
-                    timestamp: '10:30 AM',
-                    unread: 3
-                },
-                {
-                    id: 'conv2',
-                    user: {
-                        name: 'Taylor Swift',
-                        avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80',
-                        status: 'offline'
-                    },
-                    lastMessage: 'Check out this new photo I took!',
-                    timestamp: 'Yesterday',
-                    unread: 0
-                },
-                {
-                    id: 'conv3',
-                    user: {
-                        name: 'Jordan Peterson',
-                        avatar: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80',
-                        status: 'online'
-                    },
-                    lastMessage: 'Are we still meeting tomorrow?',
-                    timestamp: '2 days ago',
-                    unread: 1
-                }
-            ];
-            
-            conversationsContainer.innerHTML = '';
-            
-            conversations.forEach(conv => {
-                const convEl = document.createElement('div');
-                convEl.className = 'card';
-                convEl.style.padding = '15px';
-                convEl.style.marginBottom = '10px';
-                convEl.innerHTML = `
-                    <div style="display: flex; align-items: center;">
-                        <img src="${conv.user.avatar}" alt="${conv.user.name}" class="avatar">
-                        <div style="flex: 1; margin-left: 10px; cursor: pointer;">
-                            <div style="display: flex; justify-content: space-between;">
-                                <div class="username">${conv.user.name}</div>
-                                <div class="timestamp">${conv.timestamp}</div>
-                            </div>
-                            <p>${conv.lastMessage}</p>
+                </div>
+                <div class="card post-card">
+                    <div class="user-info">
+                        <div class="skeleton skeleton-avatar"></div>
+                        <div style="flex: 1;">
+                            <div class="skeleton skeleton-text short"></div>
+                            <div class="skeleton skeleton-text" style="width: 40%;"></div>
                         </div>
-                        ${conv.unread > 0 ? `<span class="badge">${conv.unread}</span>` : ''}
+                    </div>
+                    <div class="post-content">
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                    </div>
+                </div>
+            `;
+            
+            try {
+                let posts = [];
+                
+                if (appwriteConnected) {
+                    // Get posts from followed users
+                    const follows = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followerId', currentUser.$id)]
+                    );
+                    
+                    const followedUserIds = follows.documents.map(f => f.followingId);
+                    followedUserIds.push(currentUser.$id); // Include current user's posts
+                    
+                    // Get posts from followed users
+                    posts = await databases.listDocuments(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        [Appwrite.Query.equal('userId', followedUserIds)]
+                    );
+                    
+                    posts = posts.documents;
+                } else {
+                    // Fallback to localStorage
+                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    const followedUserIds = follows
+                        .filter(f => f.followerId === currentUser.$id)
+                        .map(f => f.followingId);
+                    
+                    followedUserIds.push(currentUser.$id);
+                    
+                    const allPosts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    posts = allPosts.filter(post => followedUserIds.includes(post.userId));
+                }
+                
+                // Sort posts by date
+                posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                feedContainer.innerHTML = '';
+                
+                if (posts.length === 0) {
+                    feedContainer.innerHTML = `
+                        <div class="card text-center">
+                            <div style="padding: 40px 20px;">
+                                <i class="fas fa-rss" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                                <h3>Your feed is empty</h3>
+                                <p>Follow some users to see their posts here</p>
+                                <button class="btn btn-primary mt-1" onclick="showPage('searchPage')">Discover Users</button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                for (const post of posts) {
+                    let user;
+                    
+                    if (appwriteConnected) {
+                        try {
+                            user = await databases.getDocument(
+                                DATABASE_ID,
+                                USERS_COLLECTION_ID,
+                                post.userId
+                            );
+                        } catch (error) {
+                            console.error('Error fetching user:', error);
+                            user = {
+                                displayName: 'Unknown User',
+                                avatarFileId: null
+                            };
+                        }
+                    } else {
+                        // Fallback to localStorage
+                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                        user = users.find(u => u.$id === post.userId) || {
+                            name: 'Unknown User',
+                            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                        };
+                    }
+                    
+                    const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
+                    const isBookmarked = post.bookmarkedBy && post.bookmarkedBy.includes(currentUser.$id);
+                    
+                    const postEl = document.createElement('div');
+                    postEl.className = 'card post-card';
+                    postEl.innerHTML = `
+                        <div class="user-info">
+                            <img src="${appwriteConnected ? (user.avatarFileId ? await getFilePreview(user.avatarFileId) : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80') : user.avatar}" 
+                                 alt="${appwriteConnected ? user.displayName : user.name}" class="avatar">
+                            <div style="flex: 1;">
+                                <div class="username">${appwriteConnected ? user.displayName : user.name}</div>
+                                <div class="timestamp">${formatDate(post.createdAt)}</div>
+                            </div>
+                            <div class="post-options">
+                                <button class="options-btn">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <p>${post.text}</p>
+                            ${post.imageFileId ? `<img src="${post.imageUrl || 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80'}" alt="Post image" class="post-image">` : ''}
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.$id}">
+                                <i class="fas fa-heart"></i> <span>${post.likeCount || 0}</span>
+                            </button>
+                            <button class="action-btn" data-post-id="${post.$id}">
+                                <i class="fas fa-comment"></i> <span>${post.commentCount || 0}</span>
+                            </button>
+                            <button class="action-btn ${isBookmarked ? 'bookmarked' : ''}" data-post-id="${post.$id}">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                            <button class="action-btn" data-post-id="${post.$id}">
+                                <i class="fas fa-share"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Add like functionality
+                    const likeBtn = postEl.querySelector('.action-btn:first-child');
+                    likeBtn.addEventListener('click', () => {
+                        toggleLike(post.$id);
+                    });
+                    
+                    // Add comment functionality
+                    const commentBtn = postEl.querySelectorAll('.action-btn')[1];
+                    commentBtn.addEventListener('click', () => {
+                        showComments(post.$id);
+                    });
+                    
+                    // Add bookmark functionality
+                    const bookmarkBtn = postEl.querySelectorAll('.action-btn')[2];
+                    bookmarkBtn.addEventListener('click', () => {
+                        toggleBookmark(post.$id);
+                    });
+                    
+                    // Add share functionality
+                    const shareBtn = postEl.querySelectorAll('.action-btn')[3];
+                    shareBtn.addEventListener('click', () => {
+                        sharePost(post.$id);
+                    });
+                    
+                    // Add options functionality
+                    const optionsBtn = postEl.querySelector('.options-btn');
+                    optionsBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showPostOptions(post);
+                    });
+                    
+                    feedContainer.appendChild(postEl);
+                }
+            } catch (error) {
+                console.error('Error loading feed:', error);
+                feedContainer.innerHTML = `
+                    <div class="card text-center">
+                        <div style="padding: 40px 20px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                            <h3>Error loading feed</h3>
+                            <p>Please try again later</p>
+                        </div>
                     </div>
                 `;
-                
-                // Add click event to open chat
-                convEl.addEventListener('click', () => {
-                    document.getElementById('chatUserName').textContent = conv.user.name;
-                    showPage('chatPage');
-                    loadChat(conv.user);
-                });
-                
-                conversationsContainer.appendChild(convEl);
-            });
+            }
         }
 
-        // Load chat with a user
-        function loadChat(user) {
-            const messageThread = document.getElementById('messageThread');
+        // Toggle like on a post
+        async function toggleLike(postId) {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
             
-            // Sample messages data
-            const messages = [
-                {
-                    id: 'msg1',
-                    sender: user,
-                    text: 'Hey there! How are you doing?',
-                    timestamp: '10:25 AM',
-                    type: 'received'
-                },
-                {
-                    id: 'msg2',
-                    sender: 'You',
-                    text: "I'm doing great! Just finished working on a new project.",
-                    timestamp: '10:28 AM',
-                    type: 'sent'
-                },
-                {
-                    id: 'msg3',
-                    sender: user,
-                    text: 'That sounds exciting! What kind of project?',
-                    timestamp: '10:30 AM',
-                    type: 'received'
+            try {
+                if (appwriteConnected) {
+                    // Get the post
+                    const post = await databases.getDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        postId
+                    );
+                    
+                    const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
+                    
+                    if (isLiked) {
+                        // Unlike the post
+                        const updatedLikedBy = post.likedBy.filter(id => id !== currentUser.$id);
+                        await databases.updateDocument(
+                            DATABASE_ID,
+                            POSTS_COLLECTION_ID,
+                            postId,
+                            {
+                                likedBy: updatedLikedBy,
+                                likeCount: post.likeCount - 1
+                            }
+                        );
+                    } else {
+                        // Like the post
+                        const updatedLikedBy = [...(post.likedBy || []), currentUser.$id];
+                        await databases.updateDocument(
+                            DATABASE_ID,
+                            POSTS_COLLECTION_ID,
+                            postId,
+                            {
+                                likedBy: updatedLikedBy,
+                                likeCount: post.likeCount + 1
+                            }
+                        );
+                        
+                        // Create notification if not the post owner
+                        if (post.userId !== currentUser.$id) {
+                            await databases.createDocument(
+                                DATABASE_ID,
+                                NOTIFICATIONS_COLLECTION_ID,
+                                'unique()',
+                                {
+                                    userId: post.userId,
+                                    type: 'like',
+                                    sourceUserId: currentUser.$id,
+                                    postId: postId,
+                                    read: false,
+                                    createdAt: new Date().toISOString()
+                                }
+                            );
+                            
+                            updateUnreadCount();
+                        }
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    const postIndex = posts.findIndex(p => p.$id === postId);
+                    
+                    if (postIndex !== -1) {
+                        const post = posts[postIndex];
+                        
+                        if (!post.likedBy) {
+                            post.likedBy = [];
+                        }
+                        
+                        const isLiked = post.likedBy.includes(currentUser.$id);
+                        
+                        if (isLiked) {
+                            post.likedBy = post.likedBy.filter(id => id !== currentUser.$id);
+                            post.likeCount--;
+                        } else {
+                            post.likedBy.push(currentUser.$id);
+                            post.likeCount++;
+                            
+                            // Create notification
+                            if (post.userId !== currentUser.$id) {
+                                const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                                notifications.push({
+                                    $id: 'notif' + (notifications.length + 1),
+                                    userId: post.userId,
+                                    type: 'like',
+                                    sourceUserId: currentUser.$id,
+                                    postId: postId,
+                                    read: false,
+                                    createdAt: new Date().toISOString()
+                                });
+                                localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
+                                updateUnreadCount();
+                            }
+                        }
+                        
+                        posts[postIndex] = post;
+                        localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                    }
                 }
-            ];
-            
-            messageThread.innerHTML = '';
-            
-            messages.forEach(msg => {
-                const messageEl = document.createElement('div');
-                messageEl.className = `message ${msg.type}`;
-                messageEl.innerHTML = `
-                    <div>${msg.text}</div>
-                    <div class="message-time">${msg.timestamp}</div>
-                `;
-                messageThread.appendChild(messageEl);
-            });
-            
-            // Scroll to bottom
-            messageThread.scrollTop = messageThread.scrollHeight;
+                
+                // Update UI
+                if (currentPage === 'homePage') {
+                    loadFeed();
+                } else if (currentPage === 'profilePage') {
+                    loadProfile();
+                }
+            } catch (error) {
+                console.error('Error toggling like:', error);
+            }
         }
 
-        // Send a message
-        function sendMessage() {
-            const messageInput = document.getElementById('messageInput');
-            const content = messageInput.value.trim();
+        // Toggle bookmark on a post
+        async function toggleBookmark(postId) {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            try {
+                if (appwriteConnected) {
+                    // Get the post
+                    const post = await databases.getDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        postId
+                    );
+                    
+                    const isBookmarked = post.bookmarkedBy && post.bookmarkedBy.includes(currentUser.$id);
+                    
+                    if (isBookmarked) {
+                        // Remove bookmark
+                        const updatedBookmarkedBy = post.bookmarkedBy.filter(id => id !== currentUser.$id);
+                        await databases.updateDocument(
+                            DATABASE_ID,
+                            POSTS_COLLECTION_ID,
+                            postId,
+                            {
+                                bookmarkedBy: updatedBookmarkedBy
+                            }
+                        );
+                    } else {
+                        // Add bookmark
+                        const updatedBookmarkedBy = [...(post.bookmarkedBy || []), currentUser.$id];
+                        await databases.updateDocument(
+                            DATABASE_ID,
+                            POSTS_COLLECTION_ID,
+                            postId,
+                            {
+                                bookmarkedBy: updatedBookmarkedBy
+                            }
+                        );
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    const postIndex = posts.findIndex(p => p.$id === postId);
+                    
+                    if (postIndex !== -1) {
+                        const post = posts[postIndex];
+                        
+                        if (!post.bookmarkedBy) {
+                            post.bookmarkedBy = [];
+                        }
+                        
+                        const isBookmarked = post.bookmarkedBy.includes(currentUser.$id);
+                        
+                        if (isBookmarked) {
+                            post.bookmarkedBy = post.bookmarkedBy.filter(id => id !== currentUser.$id);
+                        } else {
+                            post.bookmarkedBy.push(currentUser.$id);
+                        }
+                        
+                        posts[postIndex] = post;
+                        localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                    }
+                }
+                
+                // Update UI
+                if (currentPage === 'homePage') {
+                    loadFeed();
+                } else if (currentPage === 'profilePage') {
+                    loadProfile();
+                }
+                
+                showSuccess(isBookmarked ? 'Post removed from bookmarks' : 'Post added to bookmarks');
+            } catch (error) {
+                console.error('Error toggling bookmark:', error);
+            }
+        }
+
+        // Share a post
+        async function sharePost(postId) {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            try {
+                if (navigator.share) {
+                    // Use Web Share API if available
+                    await navigator.share({
+                        title: 'Check out this post on My Crush',
+                        text: 'I found this interesting post on My Crush social app',
+                        url: window.location.href + '?post=' + postId
+                    });
+                } else {
+                    // Fallback to copying to clipboard
+                    const shareUrl = window.location.href + '?post=' + postId;
+                    await navigator.clipboard.writeText(shareUrl);
+                    showSuccess('Post link copied to clipboard');
+                }
+                
+                // Track share in backend
+                if (appwriteConnected) {
+                    const post = await databases.getDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        postId
+                    );
+                    
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        postId,
+                        {
+                            shareCount: (post.shareCount || 0) + 1
+                        }
+                    );
+                } else {
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    const postIndex = posts.findIndex(p => p.$id === postId);
+                    
+                    if (postIndex !== -1) {
+                        const post = posts[postIndex];
+                        post.shareCount = (post.shareCount || 0) + 1;
+                        posts[postIndex] = post;
+                        localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                    }
+                }
+            } catch (error) {
+                console.error('Error sharing post:', error);
+            }
+        }
+
+        // Show post options
+        function showPostOptions(post) {
+            const modal = document.getElementById('postOptionsModal');
+            const optionsList = modal.querySelector('.options-list');
+            
+            // Clear previous options
+            optionsList.innerHTML = '';
+            
+            // Add save option
+            const isBookmarked = post.bookmarkedBy && post.bookmarkedBy.includes(currentUser.$id);
+            optionsList.innerHTML += `
+                <div class="option-item" data-action="save">
+                    <i class="fas fa-bookmark"></i> ${isBookmarked ? 'Unsave Post' : 'Save Post'}
+                </div>
+            `;
+            
+            // Add share option
+            optionsList.innerHTML += `
+                <div class="option-item" data-action="share">
+                    <i class="fas fa-share"></i> Share Post
+                </div>
+            `;
+            
+            // Add report option (if not current user's post)
+            if (post.userId !== currentUser.$id) {
+                optionsList.innerHTML += `
+                    <div class="option-item" data-action="report">
+                        <i class="fas fa-flag"></i> Report Post
+                    </div>
+                `;
+            }
+            
+            // Add delete option (if current user's post)
+            if (post.userId === currentUser.$id) {
+                optionsList.innerHTML += `
+                    <div class="option-item" data-action="delete" style="color: var(--error-color);">
+                        <i class="fas fa-trash"></i> Delete Post
+                    </div>
+                `;
+            }
+            
+            // Add event listeners
+            modal.querySelectorAll('.option-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const action = item.getAttribute('data-action');
+                    handlePostOption(action, post);
+                    modal.style.display = 'none';
+                });
+            });
+            
+            modal.style.display = 'flex';
+        }
+
+        // Handle post option selection
+        function handlePostOption(action, post) {
+            switch (action) {
+                case 'save':
+                    toggleBookmark(post.$id);
+                    break;
+                case 'share':
+                    sharePost(post.$id);
+                    break;
+                case 'report':
+                    alert('Report post functionality would go here');
+                    break;
+                case 'delete':
+                    if (confirm('Are you sure you want to delete this post?')) {
+                        deletePost(post.$id);
+                    }
+                    break;
+            }
+        }
+
+        // Delete a post
+        async function deletePost(postId) {
+            try {
+                if (appwriteConnected) {
+                    await databases.deleteDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        postId
+                    );
+                } else {
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    const updatedPosts = posts.filter(p => p.$id !== postId);
+                    localStorage.setItem('mycrush_posts', JSON.stringify(updatedPosts));
+                }
+                
+                showSuccess('Post deleted successfully');
+                
+                // Update UI
+                if (currentPage === 'homePage') {
+                    loadFeed();
+                } else if (currentPage === 'profilePage') {
+                    loadProfile();
+                }
+            } catch (error) {
+                console.error('Error deleting post:', error);
+                alert('Error deleting post. Please try again.');
+            }
+        }
+
+        // Show comments for a post
+        async function showComments(postId) {
+            if (!currentUser) {
+                alert('Please login to view comments');
+                showPage('authPage');
+                return;
+            }
+            
+            currentPostId = postId;
+            document.getElementById('commentModal').style.display = 'flex';
+            await loadComments();
+        }
+
+        // Load comments for a post
+        async function loadComments() {
+            const commentsContainer = document.getElementById('commentsContainer');
+            commentsContainer.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                let comments = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        COMMENTS_COLLECTION_ID,
+                        [Appwrite.Query.equal('postId', currentPostId)]
+                    );
+                    comments = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    const allComments = JSON.parse(localStorage.getItem('mycrush_comments') || '[]');
+                    comments = allComments.filter(c => c.postId === currentPostId);
+                }
+                
+                // Sort comments by date
+                comments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                
+                commentsContainer.innerHTML = '';
+                
+                if (comments.length === 0) {
+                    commentsContainer.innerHTML = '<p class="text-center">No comments yet</p>';
+                } else {
+                    for (const comment of comments) {
+                        let user;
+                        
+                        if (appwriteConnected) {
+                            try {
+                                user = await databases.getDocument(
+                                    DATABASE_ID,
+                                    USERS_COLLECTION_ID,
+                                    comment.userId
+                                );
+                            } catch (error) {
+                                console.error('Error fetching user:', error);
+                                user = {
+                                    displayName: 'Unknown User',
+                                    avatarFileId: null
+                                };
+                            }
+                        } else {
+                            // Fallback to localStorage
+                            const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                            user = users.find(u => u.$id === comment.userId) || {
+                                name: 'Unknown User',
+                                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                            };
+                        }
+                        
+                        const commentEl = document.createElement('div');
+                        commentEl.className = 'comment';
+                        commentEl.innerHTML = `
+                            <img src="${appwriteConnected ? (user.avatarFileId ? await getFilePreview(user.avatarFileId) : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80') : user.avatar}" 
+                                 alt="${appwriteConnected ? user.displayName : user.name}" class="comment-avatar">
+                            <div class="comment-content">
+                                <div class="username">${appwriteConnected ? user.displayName : user.name}</div>
+                                <p>${comment.text}</p>
+                                <div class="timestamp">${formatDate(comment.createdAt)}</div>
+                            </div>
+                        `;
+                        commentsContainer.appendChild(commentEl);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                commentsContainer.innerHTML = '<p class="text-center">Error loading comments</p>';
+            }
+        }
+
+        // Post a comment
+        async function postComment() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            const commentInput = document.getElementById('commentInput');
+            const content = commentInput.value.trim();
             
             if (!content) return;
             
-            const messageThread = document.getElementById('messageThread');
-            
-            // Create new message element
-            const messageEl = document.createElement('div');
-            messageEl.className = 'message sent';
-            messageEl.innerHTML = `
-                <div>${content}</div>
-                <div class="message-time">Just now</div>
-            `;
-            
-            messageThread.appendChild(messageEl);
-            
-            // Clear input
-            messageInput.value = '';
-            
-            // Scroll to bottom
-            messageThread.scrollTop = messageThread.scrollHeight;
-            
-            // Simulate reply after a short delay
-            setTimeout(() => {
-                const replyEl = document.createElement('div');
-                replyEl.className = 'message received';
-                replyEl.innerHTML = `
-                    <div>Thanks for your message! I'll get back to you soon.</div>
-                    <div class="message-time">Just now</div>
-                `;
+            try {
+                if (appwriteConnected) {
+                    // Create comment
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        COMMENTS_COLLECTION_ID,
+                        'unique()',
+                        {
+                            postId: currentPostId,
+                            userId: currentUser.$id,
+                            text: content,
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                    
+                    // Update post comment count
+                    const post = await databases.getDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        currentPostId
+                    );
+                    
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        currentPostId,
+                        {
+                            commentCount: (post.commentCount || 0) + 1
+                        }
+                    );
+                    
+                    // Create notification if not the post owner
+                    if (post.userId !== currentUser.$id) {
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            NOTIFICATIONS_COLLECTION_ID,
+                            'unique()',
+                            {
+                                userId: post.userId,
+                                type: 'comment',
+                                sourceUserId: currentUser.$id,
+                                postId: currentPostId,
+                                read: false,
+                                createdAt: new Date().toISOString()
+                            }
+                        );
+                        
+                        updateUnreadCount();
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const comments = JSON.parse(localStorage.getItem('mycrush_comments') || '[]');
+                    comments.push({
+                        $id: 'comment' + (comments.length + 1),
+                        postId: currentPostId,
+                        userId: currentUser.$id,
+                        text: content,
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('mycrush_comments', JSON.stringify(comments));
+                    
+                    // Update post comment count
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    const postIndex = posts.findIndex(p => p.$id === currentPostId);
+                    
+                    if (postIndex !== -1) {
+                        const post = posts[postIndex];
+                        post.commentCount = (post.commentCount || 0) + 1;
+                        posts[postIndex] = post;
+                        localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                        
+                        // Create notification
+                        if (post.userId !== currentUser.$id) {
+                            const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                            notifications.push({
+                                $id: 'notif' + (notifications.length + 1),
+                                userId: post.userId,
+                                type: 'comment',
+                                sourceUserId: currentUser.$id,
+                                postId: currentPostId,
+                                read: false,
+                                createdAt: new Date().toISOString()
+                            });
+                            localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
+                            updateUnreadCount();
+                        }
+                    }
+                }
                 
-                messageThread.appendChild(replyEl);
+                // Clear input and reload comments
+                commentInput.value = '';
+                await loadComments();
                 
-                // Scroll to bottom
-                messageThread.scrollTop = messageThread.scrollHeight;
-            }, 1000);
+                // Update post in feed
+                if (currentPage === 'homePage') {
+                    await loadFeed();
+                } else if (currentPage === 'profilePage') {
+                    await loadProfile();
+                }
+            } catch (error) {
+                console.error('Error posting comment:', error);
+            }
         }
 
         // Create a new post
-        function createPost(content, imageFile) {
-            const feedContainer = document.getElementById('feedContainer');
+        async function createPost(content, imageFile) {
+            if (!currentUser) {
+                alert('Please login to create a post');
+                showPage('authPage');
+                return;
+            }
             
-            // Create new post element
-            const postEl = document.createElement('div');
-            postEl.className = 'card post-card';
-            postEl.innerHTML = `
-                <div class="user-info">
-                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="User" class="avatar">
-                    <div>
-                        <div class="username">Your Name <span class="platform-indicator platform-twitter"><i class="fab fa-twitter"></i></span></div>
-                        <div class="timestamp">Just now</div>
+            try {
+                let imageFileId = null;
+                
+                if (appwriteConnected) {
+                    // Upload image if provided
+                    if (imageFile) {
+                        const file = await storage.createFile(
+                            POST_IMAGES_BUCKET_ID,
+                            'unique()',
+                            imageFile
+                        );
+                        imageFileId = file.$id;
+                    }
+                    
+                    // Create post
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        'unique()',
+                        {
+                            userId: currentUser.$id,
+                            text: content,
+                            imageFileId: imageFileId,
+                            likeCount: 0,
+                            commentCount: 0,
+                            shareCount: 0,
+                            likedBy: [],
+                            bookmarkedBy: [],
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                } else {
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    posts.push({
+                        $id: 'post' + (posts.length + 1),
+                        userId: currentUser.$id,
+                        text: content,
+                        imageFileId: imageFile ? 'image' + posts.length : null,
+                        likeCount: 0,
+                        commentCount: 0,
+                        shareCount: 0,
+                        likedBy: [],
+                        bookmarkedBy: [],
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                }
+                
+                // Reset form and go back to feed
+                document.getElementById('newPostForm').reset();
+                document.getElementById('charCount').textContent = '0';
+                document.getElementById('imagePreview').style.display = 'none';
+                showPage('homePage');
+                await loadFeed();
+                
+                // Show success message
+                showSuccess('Post created successfully!');
+            } catch (error) {
+                console.error('Error creating post:', error);
+                alert('Error creating post. Please try again.');
+            }
+        }
+
+        // Load user profile
+        async function loadProfile() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            // Update profile info
+            document.getElementById('profileName').textContent = currentUser.name;
+            document.getElementById('profileBio').textContent = currentUser.bio || '';
+            document.getElementById('profileAvatar').src = currentUser.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80';
+            
+            try {
+                let postCount = 0;
+                let followingCount = 0;
+                let followersCount = 0;
+                
+                if (appwriteConnected) {
+                    // Get user's posts
+                    const posts = await databases.listDocuments(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        [Appwrite.Query.equal('userId', currentUser.$id)]
+                    );
+                    postCount = posts.total;
+                    
+                    // Get following count
+                    const following = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followerId', currentUser.$id)]
+                    );
+                    followingCount = following.total;
+                    
+                    // Get followers count
+                    const followers = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followingId', currentUser.$id)]
+                    );
+                    followersCount = followers.total;
+                } else {
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    postCount = posts.filter(p => p.userId === currentUser.$id).length;
+                    
+                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    followingCount = follows.filter(f => f.followerId === currentUser.$id).length;
+                    followersCount = follows.filter(f => f.followingId === currentUser.$id).length;
+                }
+                
+                // Update stats
+                document.getElementById('postsCount').textContent = postCount;
+                document.getElementById('followingCount').textContent = followingCount;
+                document.getElementById('followersCount').textContent = followersCount;
+                
+                // Load user's posts
+                const postsContainer = document.getElementById('userPostsContainer');
+                postsContainer.innerHTML = '<div class="spinner"></div>';
+                
+                let userPosts = [];
+                
+                if (appwriteConnected) {
+                    const posts = await databases.listDocuments(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        [Appwrite.Query.equal('userId', currentUser.$id)]
+                    );
+                    userPosts = posts.documents;
+                } else {
+                    // Fallback to localStorage
+                    const allPosts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    userPosts = allPosts.filter(post => post.userId === currentUser.$id);
+                }
+                
+                // Sort posts by date
+                userPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                postsContainer.innerHTML = '';
+                
+                if (userPosts.length === 0) {
+                    postsContainer.innerHTML = `
+                        <div class="card text-center">
+                            <div style="padding: 40px 20px;">
+                                <i class="fas fa-camera" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                                <h3>No posts yet</h3>
+                                <p>Share your first post with the world</p>
+                                <button class="btn btn-primary mt-1" onclick="showPage('newPostPage')">Create Post</button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                for (const post of userPosts) {
+                    const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
+                    const isBookmarked = post.bookmarkedBy && post.bookmarkedBy.includes(currentUser.$id);
+                    
+                    const postEl = document.createElement('div');
+                    postEl.className = 'card post-card';
+                    postEl.innerHTML = `
+                        <div class="user-info">
+                            <img src="${currentUser.avatar}" alt="${currentUser.name}" class="avatar">
+                            <div>
+                                <div class="username">${currentUser.name}</div>
+                                <div class="timestamp">${formatDate(post.createdAt)}</div>
+                            </div>
+                            <div class="post-options">
+                                <button class="options-btn">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <p>${post.text}</p>
+                            ${post.imageFileId ? `<img src="${post.imageUrl || 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80'}" alt="Post image" class="post-image">` : ''}
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.$id}">
+                                <i class="fas fa-heart"></i> <span>${post.likeCount || 0}</span>
+                            </button>
+                            <button class="action-btn" data-post-id="${post.$id}">
+                                <i class="fas fa-comment"></i> <span>${post.commentCount || 0}</span>
+                            </button>
+                            <button class="action-btn ${isBookmarked ? 'bookmarked' : ''}" data-post-id="${post.$id}">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                            <button class="action-btn" data-post-id="${post.$id}">
+                                <i class="fas fa-share"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Add like functionality
+                    const likeBtn = postEl.querySelector('.action-btn:first-child');
+                    likeBtn.addEventListener('click', () => {
+                        toggleLike(post.$id);
+                    });
+                    
+                    // Add comment functionality
+                    const commentBtn = postEl.querySelectorAll('.action-btn')[1];
+                    commentBtn.addEventListener('click', () => {
+                        showComments(post.$id);
+                    });
+                    
+                    // Add bookmark functionality
+                    const bookmarkBtn = postEl.querySelectorAll('.action-btn')[2];
+                    bookmarkBtn.addEventListener('click', () => {
+                        toggleBookmark(post.$id);
+                    });
+                    
+                    // Add share functionality
+                    const shareBtn = postEl.querySelectorAll('.action-btn')[3];
+                    shareBtn.addEventListener('click', () => {
+                        sharePost(post.$id);
+                    });
+                    
+                    // Add options functionality
+                    const optionsBtn = postEl.querySelector('.options-btn');
+                    optionsBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showPostOptions(post);
+                    });
+                    
+                    postsContainer.appendChild(postEl);
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('userPostsContainer').innerHTML = `
+                    <div class="card text-center">
+                        <div style="padding: 40px 20px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                            <h3>Error loading profile</h3>
+                            <p>Please try again later</p>
+                        </div>
                     </div>
-                    <button class="btn btn-outline" style="margin-left: auto;">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                </div>
-                <div class="post-content">
-                    <p>${content}</p>
-                </div>
-                <div class="post-actions">
-                    <button class="action-btn">
-                        <i class="fas fa-heart"></i> <span>0</span>
-                    </button>
-                    <button class="action-btn">
-                        <i class="fas fa-comment"></i> <span>0</span>
-                    </button>
-                    <button class="action-btn">
-                        <i class="fas fa-retweet"></i> <span>0</span>
-                    </button>
-                    <button class="action-btn">
-                        <i class="fas fa-share"></i>
-                    </button>
-                </div>
-            `;
+                `;
+            }
+        }
+
+        // Show edit profile modal
+        function showEditProfileModal() {
+            document.getElementById('editDisplayName').value = currentUser.name;
+            document.getElementById('editBio').value = currentUser.bio || '';
+            document.getElementById('editProfileModal').style.display = 'flex';
+        }
+
+        // Update user profile
+        async function updateProfile(displayName, bio, avatarFile) {
+            try {
+                let avatarFileId = currentUser.avatarFileId;
+                
+                if (appwriteConnected) {
+                    // Upload new avatar if provided
+                    if (avatarFile) {
+                        const file = await storage.createFile(
+                            AVATARS_BUCKET_ID,
+                            'unique()',
+                            avatarFile
+                        );
+                        avatarFileId = file.$id;
+                    }
+                    
+                    // Update user profile in database
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        USERS_COLLECTION_ID,
+                        currentUser.$id,
+                        {
+                            displayName: displayName,
+                            bio: bio,
+                            avatarFileId: avatarFileId
+                        }
+                    );
+                    
+                    // Update account name
+                    await account.updateName(displayName);
+                } else {
+                    // Fallback to localStorage
+                    const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                    const userIndex = users.findIndex(u => u.$id === currentUser.$id);
+                    
+                    if (userIndex !== -1) {
+                        users[userIndex].name = displayName;
+                        users[userIndex].bio = bio;
+                        localStorage.setItem('mycrush_users', JSON.stringify(users));
+                    }
+                }
+                
+                // Update current user
+                currentUser.name = displayName;
+                currentUser.bio = bio;
+                
+                if (avatarFile) {
+                    // In a real app, this would be the URL from Appwrite Storage
+                    currentUser.avatar = URL.createObjectURL(avatarFile);
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Update UI
+                document.getElementById('profileName').textContent = displayName;
+                document.getElementById('profileBio').textContent = bio;
+                
+                if (avatarFile) {
+                    document.getElementById('profileAvatar').src = URL.createObjectURL(avatarFile);
+                }
+                
+                // Close modal
+                document.getElementById('editProfileModal').style.display = 'none';
+                
+                // Show success message
+                showSuccess('Profile updated successfully!');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Error updating profile. Please try again.');
+            }
+        }
+
+        // Load notifications
+        async function loadNotifications() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
             
-            // Add to the top of the feed
-            feedContainer.insertBefore(postEl, feedContainer.firstChild);
+            const notificationsContainer = document.getElementById('notificationsContainer');
+            notificationsContainer.innerHTML = '<div class="spinner"></div>';
             
-            // Update post count
-            const postCount = document.getElementById('postsCount');
-            postCount.textContent = parseInt(postCount.textContent) + 1;
+            try {
+                let notifications = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        NOTIFICATIONS_COLLECTION_ID,
+                        [Appwrite.Query.equal('userId', currentUser.$id)]
+                    );
+                    notifications = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                    notifications = notifications.filter(n => n.userId === currentUser.$id);
+                }
+                
+                // Sort notifications by date
+                notifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                notificationsContainer.innerHTML = '';
+                
+                if (notifications.length === 0) {
+                    notificationsContainer.innerHTML = '<p class="text-center">No notifications yet</p>';
+                    return;
+                }
+                
+                for (const notif of notifications) {
+                    let user;
+                    
+                    if (appwriteConnected) {
+                        try {
+                            user = await databases.getDocument(
+                                DATABASE_ID,
+                                USERS_COLLECTION_ID,
+                                notif.sourceUserId
+                            );
+                        } catch (error) {
+                            console.error('Error fetching user:', error);
+                            user = {
+                                displayName: 'Unknown User'
+                            };
+                        }
+                    } else {
+                        // Fallback to localStorage
+                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                        user = users.find(u => u.$id === notif.sourceUserId) || {
+                            name: 'Unknown User'
+                        };
+                    }
+                    
+                    const notifEl = document.createElement('div');
+                    notifEl.className = `card notification-item ${notif.read ? '' : 'unread'}`;
+                    notifEl.innerHTML = `
+                        <div class="notification-icon">
+                            <i class="fas fa-${notif.type === 'like' ? 'heart' : notif.type === 'comment' ? 'comment' : 'user-plus'}"></i>
+                        </div>
+                        <div>
+                            <p><strong>${appwriteConnected ? user.displayName : user.name}</strong> ${notif.type === 'like' ? 'liked' : notif.type === 'comment' ? 'commented on' : 'started following'} your ${notif.type === 'follow' ? '' : 'post'}</p>
+                            <div class="timestamp">${formatDate(notif.createdAt)}</div>
+                        </div>
+                    `;
+                    notificationsContainer.appendChild(notifEl);
+                    
+                    // Mark as read when clicked
+                    if (!notif.read) {
+                        notifEl.addEventListener('click', async () => {
+                            if (appwriteConnected) {
+                                await databases.updateDocument(
+                                    DATABASE_ID,
+                                    NOTIFICATIONS_COLLECTION_ID,
+                                    notif.$id,
+                                    { read: true }
+                                );
+                            } else {
+                                // Fallback to localStorage
+                                const allNotifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                                const notifIndex = allNotifications.findIndex(n => n.$id === notif.$id);
+                                
+                                if (notifIndex !== -1) {
+                                    allNotifications[notifIndex].read = true;
+                                    localStorage.setItem('mycrush_notifications', JSON.stringify(allNotifications));
+                                }
+                            }
+                            
+                            updateUnreadCount();
+                            loadNotifications();
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                notificationsContainer.innerHTML = '<p class="text-center">Error loading notifications</p>';
+            }
+        }
+
+        // Update unread notification count
+        async function updateUnreadCount() {
+            if (!currentUser) return;
             
-            // Show success message
-            alert('Post created successfully!');
+            try {
+                let unreadCount = 0;
+                
+                if (appwriteConnected) {
+                    const notifications = await databases.listDocuments(
+                        DATABASE_ID,
+                        NOTIFICATIONS_COLLECTION_ID,
+                        [
+                            Appwrite.Query.equal('userId', currentUser.$id),
+                            Appwrite.Query.equal('read', false)
+                        ]
+                    );
+                    unreadCount = notifications.total;
+                } else {
+                    // Fallback to localStorage
+                    const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                    unreadCount = notifications.filter(n => n.userId === currentUser.$id && !n.read).length;
+                }
+                
+                const badge = document.getElementById('notificationBadge');
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error updating unread count:', error);
+            }
+        }
+
+        // Load conversations
+        async function loadConversations() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            const conversationsContainer = document.getElementById('conversationsContainer');
+            conversationsContainer.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                let messages = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        MESSAGES_COLLECTION_ID,
+                        [
+                            Appwrite.Query.or(
+                                Appwrite.Query.equal('senderId', currentUser.$id),
+                                Appwrite.Query.equal('receiverId', currentUser.$id)
+                            )
+                        ]
+                    );
+                    messages = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    messages = JSON.parse(localStorage.getItem('mycrush_messages') || '[]');
+                    messages = messages.filter(m => 
+                        m.senderId === currentUser.$id || m.receiverId === currentUser.$id
+                    );
+                }
+                
+                // Get unique conversation partners
+                const conversationPartners = new Set();
+                
+                messages.forEach(msg => {
+                    if (msg.senderId === currentUser.$id) {
+                        conversationPartners.add(msg.receiverId);
+                    } else if (msg.receiverId === currentUser.$id) {
+                        conversationPartners.add(msg.senderId);
+                    }
+                });
+                
+                conversationsContainer.innerHTML = '';
+                
+                if (conversationPartners.size === 0) {
+                    conversationsContainer.innerHTML = `
+                        <div class="card text-center">
+                            <div style="padding: 40px 20px;">
+                                <i class="fas fa-comments" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                                <h3>No messages yet</h3>
+                                <p>Start a conversation with someone</p>
+                                <button class="btn btn-primary mt-1" onclick="showPage('searchPage')">Find Users</button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                for (const userId of conversationPartners) {
+                    let user;
+                    
+                    if (appwriteConnected) {
+                        try {
+                            user = await databases.getDocument(
+                                DATABASE_ID,
+                                USERS_COLLECTION_ID,
+                                userId
+                            );
+                        } catch (error) {
+                            console.error('Error fetching user:', error);
+                            user = {
+                                displayName: 'Unknown User',
+                                avatarFileId: null
+                            };
+                        }
+                    } else {
+                        // Fallback to localStorage
+                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                        user = users.find(u => u.$id === userId) || {
+                            name: 'Unknown User',
+                            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                        };
+                    }
+                    
+                    // Get last message in conversation
+                    const lastMessage = messages
+                        .filter(m => 
+                            (m.senderId === currentUser.$id && m.receiverId === userId) ||
+                            (m.senderId === userId && m.receiverId === currentUser.$id)
+                        )
+                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+                    
+                    const conversationEl = document.createElement('div');
+                    conversationEl.className = 'card';
+                    conversationEl.style.padding = '15px';
+                    conversationEl.style.marginBottom = '10px';
+                    conversationEl.innerHTML = `
+                        <div style="display: flex; align-items: center;">
+                            <img src="${appwriteConnected ? (user.avatarFileId ? await getFilePreview(user.avatarFileId) : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80') : user.avatar}" 
+                                 alt="${appwriteConnected ? user.displayName : user.name}" class="avatar">
+                            <div style="flex: 1; margin-left: 10px; cursor: pointer;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <div class="username">${appwriteConnected ? user.displayName : user.name}</div>
+                                    <div class="timestamp">${formatDate(lastMessage.createdAt)}</div>
+                                </div>
+                                <p>${lastMessage.text}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Add click event to open chat
+                    conversationEl.addEventListener('click', () => {
+                        currentChatUser = {
+                            $id: userId,
+                            name: appwriteConnected ? user.displayName : user.name,
+                            avatar: appwriteConnected ? (user.avatarFileId ? await getFilePreview(user.avatarFileId) : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80') : user.avatar
+                        };
+                        
+                        document.getElementById('chatUserName').textContent = appwriteConnected ? user.displayName : user.name;
+                        document.getElementById('chatUserAvatar').src = appwriteConnected ? (user.avatarFileId ? await getFilePreview(user.avatarFileId) : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80') : user.avatar;
+                        
+                        showPage('chatPage');
+                        loadChat(currentChatUser);
+                    });
+                    
+                    conversationsContainer.appendChild(conversationEl);
+                }
+            } catch (error) {
+                console.error('Error loading conversations:', error);
+                conversationsContainer.innerHTML = `
+                    <div class="card text-center">
+                        <div style="padding: 40px 20px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                            <h3>Error loading messages</h3>
+                            <p>Please try again later</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Load chat with a user
+        async function loadChat(user) {
+            const messageThread = document.getElementById('messageThread');
+            messageThread.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                let messages = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        MESSAGES_COLLECTION_ID,
+                        [
+                            Appwrite.Query.or(
+                                [
+                                    Appwrite.Query.equal('senderId', currentUser.$id),
+                                    Appwrite.Query.equal('receiverId', user.$id)
+                                ],
+                                [
+                                    Appwrite.Query.equal('senderId', user.$id),
+                                    Appwrite.Query.equal('receiverId', currentUser.$id)
+                                ]
+                            )
+                        ]
+                    );
+                    messages = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    const allMessages = JSON.parse(localStorage.getItem('mycrush_messages') || '[]');
+                    messages = allMessages.filter(m => 
+                        (m.senderId === currentUser.$id && m.receiverId === user.$id) ||
+                        (m.senderId === user.$id && m.receiverId === currentUser.$id)
+                    );
+                }
+                
+                // Sort messages by date
+                messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                
+                messageThread.innerHTML = '';
+                
+                messages.forEach(msg => {
+                    const messageEl = document.createElement('div');
+                    messageEl.className = `message ${msg.senderId === currentUser.$id ? 'sent' : 'received'}`;
+                    messageEl.innerHTML = `
+                        <div>${msg.text}</div>
+                        <div class="message-time">${formatTime(msg.createdAt)}</div>
+                    `;
+                    messageThread.appendChild(messageEl);
+                });
+                
+                // Scroll to bottom
+                messageThread.scrollTop = messageThread.scrollHeight;
+            } catch (error) {
+                console.error('Error loading chat:', error);
+                messageThread.innerHTML = '<p class="text-center">Error loading messages</p>';
+            }
+        }
+
+        // Send a message
+        async function sendMessage() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            const messageInput = document.getElementById('messageInput');
+            const content = messageInput.value.trim();
+            
+            if (!content || !currentChatUser) return;
+            
+            try {
+                if (appwriteConnected) {
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        MESSAGES_COLLECTION_ID,
+                        'unique()',
+                        {
+                            threadKey: `${currentUser.$id}_${currentChatUser.$id}`,
+                            senderId: currentUser.$id,
+                            receiverId: currentChatUser.$id,
+                            text: content,
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                    
+                    // Create notification
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        NOTIFICATIONS_COLLECTION_ID,
+                        'unique()',
+                        {
+                            userId: currentChatUser.$id,
+                            type: 'message',
+                            sourceUserId: currentUser.$id,
+                            read: false,
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                } else {
+                    // Fallback to localStorage
+                    const messages = JSON.parse(localStorage.getItem('mycrush_messages') || '[]');
+                    messages.push({
+                        $id: 'msg' + (messages.length + 1),
+                        threadKey: `${currentUser.$id}_${currentChatUser.$id}`,
+                        senderId: currentUser.$id,
+                        receiverId: currentChatUser.$id,
+                        text: content,
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('mycrush_messages', JSON.stringify(messages));
+                    
+                    // Create notification
+                    const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                    notifications.push({
+                        $id: 'notif' + (notifications.length + 1),
+                        userId: currentChatUser.$id,
+                        type: 'message',
+                        sourceUserId: currentUser.$id,
+                        read: false,
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
+                }
+                
+                // Clear input and reload chat
+                messageInput.value = '';
+                await loadChat(currentChatUser);
+                updateUnreadCount();
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        }
+
+        // Initialize search
+        function initSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '<p class="text-center">Start typing to search for users</p>';
+        }
+
+        // Handle search input
+        async function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const searchResults = document.getElementById('searchResults');
+            
+            if (query.length < 2) {
+                searchResults.innerHTML = '<p class="text-center">Start typing to search for users</p>';
+                return;
+            }
+            
+            try {
+                let users = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        USERS_COLLECTION_ID
+                    );
+                    users = result.documents.filter(user => 
+                        user.displayName.toLowerCase().includes(query) && user.userId !== currentUser.$id
+                    );
+                } else {
+                    // Fallback to localStorage
+                    const allUsers = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                    users = allUsers.filter(user => 
+                        user.name.toLowerCase().includes(query) && user.$id !== currentUser.$id
+                    );
+                }
+                
+                searchResults.innerHTML = '';
+                
+                if (users.length === 0) {
+                    searchResults.innerHTML = '<p class="text-center">No users found</p>';
+                    return;
+                }
+                
+                let follows = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followerId', currentUser.$id)]
+                    );
+                    follows = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    follows = follows.filter(f => f.followerId === currentUser.$id);
+                }
+                
+                for (const user of users) {
+                    const userId = appwriteConnected ? user.userId : user.$id;
+                    const userName = appwriteConnected ? user.displayName : user.name;
+                    const userBio = appwriteConnected ? user.bio : user.bio;
+                    const userAvatar = appwriteConnected ? 
+                        (user.avatarFileId ? await getFilePreview(user.avatarFileId) : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80') 
+                        : user.avatar;
+                    
+                    const userEl = document.createElement('div');
+                    userEl.className = 'card user-item';
+                    userEl.innerHTML = `
+                        <img src="${userAvatar}" alt="${userName}" class="avatar">
+                        <div style="flex: 1;">
+                            <div class="username">${userName}</div>
+                            <div>${userBio || ''}</div>
+                        </div>
+                        <button class="btn btn-primary" data-user-id="${userId}">Follow</button>
+                    `;
+                    
+                    // Add follow functionality
+                    const followBtn = userEl.querySelector('button');
+                    const isFollowing = follows.some(f => f.followingId === userId);
+                    
+                    if (isFollowing) {
+                        followBtn.textContent = 'Unfollow';
+                        followBtn.classList.remove('btn-primary');
+                        followBtn.classList.add('btn-secondary');
+                    }
+                    
+                    followBtn.addEventListener('click', () => {
+                        toggleFollow(userId);
+                    });
+                    
+                    searchResults.appendChild(userEl);
+                }
+            } catch (error) {
+                console.error('Error searching users:', error);
+                searchResults.innerHTML = '<p class="text-center">Error searching users</p>';
+            }
+        }
+
+        // Handle global search
+        async function handleGlobalSearch() {
+            const query = document.getElementById('globalSearch').value.toLowerCase();
+            
+            if (query.length < 2) {
+                return;
+            }
+            
+            // If we're not already on the search page, go there
+            if (currentPage !== 'searchPage') {
+                showPage('searchPage');
+                // Small delay to allow the page to render before triggering search
+                setTimeout(() => {
+                    document.getElementById('searchInput').value = query;
+                    handleSearch();
+                }, 100);
+            } else {
+                // If we're already on the search page, just trigger the search
+                document.getElementById('searchInput').value = query;
+                handleSearch();
+            }
+        }
+
+        // Get file preview URL
+        async function getFilePreview(fileId) {
+            try {
+                return await storage.getFilePreview(
+                    AVATARS_BUCKET_ID,
+                    fileId
+                );
+            } catch (error) {
+                console.error('Error getting file preview:', error);
+                return 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80';
+            }
+        }
+
+        // Toggle follow
+        async function toggleFollow(userId) {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            try {
+                let isFollowing = false;
+                
+                if (appwriteConnected) {
+                    // Check if already following
+                    const follows = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [
+                            Appwrite.Query.equal('followerId', currentUser.$id),
+                            Appwrite.Query.equal('followingId', userId)
+                        ]
+                    );
+                    
+                    isFollowing = follows.total > 0;
+                    
+                    if (isFollowing) {
+                        // Unfollow
+                        await databases.deleteDocument(
+                            DATABASE_ID,
+                            FOLLOWS_COLLECTION_ID,
+                            follows.documents[0].$id
+                        );
+                    } else {
+                        // Follow
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            FOLLOWS_COLLECTION_ID,
+                            'unique()',
+                            {
+                                followerId: currentUser.$id,
+                                followingId: userId,
+                                createdAt: new Date().toISOString()
+                            }
+                        );
+                        
+                        // Create notification
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            NOTIFICATIONS_COLLECTION_ID,
+                            'unique()',
+                            {
+                                userId: userId,
+                                type: 'follow',
+                                sourceUserId: currentUser.$id,
+                                read: false,
+                                createdAt: new Date().toISOString()
+                            }
+                        );
+                        
+                        updateUnreadCount();
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    const existingFollow = follows.find(f => 
+                        f.followerId === currentUser.$id && f.followingId === userId
+                    );
+                    
+                    isFollowing = !!existingFollow;
+                    
+                    if (isFollowing) {
+                        // Unfollow
+                        localStorage.setItem('mycrush_follows', JSON.stringify(
+                            follows.filter(f => f.$id !== existingFollow.$id)
+                        ));
+                    } else {
+                        // Follow
+                        follows.push({
+                            $id: 'follow' + (follows.length + 1),
+                            followerId: currentUser.$id,
+                            followingId: userId,
+                            createdAt: new Date().toISOString()
+                        });
+                        localStorage.setItem('mycrush_follows', JSON.stringify(follows));
+                        
+                        // Create notification
+                        const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                        notifications.push({
+                            $id: 'notif' + (notifications.length + 1),
+                            userId: userId,
+                            type: 'follow',
+                            sourceUserId: currentUser.$id,
+                            read: false,
+                            createdAt: new Date().toISOString()
+                        });
+                        localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
+                        updateUnreadCount();
+                    }
+                }
+                
+                // Update UI
+                handleSearch();
+                
+                // Update profile stats if on profile page
+                if (currentPage === 'profilePage') {
+                    loadProfile();
+                }
+                
+                showSuccess(isFollowing ? 'Unfollowed user' : 'Followed user');
+            } catch (error) {
+                console.error('Error toggling follow:', error);
+            }
+        }
+
+        // Format date
+        function formatDate(date) {
+            const now = new Date();
+            const diff = now - new Date(date);
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            if (days < 7) return `${days}d ago`;
+            
+            return new Date(date).toLocaleDateString();
+        }
+
+        // Format time
+        function formatTime(date) {
+            return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
         // Initialize the app when the DOM is loaded
